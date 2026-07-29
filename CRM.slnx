@@ -1,17 +1,4 @@
 <Solution>
-  <Folder Name="/Database/">
-    <File Path="Database/Scripts/001_Users_Roles_Permissions_AuditLogs.sql" />
-    <File Path="Database/Scripts/002_Countries_Settings_ListasAuxiliares.sql" />
-    <File Path="Database/Scripts/003_Clients_Contacts.sql" />
-    <File Path="Database/Scripts/004_Leads.sql" />
-    <File Path="Database/Scripts/005_Products_Categories.sql" />
-    <File Path="Database/Scripts/006_Opportunities_Pipeline.sql" />
-    <File Path="Database/Scripts/007_Proposals_ProposalLines.sql" />
-    <File Path="Database/Scripts/008_Sales_SaleLines_Payments.sql" />
-    <File Path="Database/Scripts/009_Activities_Tasks.sql" />
-    <File Path="Database/Scripts/010_Documents.sql" />
-    <File Path="Database/Scripts/011_Notifications_Email.sql" />
-  </Folder>
   <Project Path="CRM.Business/CRM.Business.csproj" Id="575ad754-a8fa-4008-a496-c346d2f445f2" />
   <Project Path="CRM.Data/CRM.Data.csproj" Id="dbc1a5b5-a4ff-4747-ac27-81a1de824822" />
   <Project Path="CRM.Models/CRM.Models.csproj" Id="23f71852-14a9-4eee-853a-a0ea0f384942" />
