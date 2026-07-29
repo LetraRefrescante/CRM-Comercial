@@ -3,6 +3,7 @@
 -- Descrição: Tabelas base de autenticação, perfis, permissões e auditoria
 -- =============================================
 
+USE CRM;
 GO
 
 -- =============================================
