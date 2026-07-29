@@ -1,8 +1,8 @@
 <Solution>
-  <Project Path="CRM.Business/CRM.Business.csproj" />
-  <Project Path="CRM.Data/CRM.Data.csproj" />
-  <Project Path="CRM.Models/CRM.Models.csproj" />
-  <Project Path="CRM.Services/CRM.Services.csproj" />
-  <Project Path="CRM.Tests/CRM.Tests.csproj" />
-  <Project Path="CRM.Web/CRM.Web.csproj" />
+  <Project Path="CRM.Business/CRM.Business.csproj" Id="575ad754-a8fa-4008-a496-c346d2f445f2" />
+  <Project Path="CRM.Data/CRM.Data.csproj" Id="dbc1a5b5-a4ff-4747-ac27-81a1de824822" />
+  <Project Path="CRM.Models/CRM.Models.csproj" Id="23f71852-14a9-4eee-853a-a0ea0f384942" />
+  <Project Path="CRM.Services/CRM.Services.csproj" Id="a5d55db9-a65d-4ab1-b2ab-de96685cbee3" />
+  <Project Path="CRM.Tests/CRM.Tests.csproj" Id="e0411e9c-f97b-4607-bb87-385bddbd41f5" />
+  <Project Path="CRM.Web/CRM.Web.csproj" Id="3b0e33e9-3b42-44a7-be97-858f73b308f3" />
 </Solution>
