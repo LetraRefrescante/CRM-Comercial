@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CRM.Models.Entities
+namespace CRM.Models.Entities.Seguranca
 {
     [Table("Users")]
     public class User

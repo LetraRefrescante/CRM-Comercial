@@ -7,155 +7,146 @@
 // </gerado automaticamente>
 //------------------------------------------------------------------------------
 
-namespace CRM.Web.MasterPages
+namespace CRM.Web.Paginas.Administracao
 {
 
 
-    public partial class SiteMaster
+    public partial class UtilizadorEditar
     {
 
         /// <summary>
-        /// Controle head.
+        /// Controle litTituloBreadcrumb.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder head;
+        protected global::System.Web.UI.WebControls.Literal litTituloBreadcrumb;
 
         /// <summary>
-        /// Controle form1.
+        /// Controle litTitulo.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+        protected global::System.Web.UI.WebControls.Literal litTitulo;
 
         /// <summary>
-        /// Controle lnkLogout.
+        /// Controle phFormulario.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton lnkLogout;
+        protected global::System.Web.UI.WebControls.PlaceHolder phFormulario;
 
         /// <summary>
-        /// Controle menuLateral.
+        /// Controle avisoAutoEdicao.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl menuLateral;
+        protected global::System.Web.UI.WebControls.PlaceHolder avisoAutoEdicao;
 
         /// <summary>
-        /// Controle phClientes.
+        /// Controle txtNome.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phClientes;
+        protected global::System.Web.UI.WebControls.TextBox txtNome;
 
         /// <summary>
-        /// Controle phLeads.
+        /// Controle txtEmail.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phLeads;
+        protected global::System.Web.UI.WebControls.TextBox txtEmail;
 
         /// <summary>
-        /// Controle phOportunidades.
+        /// Controle ddlPerfil.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phOportunidades;
+        protected global::System.Web.UI.WebControls.DropDownList ddlPerfil;
 
         /// <summary>
-        /// Controle phPropostas.
+        /// Controle ddlEstado.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phPropostas;
+        protected global::System.Web.UI.WebControls.DropDownList ddlEstado;
 
         /// <summary>
-        /// Controle phVendas.
+        /// Controle phPasswordInicial.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phVendas;
+        protected global::System.Web.UI.WebControls.PlaceHolder phPasswordInicial;
 
         /// <summary>
-        /// Controle phRelatorios.
+        /// Controle phResetPassword.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phRelatorios;
+        protected global::System.Web.UI.WebControls.PlaceHolder phResetPassword;
 
         /// <summary>
-        /// Controle phAdministracao.
+        /// Controle chkResetPassword.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phAdministracao;
+        protected global::System.Web.UI.WebControls.CheckBox chkResetPassword;
 
         /// <summary>
-        /// Controle Breadcrumb.
+        /// Controle btnGuardar.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder Breadcrumb;
+        protected global::System.Web.UI.WebControls.Button btnGuardar;
 
         /// <summary>
-        /// Controle MainContent.
+        /// Controle phPasswordGerada.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
+        protected global::System.Web.UI.WebControls.PlaceHolder phPasswordGerada;
 
         /// <summary>
-        /// Controle ucMensagens.
+        /// Controle litPasswordGerada.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::CRM.Web.Controls.Mensagens ucMensagens;
+        protected global::System.Web.UI.WebControls.Literal litPasswordGerada;
 
         /// <summary>
-        /// Controle ucConfirmacaoModal.
+        /// Controle phAcoesPosCriacao.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::CRM.Web.Controls.ConfirmacaoModal ucConfirmacaoModal;
-
-        /// <summary>
-        /// Controle Scripts.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder Scripts;
+        protected global::System.Web.UI.WebControls.PlaceHolder phAcoesPosCriacao;
     }
 }

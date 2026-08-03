@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CRM.Models.Entities
+namespace CRM.Models.Entities.Seguranca
 {
     [Table("AuditLogs")]
     public class AuditLog

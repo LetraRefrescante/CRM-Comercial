@@ -1,7 +1,7 @@
 ﻿using System;
 using CRM.Business.Security;
 using CRM.Data.Repositories;
-using CRM.Models.Entities;
+using CRM.Models.Entities.Seguranca;
 
 namespace CRM.Business.Services
 {

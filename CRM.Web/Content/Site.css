@@ -1,21 +1,406 @@
-﻿/* Wrapping element */
-/* Set some basic padding to keep content from hitting the edges */
-.body-content {
-    margin-top: 15px;
-    padding-left: 15px;
-    padding-right: 15px;
+﻿/* =====================================================
+   CRM Comercial — Design Tokens
+   ===================================================== */
+:root {
+    --ink: #12213B;
+    --ink-soft: #1E3A5F;
+    --accent: #1F7A5C;
+    --accent-hover: #17614A;
+    --accent-soft: #E7F3EE;
+    --warn: #C08A2E;
+    --paper: #F4F6F8;
+    --surface: #FFFFFF;
+    --line: #E2E5EA;
+    --text: #17202B;
+    --text-muted: #64748B;
+    --radius: 10px;
 }
 
-/* Set widths on the form inputs since otherwise they're 100% wide */
-input,
-select,
-textarea {
-    max-width: 280px;
+body {
+    background: var(--paper);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
 }
 
-/* Responsive: Portrait tablets and up */
-@media screen and (min-width: 768px) {
-    .body-content {
+h1, h2, h3, h4, h5, .brand {
+    font-family: 'Sora', 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+}
+
+.mono, .money, .codigo {
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ---------- Botões ---------- */
+.btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+    .btn-primary:hover, .btn-primary:focus {
+        background: var(--accent-hover);
+        border-color: var(--accent-hover);
+    }
+
+    .btn-primary:focus-visible, a:focus-visible, .form-control:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+
+/* ---------- Cartões ---------- */
+.card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(18, 33, 59, 0.04);
+}
+
+/* =====================================================
+   LOGIN — cartão centrado
+   ===================================================== */
+.login-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.login-card {
+    display: flex;
+    width: 100%;
+    max-width: 960px;
+    min-height: 560px;
+    background: var(--surface);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(18, 33, 59, 0.12);
+}
+
+.login-brandpanel {
+    flex: 0 0 42%;
+    background: linear-gradient(165deg, var(--ink) 0%, var(--ink-soft) 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem;
+}
+
+    .login-brandpanel .brand {
+        color: #fff;
+        font-size: 1.4rem;
+    }
+
+.login-tagline {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.95rem;
+    max-width: 320px;
+}
+
+.stage-tracker {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+}
+
+    .stage-tracker .stage {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        position: relative;
+        padding-bottom: 1.6rem;
+    }
+
+        .stage-tracker .stage:last-child {
+            padding-bottom: 0;
+        }
+
+    .stage-tracker .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.25);
+        border: 2px solid rgba(255,255,255,0.4);
+        flex-shrink: 0;
+        z-index: 1;
+    }
+
+    .stage-tracker .stage.is-active .dot {
+        background: #4FD1A5;
+        border-color: #4FD1A5;
+        box-shadow: 0 0 0 4px rgba(79, 209, 165, 0.2);
+    }
+
+    .stage-tracker .stage:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: 5px;
+        top: 18px;
+        width: 2px;
+        height: calc(100% - 6px);
+        background: rgba(255,255,255,0.2);
+    }
+
+    .stage-tracker .label {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.85);
+    }
+
+.login-formpanel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.login-form-inner {
+    width: 100%;
+    max-width: 360px;
+}
+
+@media (max-width: 991px) {
+    .login-shell {
         padding: 0;
+    }
+
+    .login-card {
+        flex-direction: column;
+        border-radius: 0;
+        min-height: 100vh;
+        box-shadow: none;
+    }
+
+    .login-brandpanel {
+        flex: 0 0 auto;
+        padding: 2rem;
+    }
+
+    .stage-tracker {
+        display: none;
+    }
+}
+
+/* =====================================================
+   SITE MASTER — sidebar
+   ===================================================== */
+.crm-sidebar .nav-link {
+    color: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 0.55rem 0.9rem;
+    margin-bottom: 2px;
+    font-size: 0.925rem;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+    .crm-sidebar .nav-link:hover {
+        background: rgba(255,255,255,0.08);
+        color: #fff;
+    }
+
+    .crm-sidebar .nav-link.active {
+        background: var(--accent);
+        color: #fff;
+    }
+
+.crm-sidebar .section-label {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0 0.9rem;
+}
+
+.crm-topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+}
+
+.avatar-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.kpi-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(18, 33, 59, 0.1);
+    }
+
+/* =====================================================
+   LISTAGENS
+   ===================================================== */
+.crm-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.crm-filter-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+    .crm-filter-card label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+.crm-table-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    padding: 0;
+}
+
+    .crm-table-card table {
+        margin-bottom: 0;
+    }
+
+    .crm-table-card thead th {
+        background: var(--paper);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--text-muted);
+        font-weight: 600;
+        border-bottom: 2px solid var(--line);
+    }
+
+    .crm-table-card tbody tr:hover {
+        background-color: var(--accent-soft);
+    }
+
+    .crm-table-card td, .crm-table-card th {
+        padding: 0.75rem 1rem;
+    }
+
+.badge-ativo {
+    background-color: var(--accent-soft);
+    color: var(--accent);
+}
+
+.badge-potencial {
+    background-color: #E7EEF6;
+    color: var(--ink-soft);
+}
+
+.badge-bloqueado {
+    background-color: #FBEAEA;
+    color: #A93226;
+}
+
+.badge-inativo {
+    background-color: #EDEEF0;
+    color: var(--text-muted);
+}
+
+.crm-empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 3rem 1rem;
+}
+
+    .crm-empty-state i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+        opacity: 0.5;
+    }
+
+.crm-row-actions .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+/* =====================================================
+   APP SHELL — header, sidebar e footer fixos;
+   só o .app-content faz scroll
+   ===================================================== */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-header {
+    flex: 0 0 auto;
+}
+
+.app-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    min-height: 0;
+    width: 100%;
+}
+
+.crm-sidebar {
+    flex: 0 0 240px; /* largura fixa — não encolhe nem cresce */
+    width: 240px;
+    max-width: 240px;
+    box-sizing: border-box;
+    background: var(--ink);
+    height: 100%;
+    overflow-y: auto;
+    flex-direction: column; /* substitui o d-flex do Bootstrap quando visível */
+}
+
+.app-content {
+    flex: 1 1 0%;
+    min-width: 0;
+    overflow-y: auto;
+}
+
+.app-footer {
+    flex: 0 0 auto;
+}
+
+/* Mobile/tablet pequeno: volta a scroll normal de página, sidebar em colapso */
+@media (max-width: 991.98px) {
+    .app-shell {
+        height: auto;
+        overflow: visible;
+    }
+
+    .app-body {
+        flex-direction: column;
+    }
+
+    .crm-sidebar {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        overflow-y: visible;
+    }
+
+    .app-content {
+        overflow-y: visible;
     }
 }

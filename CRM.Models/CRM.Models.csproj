@@ -42,11 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\AuditLog.cs" />
-    <Compile Include="Entities\Permission.cs" />
-    <Compile Include="Entities\Role.cs" />
-    <Compile Include="Entities\RolePermission.cs" />
-    <Compile Include="Entities\User.cs" />
+    <Compile Include="Entities\Clientes\Contact.cs" />
+    <Compile Include="Entities\ListasAuxiliares\Country.cs" />
+    <Compile Include="Entities\ListasAuxiliares\Sector.cs" />
+    <Compile Include="Entities\Seguranca\AuditLog.cs" />
+    <Compile Include="Entities\Clientes\Client.cs" />
+    <Compile Include="Entities\Seguranca\Permission.cs" />
+    <Compile Include="Entities\Seguranca\Role.cs" />
+    <Compile Include="Entities\Seguranca\RolePermission.cs" />
+    <Compile Include="Entities\Seguranca\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

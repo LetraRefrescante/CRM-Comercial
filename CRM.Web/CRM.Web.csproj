@@ -96,9 +96,6 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.WebForms.1.1.3\lib\net45\Microsoft.AspNet.Web.Optimization.WebForms.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.FriendlyUrls">
-      <HintPath>..\packages\Microsoft.AspNet.FriendlyUrls.Core.1.0.2\lib\net45\Microsoft.AspNet.FriendlyUrls.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
@@ -106,7 +103,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Account\Login.aspx" />
+    <Content Include="Paginas\Account\Login.aspx" />
+    <Content Include="Paginas\Administracao\PerfisPermissoes.aspx" />
+    <Content Include="Paginas\Administracao\UtilizadorEditar.aspx" />
+    <Content Include="Paginas\Administracao\UtilizadoresLista.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
@@ -124,8 +124,17 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="Controls\FiltroDatas.ascx" />
+    <Content Include="Controls\Mensagens.ascx" />
+    <Content Include="Controls\ConfirmacaoModal.ascx" />
+    <Content Include="Controls\Paginacao.ascx" />
+    <Content Include="Paginas\Dashboard\Dashboard.aspx" />
+    <Content Include="Paginas\Erro.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Paginas\Clientes\ClienteDetalhe.aspx" />
+    <Content Include="Paginas\Clientes\ClienteEditar.aspx" />
+    <Content Include="Paginas\Clientes\ClienteLista.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -185,17 +194,102 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account\Login.aspx.cs">
+    <Compile Include="Paginas\Account\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Account\Login.aspx.designer.cs">
+    <Compile Include="Paginas\Account\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Administracao\PerfisPermissoes.aspx.cs">
+      <DependentUpon>PerfisPermissoes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Administracao\PerfisPermissoes.aspx.designer.cs">
+      <DependentUpon>PerfisPermissoes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Administracao\UtilizadorEditar.aspx.cs">
+      <DependentUpon>UtilizadorEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Administracao\UtilizadorEditar.aspx.designer.cs">
+      <DependentUpon>UtilizadorEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Administracao\UtilizadoresLista.aspx.cs">
+      <DependentUpon>UtilizadoresLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Administracao\UtilizadoresLista.aspx.designer.cs">
+      <DependentUpon>UtilizadoresLista.aspx</DependentUpon>
     </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controls\FiltroDatas.ascx.cs">
+      <DependentUpon>FiltroDatas.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\FiltroDatas.ascx.designer.cs">
+      <DependentUpon>FiltroDatas.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Mensagens.ascx.cs">
+      <DependentUpon>Mensagens.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\Mensagens.ascx.designer.cs">
+      <DependentUpon>Mensagens.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ConfirmacaoModal.ascx.cs">
+      <DependentUpon>ConfirmacaoModal.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\ConfirmacaoModal.ascx.designer.cs">
+      <DependentUpon>ConfirmacaoModal.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Paginacao.ascx.cs">
+      <DependentUpon>Paginacao.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\Paginacao.ascx.designer.cs">
+      <DependentUpon>Paginacao.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Dashboard\Dashboard.aspx.cs">
+      <DependentUpon>Dashboard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Dashboard\Dashboard.aspx.designer.cs">
+      <DependentUpon>Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Erro.aspx.cs">
+      <DependentUpon>Erro.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Erro.aspx.designer.cs">
+      <DependentUpon>Erro.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\NotificacaoService.cs" />
+    <Compile Include="Paginas\Clientes\ClienteDetalhe.aspx.cs">
+      <DependentUpon>ClienteDetalhe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ClienteDetalhe.aspx.designer.cs">
+      <DependentUpon>ClienteDetalhe.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ClienteEditar.aspx.cs">
+      <DependentUpon>ClienteEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ClienteEditar.aspx.designer.cs">
+      <DependentUpon>ClienteEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ClienteLista.aspx.cs">
+      <DependentUpon>ClienteLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ClienteLista.aspx.designer.cs">
+      <DependentUpon>ClienteLista.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MasterPages\Site.Master.cs">
@@ -224,6 +318,10 @@
     <ProjectReference Include="..\CRM.Business\CRM.Business.csproj">
       <Project>{575ad754-a8fa-4008-a496-c346d2f445f2}</Project>
       <Name>CRM.Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CRM.Data\CRM.Data.csproj">
+      <Project>{dbc1a5b5-a4ff-4747-ac27-81a1de824822}</Project>
+      <Name>CRM.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\CRM.Models\CRM.Models.csproj">
       <Project>{23f71852-14a9-4eee-853a-a0ea0f384942}</Project>

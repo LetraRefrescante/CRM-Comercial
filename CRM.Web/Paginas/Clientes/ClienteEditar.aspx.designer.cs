@@ -7,155 +7,155 @@
 // </gerado automaticamente>
 //------------------------------------------------------------------------------
 
-namespace CRM.Web.MasterPages
+namespace CRM.Web.Paginas.Clientes
 {
 
 
-    public partial class SiteMaster
+    public partial class ClienteEditar
     {
 
         /// <summary>
-        /// Controle head.
+        /// Controle litTituloBreadcrumb.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder head;
+        protected global::System.Web.UI.WebControls.Literal litTituloBreadcrumb;
 
         /// <summary>
-        /// Controle form1.
+        /// Controle litTitulo.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+        protected global::System.Web.UI.WebControls.Literal litTitulo;
 
         /// <summary>
-        /// Controle lnkLogout.
+        /// Controle txtNomeComercial.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton lnkLogout;
+        protected global::System.Web.UI.WebControls.TextBox txtNomeComercial;
 
         /// <summary>
-        /// Controle menuLateral.
+        /// Controle txtNif.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl menuLateral;
+        protected global::System.Web.UI.WebControls.TextBox txtNif;
 
         /// <summary>
-        /// Controle phClientes.
+        /// Controle txtNomeLegal.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phClientes;
+        protected global::System.Web.UI.WebControls.TextBox txtNomeLegal;
 
         /// <summary>
-        /// Controle phLeads.
+        /// Controle ddlEstado.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phLeads;
+        protected global::System.Web.UI.WebControls.DropDownList ddlEstado;
 
         /// <summary>
-        /// Controle phOportunidades.
+        /// Controle txtEmail.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phOportunidades;
+        protected global::System.Web.UI.WebControls.TextBox txtEmail;
 
         /// <summary>
-        /// Controle phPropostas.
+        /// Controle txtTelefone.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phPropostas;
+        protected global::System.Web.UI.WebControls.TextBox txtTelefone;
 
         /// <summary>
-        /// Controle phVendas.
+        /// Controle txtMorada.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phVendas;
+        protected global::System.Web.UI.WebControls.TextBox txtMorada;
 
         /// <summary>
-        /// Controle phRelatorios.
+        /// Controle txtCodigoPostal.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phRelatorios;
+        protected global::System.Web.UI.WebControls.TextBox txtCodigoPostal;
 
         /// <summary>
-        /// Controle phAdministracao.
+        /// Controle txtCidade.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phAdministracao;
+        protected global::System.Web.UI.WebControls.TextBox txtCidade;
 
         /// <summary>
-        /// Controle Breadcrumb.
+        /// Controle ddlPais.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder Breadcrumb;
+        protected global::System.Web.UI.WebControls.DropDownList ddlPais;
 
         /// <summary>
-        /// Controle MainContent.
+        /// Controle ddlSetor.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
+        protected global::System.Web.UI.WebControls.DropDownList ddlSetor;
 
         /// <summary>
-        /// Controle ucMensagens.
+        /// Controle ddlComercial.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::CRM.Web.Controls.Mensagens ucMensagens;
+        protected global::System.Web.UI.WebControls.DropDownList ddlComercial;
 
         /// <summary>
-        /// Controle ucConfirmacaoModal.
+        /// Controle txtObservacoes.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::CRM.Web.Controls.ConfirmacaoModal ucConfirmacaoModal;
+        protected global::System.Web.UI.WebControls.TextBox txtObservacoes;
 
         /// <summary>
-        /// Controle Scripts.
+        /// Controle btnGuardar.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder Scripts;
+        protected global::System.Web.UI.WebControls.Button btnGuardar;
     }
 }
