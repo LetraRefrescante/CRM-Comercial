@@ -1,10 +1,11 @@
-﻿using System;
+﻿using CRM.Data.Context;
+using CRM.Data.Helpers;
+using CRM.Models.Entities.Clientes;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using CRM.Data.Context;
-using CRM.Models.Entities.Clientes;
 
 namespace CRM.Data.Repositories
 {
@@ -29,44 +30,96 @@ namespace CRM.Data.Repositories
             int? accountManagerId,
             int pagina,
             int tamanhoPagina,
-            out int totalRegistos)
+            out int totalRegistos,
+            string sortColumn = "TradeName",
+            bool sortAscending = true)
         {
             using (var context = new CrmDbContext())
             {
-                var query = context.Clients
-                    .Include(c => c.Country)
-                    .Include(c => c.AccountManager)
-                    .Where(c => !c.IsDeleted);
-
-                if (!string.IsNullOrWhiteSpace(pesquisa))
-                {
-                    query = query.Where(c =>
-                        c.TradeName.Contains(pesquisa) ||
-                        c.VatNumber.Contains(pesquisa) ||
-                        (c.Email != null && c.Email.Contains(pesquisa)) ||
-                        (c.City != null && c.City.Contains(pesquisa)));
-                }
-
-                if (!string.IsNullOrWhiteSpace(status))
-                {
-                    query = query.Where(c => c.Status == status);
-                }
-
-                if (accountManagerId.HasValue)
-                {
-                    query = query.Where(c => c.AccountManagerId == accountManagerId.Value);
-                }
+                var query = ConstruirQuery(context, pesquisa, status, accountManagerId);
 
                 totalRegistos = query.Count();
 
-                return query
-                    .OrderBy(c => c.TradeName)
+                return AplicarOrdenacao(query, sortColumn, sortAscending)
                     .Skip((pagina - 1) * tamanhoPagina)
                     .Take(tamanhoPagina)
                     .ToList();
             }
         }
 
+        /// <summary>
+        /// Igual a Listar, mas sem paginação — usado para exportar apenas os resultados filtrados.
+        /// </summary>
+        public List<Client> ListarParaExportacao(string pesquisa, string status, int? accountManagerId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return ConstruirQuery(context, pesquisa, status, accountManagerId)
+                    .OrderBy(c => c.TradeName)
+                    .ToList();
+            }
+        }
+
+        private IQueryable<Client> ConstruirQuery(CrmDbContext context, string pesquisa, string status, int? accountManagerId)
+        {
+            var query = context.Clients
+                .Include(c => c.Country)
+                .Include(c => c.AccountManager)
+                .Where(c => !c.IsDeleted);
+
+            if (!string.IsNullOrWhiteSpace(pesquisa))
+            {
+                query = query.Where(c =>
+                    c.TradeName.Contains(pesquisa) ||
+                    c.VatNumber.Contains(pesquisa) ||
+                    (c.Phone != null && c.Phone.Contains(pesquisa)) ||
+                    (c.Email != null && c.Email.Contains(pesquisa)) ||
+                    (c.City != null && c.City.Contains(pesquisa)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                query = query.Where(c => c.Status == status);
+            }
+
+            if (accountManagerId.HasValue)
+            {
+                query = query.Where(c => c.AccountManagerId == accountManagerId.Value);
+            }
+
+            return query;
+        }
+
+        // Whitelist explícita de propósito: nunca aceites o nome da coluna
+        // diretamente num OrderBy dinâmico por string (isso sim seria uma
+        // porta para injeção).
+        private IQueryable<Client> AplicarOrdenacao(IQueryable<Client> query, string sortColumn, bool sortAscending)
+        {
+            switch (sortColumn)
+            {
+                case "InternalCode":
+                    return sortAscending ? query.OrderBy(c => c.InternalCode) : query.OrderByDescending(c => c.InternalCode);
+                case "VatNumber":
+                    return sortAscending ? query.OrderBy(c => c.VatNumber) : query.OrderByDescending(c => c.VatNumber);
+                case "City":
+                    return sortAscending ? query.OrderBy(c => c.City) : query.OrderByDescending(c => c.City);
+                case "AccountManager":
+                    return sortAscending ? query.OrderBy(c => c.AccountManager.Name) : query.OrderByDescending(c => c.AccountManager.Name);
+                case "Status":
+                    return sortAscending ? query.OrderBy(c => c.Status) : query.OrderByDescending(c => c.Status);
+                case "TradeName":
+                default:
+                    return sortAscending ? query.OrderBy(c => c.TradeName) : query.OrderByDescending(c => c.TradeName);
+            }
+        }
+
+        /// <summary>
+        /// Blueprint: "Não permitir clientes ativos duplicados pelo mesmo NIF" — por isso
+        /// só o Status "Ativo" bloqueia, alinhado com o índice único filtrado
+        /// UX_Clients_VatNumber (WHERE IsDeleted = 0 AND Status = 'Ativo') em 003_Clients_Contacts.sql.
+        /// Antes verificava "Status != Inativo" (bloqueava também Potencial/Bloqueado),
+        /// o que era mais restritivo do que a BD e do que a blueprint pedem.
+        /// </summary>
         public bool NifAtivoExiste(string vatNumber, int? ignorarClientId = null)
         {
             using (var context = new CrmDbContext())
@@ -74,7 +127,7 @@ namespace CRM.Data.Repositories
                 var query = context.Clients.Where(c =>
                     c.VatNumber == vatNumber &&
                     !c.IsDeleted &&
-                    c.Status != "Inativo");
+                    c.Status == "Ativo");
 
                 if (ignorarClientId.HasValue)
                 {
@@ -100,7 +153,16 @@ namespace CRM.Data.Repositories
             {
                 client.CreatedDate = DateTime.UtcNow;
                 context.Clients.Add(client);
-                context.SaveChanges();
+
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    throw new AplicacaoException(DbErrorTranslator.Traduzir(ex), ex);
+                }
+
                 return client.ClientId;
             }
         }

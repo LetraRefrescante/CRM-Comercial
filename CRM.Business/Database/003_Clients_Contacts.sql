@@ -54,6 +54,8 @@ ON Clients(VatNumber)
 WHERE IsDeleted = 0 AND Status = 'Ativo';
 GO
 
+CREATE UNIQUE INDEX UX_Clients_InternalCode ON Clients(InternalCode);
+
 -- Índices para pesquisa (nome, cidade, estado, comercial)
 CREATE INDEX IX_Clients_CommercialName ON Clients(CommercialName);
 CREATE INDEX IX_Clients_City ON Clients(City);

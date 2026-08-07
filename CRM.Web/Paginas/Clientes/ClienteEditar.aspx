@@ -18,17 +18,26 @@
                 <asp:TextBox ID="txtNomeComercial" runat="server" CssClass="form-control" MaxLength="150" />
                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtNomeComercial"
                     ErrorMessage="Obrigatório." CssClass="text-danger small" Display="Dynamic" ValidationGroup="Guardar" />
+                <asp:CustomValidator ID="cvNomeComercial" runat="server" ControlToValidate="txtNomeComercial"
+                    OnServerValidate="cvNomeComercial_ServerValidate"
+                    ErrorMessage="Nome Comercial deve ter entre 2 e 150 caracteres." CssClass="text-danger small" Display="Dynamic" ValidationGroup="Guardar" />
             </div>
             <div class="col-md-4">
                 <label class="form-label">NIF</label>
                 <asp:TextBox ID="txtNif" runat="server" CssClass="form-control mono" MaxLength="30" />
                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtNif"
                     ErrorMessage="Obrigatório." CssClass="text-danger small" Display="Dynamic" ValidationGroup="Guardar" />
+                <asp:CustomValidator ID="cvNif" runat="server" ControlToValidate="txtNif"
+                    OnServerValidate="cvNif_ServerValidate"
+                    ErrorMessage="NIF inválido." CssClass="text-danger small" Display="Dynamic" ValidationGroup="Guardar" />
             </div>
 
             <div class="col-md-8">
                 <label class="form-label">Nome Legal</label>
                 <asp:TextBox ID="txtNomeLegal" runat="server" CssClass="form-control" MaxLength="200" />
+                <asp:CustomValidator ID="cvNomeLegal" runat="server" ControlToValidate="txtNomeLegal"
+                    OnServerValidate="cvNomeLegal_ServerValidate"
+                    ErrorMessage="Nome Legal não pode exceder 200 caracteres." CssClass="text-danger small" Display="Dynamic" ValidationGroup="Guardar" />
             </div>
             <div class="col-md-4">
                 <label class="form-label">Estado</label>
@@ -50,6 +59,9 @@
             <div class="col-md-6">
                 <label class="form-label">Telefone</label>
                 <asp:TextBox ID="txtTelefone" runat="server" CssClass="form-control" MaxLength="30" />
+                <asp:CustomValidator ID="cvTelefone" runat="server" ControlToValidate="txtTelefone"
+                    OnServerValidate="cvTelefone_ServerValidate"
+                    ErrorMessage="Telefone inválido." CssClass="text-danger small" Display="Dynamic" ValidationGroup="Guardar" />
             </div>
 
             <div class="col-12">
@@ -59,7 +71,10 @@
 
             <div class="col-md-4">
                 <label class="form-label">Código Postal</label>
-                <asp:TextBox ID="txtCodigoPostal" runat="server" CssClass="form-control" MaxLength="20" />
+                <asp:TextBox ID="txtCodigoPostal" runat="server" CssClass="form-control" MaxLength="20" placeholder="1234-567" />
+                <asp:CustomValidator ID="cvCodigoPostal" runat="server" ControlToValidate="txtCodigoPostal"
+                    OnServerValidate="cvCodigoPostal_ServerValidate"
+                    ErrorMessage="Código postal inválido (formato 1234-567)." CssClass="text-danger small" Display="Dynamic" ValidationGroup="Guardar" />
             </div>
             <div class="col-md-4">
                 <label class="form-label">Cidade</label>
@@ -67,7 +82,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">País</label>
-                <asp:DropDownList ID="ddlPais" runat="server" CssClass="form-select" />
+                <asp:DropDownList ID="ddlPais" runat="server" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlPais_SelectedIndexChanged" />
             </div>
 
             <div class="col-md-6">

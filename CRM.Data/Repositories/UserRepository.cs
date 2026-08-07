@@ -59,6 +59,18 @@ namespace CRM.Data.Repositories
             }
         }
 
+        public List<User> ListarComerciaisAtivos()
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Users
+                    .Include(u => u.Role)
+                    .Where(u => !u.IsDeleted && u.Status == "Ativo" && u.Role.Name == "Comercial")
+                    .OrderBy(u => u.Name)
+                    .ToList();
+            }
+        }
+
         public bool EmailExiste(string email, int? ignorarUserId = null)
         {
             using (var context = new CrmDbContext())
@@ -191,14 +203,7 @@ namespace CRM.Data.Repositories
 
         private void TrySave(CrmDbContext context)
         {
-            try
-            {
-                context.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-
-            }
+            context.SaveChanges();
         }
     }
 }

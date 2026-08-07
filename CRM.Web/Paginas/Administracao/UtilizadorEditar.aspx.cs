@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Data.Entity.Infrastructure;
 using CRM.Business.Security;
+using CRM.Business.Services;
 using CRM.Data.Repositories;
 using CRM.Web.Helpers;
 using CRM.Models.Entities.Seguranca;
 
 namespace CRM.Web.Paginas.Administracao
 {
-    public partial class UtilizadorEditar : Page
+    public partial class UtilizadorEditar : PaginaBase
     {
         private readonly UserRepository _userRepository = new UserRepository();
         private readonly RoleRepository _roleRepository = new RoleRepository();
+        private readonly AuditService _auditService = new AuditService();
 
         private int? UserIdEdicao
         {
@@ -22,12 +25,12 @@ namespace CRM.Web.Paginas.Administracao
             }
         }
 
-        private bool EhOProprioUtilizador => UserIdEdicao.HasValue && UserIdEdicao.Value == (int)Session["UserId"];
+        private bool EhOProprioUtilizador => UserIdEdicao.HasValue && UserIdEdicao.Value == UserId;
 
         protected void Page_Load(object sender, EventArgs e)
         {
             // Só o Administrador cria/edita utilizadores - Diretor tem apenas CONSULTA na listagem
-            if (Session["RoleName"] as string != "Administrador")
+            if (Perfil != "Administrador")
             {
                 NotificacaoService.Erro("Não tens permissão para aceder a esta página.");
                 Response.Redirect("~/Dashboard/Dashboard.aspx");
@@ -48,7 +51,10 @@ namespace CRM.Web.Paginas.Administracao
 
                     if (EhOProprioUtilizador)
                     {
-                        // Impede auto-bloqueio ou auto-alteração de perfil por engano
+                        // Impede auto-bloqueio ou auto-alteração de perfil por engano.
+                        // Nota: isto é só UX (esconder/desativar os campos). A proteção
+                        // real está no btnGuardar_Click, que ignora estes controlos por
+                        // completo quando EhOProprioUtilizador é true.
                         ddlPerfil.Enabled = false;
                         ddlEstado.Enabled = false;
                         avisoAutoEdicao.Visible = true;
@@ -104,23 +110,58 @@ namespace CRM.Web.Paginas.Administracao
                 return;
             }
 
-            int utilizadorAtualId = (int)Session["UserId"];
-
             if (UserIdEdicao.HasValue)
             {
+                int roleId;
+                string status;
+
+                if (EhOProprioUtilizador)
+                {
+                    // Nunca confiar no valor postado dos dropdowns aqui: mesmo com
+                    // Enabled=false no servidor, o WebForms processa um valor
+                    // reenviado se o <select> for reativado no browser (ex. DevTools).
+                    // Vai sempre buscar o RoleId/Status atuais à BD, ignorando por
+                    // completo ddlPerfil/ddlEstado.
+                    var utilizadorAtual = _userRepository.GetById(UserIdEdicao.Value);
+                    if (utilizadorAtual == null)
+                    {
+                        NotificacaoService.Erro("Utilizador não encontrado.");
+                        Response.Redirect("~/Administracao/UtilizadoresLista.aspx");
+                        return;
+                    }
+
+                    roleId = utilizadorAtual.RoleId;
+                    status = utilizadorAtual.Status;
+                }
+                else
+                {
+                    roleId = int.Parse(ddlPerfil.SelectedValue);
+                    status = ddlEstado.SelectedValue;
+                }
+
                 var user = new User
                 {
                     UserId = UserIdEdicao.Value,
                     Name = txtNome.Text.Trim(),
                     Email = txtEmail.Text.Trim(),
-                    // Se for o próprio utilizador, os dropdowns estão desativados - mantém os valores originais
-                    RoleId = EhOProprioUtilizador ? int.Parse(Request.Form[ddlPerfil.UniqueID] ?? ddlPerfil.SelectedValue) : int.Parse(ddlPerfil.SelectedValue),
-                    Status = ddlEstado.SelectedValue,
-                    UpdatedBy = utilizadorAtualId,
+                    RoleId = roleId,
+                    Status = status,
+                    UpdatedBy = UserId,
                     RowVersion = Convert.FromBase64String(ViewState["RowVersion"].ToString())
                 };
 
-                _userRepository.Atualizar(user);
+                try
+                {
+                    _userRepository.Atualizar(user);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    NotificacaoService.Erro("Este utilizador foi alterado por outro utilizador entretanto. Recarrega a página e tenta novamente.");
+                    return;
+                }
+
+                _auditService.Registar(UserId, "Update", "User", user.UserId.ToString(),
+                    $"Nome: {user.Name}; Email: {user.Email}");
 
                 if (chkResetPassword.Checked)
                 {
@@ -129,6 +170,8 @@ namespace CRM.Web.Paginas.Administracao
                     string hash = PasswordHasher.HashPassword(novaPassword, salt);
 
                     _userRepository.AtualizarPassword(UserIdEdicao.Value, hash, salt);
+
+                    _auditService.Registar(UserId, "PasswordReset", "User", UserIdEdicao.Value.ToString());
 
                     phPasswordGerada.Visible = true;
                     litPasswordGerada.Text = novaPassword;
@@ -150,10 +193,13 @@ namespace CRM.Web.Paginas.Administracao
                     Status = ddlEstado.SelectedValue,
                     PasswordHash = hash,
                     PasswordSalt = salt,
-                    CreatedBy = utilizadorAtualId
+                    CreatedBy = UserId
                 };
 
-                _userRepository.Criar(user);
+                int novoUserId = _userRepository.Criar(user);
+
+                _auditService.Registar(UserId, "Create", "User", novoUserId.ToString(),
+                    $"Nome: {user.Name}; Email: {user.Email}");
 
                 phPasswordGerada.Visible = true;
                 litPasswordGerada.Text = passwordTemporaria;

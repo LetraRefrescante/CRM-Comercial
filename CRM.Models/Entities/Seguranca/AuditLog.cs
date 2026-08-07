@@ -14,7 +14,7 @@ namespace CRM.Models.Entities.Seguranca
 
         [Required]
         [MaxLength(50)]
-        public string Action { get; set; } // Create, Update, Delete, Login, LoginFailed, Logout, PasswordReset...
+        public string Action { get; set; }
 
         [MaxLength(100)]
         public string EntityName { get; set; }
@@ -22,14 +22,13 @@ namespace CRM.Models.Entities.Seguranca
         [MaxLength(50)]
         public string EntityId { get; set; }
 
-        public string Details { get; set; } // JSON com valores antigos/novos
+        public string Details { get; set; }
 
         [MaxLength(45)]
         public string IpAddress { get; set; }
 
         public DateTime CreatedDate { get; set; }
 
-        // Navegação
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
     }

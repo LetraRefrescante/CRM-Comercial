@@ -42,6 +42,15 @@ namespace CRM.Web.Paginas.Clientes
         protected global::System.Web.UI.WebControls.TextBox txtNomeComercial;
 
         /// <summary>
+        /// Controle cvNomeComercial.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator cvNomeComercial;
+
+        /// <summary>
         /// Controle txtNif.
         /// </summary>
         /// <remarks>
@@ -51,6 +60,15 @@ namespace CRM.Web.Paginas.Clientes
         protected global::System.Web.UI.WebControls.TextBox txtNif;
 
         /// <summary>
+        /// Controle cvNif.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator cvNif;
+
+        /// <summary>
         /// Controle txtNomeLegal.
         /// </summary>
         /// <remarks>
@@ -58,6 +76,15 @@ namespace CRM.Web.Paginas.Clientes
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtNomeLegal;
+
+        /// <summary>
+        /// Controle cvNomeLegal.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator cvNomeLegal;
 
         /// <summary>
         /// Controle ddlEstado.
@@ -87,6 +114,15 @@ namespace CRM.Web.Paginas.Clientes
         protected global::System.Web.UI.WebControls.TextBox txtTelefone;
 
         /// <summary>
+        /// Controle cvTelefone.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator cvTelefone;
+
+        /// <summary>
         /// Controle txtMorada.
         /// </summary>
         /// <remarks>
@@ -103,6 +139,15 @@ namespace CRM.Web.Paginas.Clientes
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtCodigoPostal;
+
+        /// <summary>
+        /// Controle cvCodigoPostal.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator cvCodigoPostal;
 
         /// <summary>
         /// Controle txtCidade.

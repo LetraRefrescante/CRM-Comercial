@@ -9,6 +9,8 @@ namespace CRM.Web.Account
     public partial class Login : System.Web.UI.Page
     {
         private readonly AuthenticationService _authService = new AuthenticationService();
+        private readonly AuditService _auditService = new AuditService();
+        private readonly UserRepository _userRepository = new UserRepository();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -34,10 +36,13 @@ namespace CRM.Web.Account
         {
             if (!int.TryParse(Context.User.Identity.Name, out int userId)) return false;
 
-            var userRepository = new UserRepository();
-            UserEntity user = userRepository.GetById(userId);
+            UserEntity user = _userRepository.GetById(userId);
 
-            if (user == null || user.Status != "Ativo") return false;
+            if (user == null || user.Status != "Ativo")
+            {
+                FormsAuthentication.SignOut();
+                return false;
+            }
 
             Session["UserId"] = user.UserId;
             Session["UserName"] = user.Name;
@@ -65,10 +70,16 @@ namespace CRM.Web.Account
 
                 FormsAuthentication.SetAuthCookie(result.User.UserId.ToString(), chkLembrar.Checked);
 
+                _auditService.Registar(result.User.UserId, "Login", "User", result.User.UserId.ToString());
+
                 Response.Redirect("~/Dashboard/Dashboard.aspx");
             }
             else
             {
+                var utilizadorTentado = _userRepository.GetByEmail(email);
+                _auditService.Registar(utilizadorTentado?.UserId, "LoginFailed", "User",
+                    utilizadorTentado?.UserId.ToString(), $"Email tentado: {email}");
+
                 pnlErro.Visible = true;
                 litErro.Text = result.ErrorMessage;
             }

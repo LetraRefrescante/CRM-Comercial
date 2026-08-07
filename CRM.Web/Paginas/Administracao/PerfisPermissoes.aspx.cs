@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
+using CRM.Business.Services;
 using CRM.Data.Repositories;
 using CRM.Web.Helpers;
 
 namespace CRM.Web.Paginas.Administracao
 {
-    public partial class PerfisPermissoes : Page
+    public partial class PerfisPermissoes : PaginaBase
     {
         private readonly RoleRepository _roleRepository = new RoleRepository();
         private readonly PermissionRepository _permissionRepository = new PermissionRepository();
         private readonly RolePermissionRepository _rolePermissionRepository = new RolePermissionRepository();
+        private readonly AuditService _auditService = new AuditService();
 
-        private bool PodeGerir => Session["RoleName"] as string == "Administrador";
-        private bool PodeConsultar => PodeGerir || Session["RoleName"] as string == "Diretor";
+        private bool PodeGerir => Perfil == "Administrador";
+        private bool PodeConsultar => PodeGerir || Perfil == "Diretor";
         public bool PodeGerirPublico => PodeGerir;
 
         protected void Page_Load(object sender, EventArgs e)
@@ -79,7 +81,6 @@ namespace CRM.Web.Paginas.Administracao
             rptModulos.DataBind();
 
             phVazio.Visible = false;
-            // Diretor só consulta: mostra as checkboxes mas sem botão de gravar
             btnGuardar.Visible = PodeGerir;
         }
 
@@ -97,14 +98,16 @@ namespace CRM.Web.Paginas.Administracao
             }
 
             int roleId = int.Parse(ddlPerfil.SelectedValue);
-            int utilizadorAtualId = (int)Session["UserId"];
 
             var selecionadas = Request.Form.GetValues("permissao");
             var permissionIds = selecionadas == null
                 ? new List<int>()
                 : selecionadas.Select(int.Parse).ToList();
 
-            _rolePermissionRepository.AtualizarPermissoesDoRole(roleId, permissionIds, utilizadorAtualId);
+            _rolePermissionRepository.AtualizarPermissoesDoRole(roleId, permissionIds, UserId);
+
+            _auditService.Registar(UserId, "Update", "RolePermissions", roleId.ToString(),
+                $"Role: {ddlPerfil.SelectedItem.Text}; PermissionIds: {string.Join(",", permissionIds)}");
 
             NotificacaoService.Sucesso("Permissões atualizadas para o perfil " + ddlPerfil.SelectedItem.Text + ".");
 

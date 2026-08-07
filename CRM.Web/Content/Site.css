@@ -404,3 +404,7 @@ html, body {
         overflow-y: visible;
     }
 }
+
+.crm-validation-message {
+    display: block;
+}

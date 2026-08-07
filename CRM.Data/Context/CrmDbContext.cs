@@ -1,7 +1,8 @@
-﻿using System.Data.Entity;
-using CRM.Models.Entities.Seguranca;
-using CRM.Models.Entities.Clientes;
+﻿using CRM.Models.Entities.Clientes;
+using CRM.Models.Entities.Documentos;
 using CRM.Models.Entities.ListasAuxiliares;
+using CRM.Models.Entities.Seguranca;
+using System.Data.Entity;
 
 namespace CRM.Data.Context
 {
@@ -16,11 +17,13 @@ namespace CRM.Data.Context
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
-
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Sector> Sectors { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Contact> Contacts { get; set; }
+        public DbSet<Document> Documents { get; set; }
+        public DbSet<DocumentAccessLog> DocumentAccessLogs { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -59,6 +62,18 @@ namespace CRM.Data.Context
                 .HasRequired(ct => ct.Client)
                 .WithMany(c => c.Contacts)
                 .HasForeignKey(ct => ct.ClientId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Document>()
+                .HasOptional(d => d.RelatedClient)
+                .WithMany()
+                .HasForeignKey(d => d.RelatedClientId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<DocumentAccessLog>()
+                .HasRequired(l => l.Document)
+                .WithMany()
+                .HasForeignKey(l => l.DocumentId)
                 .WillCascadeOnDelete(false);
         }
     }

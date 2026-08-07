@@ -1,22 +1,20 @@
-﻿using CRM.Data.Repositories;
-using System;
+﻿using System;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
-using UserEntity = CRM.Models.Entities.Seguranca.User;
+using CRM.Business.Services;
 
 namespace CRM.Web.MasterPages
 {
     public partial class SiteMaster : MasterPage
     {
+        private readonly AuditService _auditService = new AuditService();
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["UserId"] == null)
             {
-                if (!TentarRestaurarSessaoDoCookie())
-                {
-                    Response.Redirect("~/Account/Login.aspx?returnUrl=" + Server.UrlEncode(Request.Url.PathAndQuery));
-                    return;
-                }
+                Response.Redirect("~/Account/Login.aspx?returnUrl=" + Server.UrlEncode(Request.Url.PathAndQuery));
+                return;
             }
 
             if (!IsPostBack)
@@ -25,66 +23,20 @@ namespace CRM.Web.MasterPages
                 MarcarItemAtivo();
             }
         }
-
-        private bool TentarRestaurarSessaoDoCookie()
-        {
-            if (!Request.IsAuthenticated) return false;
-
-            if (!int.TryParse(Context.User.Identity.Name, out int userId)) return false;
-
-            var userRepository = new UserRepository();
-            UserEntity user = userRepository.GetById(userId);
-
-            if (user == null || user.Status != "Ativo") return false;
-
-            Session["UserId"] = user.UserId;
-            Session["UserName"] = user.Name;
-            Session["RoleId"] = user.RoleId;
-            Session["RoleName"] = user.Role?.Name;
-
-            return true;
-        }
-
-
         private void AplicarPermissoesMenu()
         {
             string perfil = Session["RoleName"] as string ?? string.Empty;
 
-            switch (perfil)
-            {
-                case "Administrador":
-                    phClientes.Visible = true;
-                    phLeads.Visible = true;
-                    phOportunidades.Visible = true;
-                    phPropostas.Visible = true;
-                    phVendas.Visible = true;
-                    phRelatorios.Visible = true;
-                    phAdministracao.Visible = true;
-                    break;
-
-                case "Diretor":
-                case "Financeiro":
-                case "Consulta":
-                    phClientes.Visible = true;
-                    phLeads.Visible = true;
-                    phOportunidades.Visible = true;
-                    phPropostas.Visible = true;
-                    phVendas.Visible = true;
-                    phRelatorios.Visible = true;
-                    phAdministracao.Visible = false;
-                    break;
-
-                case "Comercial":
-                default:
-                    phClientes.Visible = true;
-                    phLeads.Visible = true;
-                    phOportunidades.Visible = true;
-                    phPropostas.Visible = true;
-                    phVendas.Visible = true;
-                    phRelatorios.Visible = false;
-                    phAdministracao.Visible = false;
-                    break;
-            }
+            phClientes.Visible = true;
+            phLeads.Visible = true;
+            phOportunidades.Visible = true;
+            phPropostas.Visible = true;
+            phVendas.Visible = true;
+            phRelatorios.Visible = perfil == "Administrador" || perfil == "Diretor" ||
+                                    perfil == "Financeiro" || perfil == "Consulta" ||
+                                    perfil == "Comercial";
+            phImportarClientes.Visible = perfil == "Administrador" || perfil == "Diretor" || perfil == "Comercial";
+            phAdministracao.Visible = perfil == "Administrador" || perfil == "Diretor";
         }
 
         private void MarcarItemAtivo()
@@ -119,6 +71,9 @@ namespace CRM.Web.MasterPages
 
         protected void lnkLogout_Click(object sender, EventArgs e)
         {
+            int? userId = Session["UserId"] as int?;
+            _auditService.Registar(userId, "Logout", "User", userId?.ToString());
+
             Session.Clear();
             Session.Abandon();
             System.Web.Security.FormsAuthentication.SignOut();

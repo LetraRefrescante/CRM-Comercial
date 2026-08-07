@@ -3,19 +3,19 @@ using CRM.Data.Context;
 using CRM.Data.Repositories;
 using CRM.Models.Entities.Clientes;
 using CRM.Web.Helpers;
+using CRM.Data.Helpers;
 using System;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Web.UI.WebControls;
 
 namespace CRM.Web.Paginas.Clientes
 {
-    public partial class ClienteEditar : System.Web.UI.Page
+    public partial class ClienteEditar : PaginaBase
     {
         private readonly ClientRepository _clientRepository = new ClientRepository();
         private readonly ClientService _clientService = new ClientService();
         private readonly UserRepository _userRepository = new UserRepository();
-
-        private string Perfil => Session["RoleName"] as string ?? string.Empty;
-        private int UserId => (int)Session["UserId"];
 
         private int? ClientId
         {
@@ -62,19 +62,20 @@ namespace CRM.Web.Paginas.Clientes
                 ddlPais.DataValueField = "CountryId";
                 ddlPais.DataBind();
 
-                ddlSetor.Items.Add(new System.Web.UI.WebControls.ListItem("(Sem setor)", ""));
+                ddlSetor.Items.Add(new ListItem("(Sem setor)", ""));
                 var setores = context.Sectors.Where(s => s.IsActive).OrderBy(s => s.Name).ToList();
                 foreach (var setor in setores)
                 {
-                    ddlSetor.Items.Add(new System.Web.UI.WebControls.ListItem(setor.Name, setor.SectorId.ToString()));
+                    ddlSetor.Items.Add(new ListItem(setor.Name, setor.SectorId.ToString()));
                 }
             }
 
-            ddlComercial.Items.Add(new System.Web.UI.WebControls.ListItem("-- Selecionar --", ""));
-            var comerciais = _userRepository.Listar(status: "Ativo");
+            // Regra da blueprint: "Comercial Responsável ... Utilizador ativo com perfil comercial"
+            ddlComercial.Items.Add(new ListItem("-- Selecionar --", ""));
+            var comerciais = _userRepository.ListarComerciaisAtivos();
             foreach (var user in comerciais)
             {
-                ddlComercial.Items.Add(new System.Web.UI.WebControls.ListItem(user.Name, user.UserId.ToString()));
+                ddlComercial.Items.Add(new ListItem(user.Name, user.UserId.ToString()));
             }
         }
 
@@ -112,6 +113,49 @@ namespace CRM.Web.Paginas.Clientes
             txtObservacoes.Text = client.Notes;
         }
 
+        protected void ddlPais_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Só para reavaliar os validators visualmente no próximo submit; não precisa de lógica.
+        }
+
+        /// <summary>
+        /// Wrapper fino sobre ClientService.PaisEhPortugal — a regra de negócio (o que
+        /// conta como "Portugal") vive na camada de serviço, não aqui.
+        /// </summary>
+        private bool PaisEhPortugal()
+        {
+            if (string.IsNullOrEmpty(ddlPais.SelectedValue)) return false;
+            return _clientService.PaisEhPortugal(int.Parse(ddlPais.SelectedValue));
+        }
+
+        protected void cvNomeComercial_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            string valor = args.Value?.Trim() ?? "";
+            args.IsValid = valor.Length >= 2 && valor.Length <= 150;
+        }
+
+        protected void cvNomeLegal_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            // Opcional (blueprint: "Não" obrigatório), mas quando preenchido não pode
+            // exceder 200 caracteres — o MaxLength do TextBox só protege no browser.
+            args.IsValid = string.IsNullOrEmpty(args.Value) || args.Value.Trim().Length <= 200;
+        }
+
+        protected void cvNif_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            args.IsValid = _clientService.NifValido(args.Value, PaisEhPortugal());
+        }
+
+        protected void cvTelefone_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            args.IsValid = _clientService.TelefoneValido(args.Value, PaisEhPortugal());
+        }
+
+        protected void cvCodigoPostal_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            args.IsValid = _clientService.CodigoPostalValido(args.Value, PaisEhPortugal());
+        }
+
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
             if (!Page.IsValid) return;
@@ -136,16 +180,29 @@ namespace CRM.Web.Paginas.Clientes
 
             ResultadoGuardarCliente resultado;
 
-            if (ClientId.HasValue)
+            try
             {
-                client.ClientId = ClientId.Value;
-                client.RowVersion = Convert.FromBase64String(ViewState["RowVersion"] as string ?? "");
-                resultado = _clientService.Atualizar(client, Perfil);
+                if (ClientId.HasValue)
+                {
+                    client.ClientId = ClientId.Value;
+                    client.RowVersion = Convert.FromBase64String(ViewState["RowVersion"] as string ?? "");
+                    resultado = _clientService.Atualizar(client, Perfil);
+                }
+                else
+                {
+                    client.CreatedBy = UserId;
+                    resultado = _clientService.Criar(client, Perfil);
+                }
             }
-            else
+            catch (DbUpdateConcurrencyException)
             {
-                client.CreatedBy = UserId;
-                resultado = _clientService.Criar(client, Perfil);
+                NotificacaoService.Erro("Este cliente foi alterado por outro utilizador. Recarrega a página e tenta novamente.");
+                return;
+            }
+            catch (AplicacaoException ex)
+            {
+                NotificacaoService.Erro(ex.Message);
+                return;
             }
 
             switch (resultado)

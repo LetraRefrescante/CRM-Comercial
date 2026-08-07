@@ -20,7 +20,7 @@
                 <label class="form-label">Pesquisar</label>
                 <asp:TextBox ID="txtPesquisa" runat="server" CssClass="form-control" placeholder="Nome, NIF, email ou cidade..." />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label">Estado</label>
                 <asp:DropDownList ID="ddlEstado" runat="server" CssClass="form-select">
                     <asp:ListItem Text="Todos" Value="" />
@@ -31,23 +31,28 @@
                 </asp:DropDownList>
             </div>
             <div class="col-md-3">
-                <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="btn btn-outline-secondary w-100" OnClick="btnFiltrar_Click" />
+                <asp:Label ID="lblComercial" runat="server" CssClass="form-label" Text="Comercial" AssociatedControlID="ddlComercial" />
+                <asp:DropDownList ID="ddlComercial" runat="server" CssClass="form-select" />
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="btn btn-outline-secondary flex-fill" OnClick="btnFiltrar_Click" />
+                <asp:Button ID="btnExportar" runat="server" Text="Exportar" CssClass="btn btn-outline-primary flex-fill" OnClick="btnExportar_Click" CausesValidation="false" />
             </div>
         </div>
     </div>
 
     <div class="crm-table-card">
-        <asp:Repeater ID="rptClientes" runat="server" OnItemCommand="rptClientes_ItemCommand">
+        <asp:Repeater ID="rptClientes" runat="server" OnItemCommand="rptClientes_ItemCommand" OnItemDataBound="rptClientes_ItemDataBound">
             <HeaderTemplate>
                 <table class="table table-hover mb-0 align-middle">
                     <thead>
                         <tr>
-                            <th>Código</th>
-                            <th>Nome Comercial</th>
-                            <th>NIF</th>
-                            <th>Cidade</th>
-                            <th>Comercial</th>
-                            <th>Estado</th>
+                            <th><asp:LinkButton runat="server" CssClass="crm-th-sort" CommandName="Ordenar" CommandArgument="InternalCode" OnCommand="lnkOrdenar_Command">Código</asp:LinkButton></th>
+                            <th><asp:LinkButton runat="server" CssClass="crm-th-sort" CommandName="Ordenar" CommandArgument="TradeName" OnCommand="lnkOrdenar_Command">Nome Comercial</asp:LinkButton></th>
+                            <th><asp:LinkButton runat="server" CssClass="crm-th-sort" CommandName="Ordenar" CommandArgument="VatNumber" OnCommand="lnkOrdenar_Command">NIF</asp:LinkButton></th>
+                            <th><asp:LinkButton runat="server" CssClass="crm-th-sort" CommandName="Ordenar" CommandArgument="City" OnCommand="lnkOrdenar_Command">Cidade</asp:LinkButton></th>
+                            <th><asp:LinkButton runat="server" CssClass="crm-th-sort" CommandName="Ordenar" CommandArgument="AccountManager" OnCommand="lnkOrdenar_Command">Comercial</asp:LinkButton></th>
+                            <th><asp:LinkButton runat="server" CssClass="crm-th-sort" CommandName="Ordenar" CommandArgument="Status" OnCommand="lnkOrdenar_Command">Estado</asp:LinkButton></th>
                             <th class="text-end">Ações</th>
                         </tr>
                     </thead>

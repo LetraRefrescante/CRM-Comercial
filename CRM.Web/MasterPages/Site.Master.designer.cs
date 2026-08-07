@@ -33,6 +33,15 @@ namespace CRM.Web.MasterPages
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
+        /// Controle scriptManager.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.ScriptManager scriptManager;
+
+        /// <summary>
         /// Controle lnkLogout.
         /// </summary>
         /// <remarks>
@@ -58,6 +67,15 @@ namespace CRM.Web.MasterPages
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.PlaceHolder phClientes;
+
+        /// <summary>
+        /// Controle phImportarClientes.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phImportarClientes;
 
         /// <summary>
         /// Controle phLeads.

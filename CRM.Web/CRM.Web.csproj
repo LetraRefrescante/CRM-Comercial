@@ -57,7 +57,13 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.DynamicData.Design" />
+    <Reference Include="System.Web.Entity.Design" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Extensions.Design" />
+    <Reference Include="System.Web.Mobile" />
+    <Reference Include="System.Web.RegularExpressions" />
+    <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -103,7 +109,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Controls\Anexos.ascx" />
+    <Content Include="Controls\Historico.ascx" />
+    <Content Include="Controls\SeletorCliente.ascx" />
+    <Content Include="Paginas\Account\AlterarPassword.aspx" />
     <Content Include="Paginas\Account\Login.aspx" />
+    <Content Include="Paginas\Account\RecuperarPassword.aspx" />
+    <Content Include="Paginas\Account\RedefinirPassword.aspx" />
+    <Content Include="Paginas\AcessoNegado.aspx" />
+    <Content Include="Paginas\Administracao\Auditoria.aspx" />
     <Content Include="Paginas\Administracao\PerfisPermissoes.aspx" />
     <Content Include="Paginas\Administracao\UtilizadorEditar.aspx" />
     <Content Include="Paginas\Administracao\UtilizadoresLista.aspx" />
@@ -128,6 +142,10 @@
     <Content Include="Controls\Mensagens.ascx" />
     <Content Include="Controls\ConfirmacaoModal.ascx" />
     <Content Include="Controls\Paginacao.ascx" />
+    <Content Include="Paginas\Clientes\ClientesImportar.aspx" />
+    <Content Include="Paginas\Clientes\ContactoDetalhe.aspx" />
+    <Content Include="Paginas\Clientes\ContactoEditar.aspx" />
+    <Content Include="Paginas\Clientes\ContactosLista.aspx" />
     <Content Include="Paginas\Dashboard\Dashboard.aspx" />
     <Content Include="Paginas\Erro.aspx" />
     <Content Include="favicon.ico" />
@@ -194,12 +212,68 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\Anexos.ascx.cs">
+      <DependentUpon>Anexos.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\Anexos.ascx.designer.cs">
+      <DependentUpon>Anexos.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Historico.ascx.cs">
+      <DependentUpon>Historico.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\Historico.ascx.designer.cs">
+      <DependentUpon>Historico.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SeletorCliente.ascx.cs">
+      <DependentUpon>SeletorCliente.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\SeletorCliente.ascx.designer.cs">
+      <DependentUpon>SeletorCliente.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Account\AlterarPassword.aspx.cs">
+      <DependentUpon>AlterarPassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Account\AlterarPassword.aspx.designer.cs">
+      <DependentUpon>AlterarPassword.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Paginas\Account\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Paginas\Account\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Account\RecuperarPassword.aspx.cs">
+      <DependentUpon>RecuperarPassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Account\RecuperarPassword.aspx.designer.cs">
+      <DependentUpon>RecuperarPassword.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Account\RedefinirPassword.aspx.cs">
+      <DependentUpon>RedefinirPassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Account\RedefinirPassword.aspx.designer.cs">
+      <DependentUpon>RedefinirPassword.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\AcessoNegado.aspx.cs">
+      <DependentUpon>AcessoNegado.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\AcessoNegado.aspx.designer.cs">
+      <DependentUpon>AcessoNegado.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Administracao\Auditoria.aspx.cs">
+      <DependentUpon>Auditoria.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Administracao\Auditoria.aspx.designer.cs">
+      <DependentUpon>Auditoria.aspx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\Administracao\PerfisPermissoes.aspx.cs">
       <DependentUpon>PerfisPermissoes.aspx</DependentUpon>
@@ -252,6 +326,34 @@
     <Compile Include="Controls\Paginacao.ascx.designer.cs">
       <DependentUpon>Paginacao.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Paginas\Clientes\ClientesImportar.aspx.cs">
+      <DependentUpon>ClientesImportar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ClientesImportar.aspx.designer.cs">
+      <DependentUpon>ClientesImportar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ContactoDetalhe.aspx.cs">
+      <DependentUpon>ContactoDetalhe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ContactoDetalhe.aspx.designer.cs">
+      <DependentUpon>ContactoDetalhe.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ContactoEditar.aspx.cs">
+      <DependentUpon>ContactoEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ContactoEditar.aspx.designer.cs">
+      <DependentUpon>ContactoEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ContactosLista.aspx.cs">
+      <DependentUpon>ContactosLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Clientes\ContactosLista.aspx.designer.cs">
+      <DependentUpon>ContactosLista.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Paginas\Dashboard\Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -290,6 +392,9 @@
     </Compile>
     <Compile Include="Paginas\Clientes\ClienteLista.aspx.designer.cs">
       <DependentUpon>ClienteLista.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\PaginaBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MasterPages\Site.Master.cs">

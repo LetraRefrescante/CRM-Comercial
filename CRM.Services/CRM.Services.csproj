@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,11 +43,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AuditService.cs" />
+    <Compile Include="Services\AuthenticationService.cs" />
+    <Compile Include="Services\ClientService.cs" />
+    <Compile Include="Services\ContactService.cs" />
+    <Compile Include="Services\DocumentService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CRM.Business\CRM.Business.csproj">
       <Project>{575ad754-a8fa-4008-a496-c346d2f445f2}</Project>
       <Name>CRM.Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CRM.Data\CRM.Data.csproj">
+      <Project>{dbc1a5b5-a4ff-4747-ac27-81a1de824822}</Project>
+      <Name>CRM.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\CRM.Models\CRM.Models.csproj">
       <Project>{23f71852-14a9-4eee-853a-a0ea0f384942}</Project>

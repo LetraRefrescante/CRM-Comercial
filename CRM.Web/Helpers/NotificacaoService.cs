@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web;
 
 namespace CRM.Web.Helpers
@@ -11,6 +12,7 @@ namespace CRM.Web.Helpers
         Info
     }
 
+    [Serializable]
     public class MensagemToast
     {
         public string Texto { get; set; }

@@ -18,7 +18,7 @@
 </head>
 <body>
     <form id="form1" runat="server" class="app-shell">
-
+        <asp:ScriptManager ID="scriptManager" runat="server" />
         <!-- Barra superior: fixa, não faz scroll -->
         <nav class="navbar crm-topbar px-3 app-header">
             <span class="navbar-brand mb-0 brand" style="font-size:1.1rem;">CRM Comercial</span>
@@ -46,8 +46,15 @@
                 <ul class="nav flex-column w-100">
                     <li class="nav-item"><a class="nav-link" href="~/Dashboard/Dashboard.aspx" runat="server">Dashboard</a></li>
 
+                    <!-- Comercial: Clientes, Contactos, Leads, Oportunidades -->
+                    <li class="nav-item mt-3"><small class="section-label">Comercial</small></li>
+
                     <asp:PlaceHolder ID="phClientes" runat="server">
                         <li class="nav-item"><a class="nav-link" href="~/Clientes/ClienteLista.aspx" runat="server">Clientes</a></li>
+                        <li class="nav-item"><a class="nav-link ps-4 small" href="~/Clientes/ContactosLista.aspx" runat="server">Contactos</a></li>
+                        <asp:PlaceHolder ID="phImportarClientes" runat="server">
+                            <li class="nav-item"><a class="nav-link ps-4 small" href="~/Clientes/ClientesImportar.aspx" runat="server">Importar Clientes</a></li>
+                        </asp:PlaceHolder>
                     </asp:PlaceHolder>
 
                     <asp:PlaceHolder ID="phLeads" runat="server">
@@ -58,6 +65,9 @@
                         <li class="nav-item"><a class="nav-link" href="~/Oportunidades/Pipeline.aspx" runat="server">Oportunidades</a></li>
                     </asp:PlaceHolder>
 
+                    <!-- Vendas: Propostas, Vendas -->
+                    <li class="nav-item mt-3"><small class="section-label">Vendas</small></li>
+
                     <asp:PlaceHolder ID="phPropostas" runat="server">
                         <li class="nav-item"><a class="nav-link" href="~/Catalogo/PropostasLista.aspx" runat="server">Propostas</a></li>
                     </asp:PlaceHolder>
@@ -66,15 +76,19 @@
                         <li class="nav-item"><a class="nav-link" href="~/Vendas/VendasLista.aspx" runat="server">Vendas</a></li>
                     </asp:PlaceHolder>
 
+                    <!-- Análise -->
                     <asp:PlaceHolder ID="phRelatorios" runat="server">
+                        <li class="nav-item mt-3"><small class="section-label">Análise</small></li>
                         <li class="nav-item"><a class="nav-link" href="~/Relatorios/Relatorios.aspx" runat="server">Relatórios</a></li>
                     </asp:PlaceHolder>
 
+                    <!-- Administração -->
                     <asp:PlaceHolder ID="phAdministracao" runat="server">
                         <li class="nav-item mt-3"><small class="section-label">Administração</small></li>
                         <li class="nav-item"><a class="nav-link" href="~/Administracao/UtilizadoresLista.aspx" runat="server">Utilizadores</a></li>
                         <li class="nav-item"><a class="nav-link" href="~/Administracao/PerfisPermissoes.aspx" runat="server">Perfis e Permissões</a></li>
                         <li class="nav-item"><a class="nav-link" href="~/Administracao/Parametros.aspx" runat="server">Parâmetros</a></li>
+                        <li class="nav-item"><a class="nav-link" href="~/Administracao/Auditoria.aspx" runat="server">Auditoria</a></li>
                     </asp:PlaceHolder>
                 </ul>
             </nav>

@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Data.Entity.Infrastructure;
+using CRM.Business.Services;
 using CRM.Data.Repositories;
 using CRM.Web.Helpers;
 
 namespace CRM.Web.Paginas.Administracao
 {
-    public partial class UtilizadoresLista : Page
+    public partial class UtilizadoresLista : PaginaBase
     {
         private readonly UserRepository _userRepository = new UserRepository();
         private readonly RoleRepository _roleRepository = new RoleRepository();
+        private readonly AuditService _auditService = new AuditService();
 
-        private bool PodeGerir => Session["RoleName"] as string == "Administrador";
-        private bool PodeConsultar => PodeGerir || Session["RoleName"] as string == "Diretor";
+        private bool PodeGerir => Perfil == "Administrador";
+        private bool PodeConsultar => PodeGerir || Perfil == "Diretor";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -69,31 +72,40 @@ namespace CRM.Web.Paginas.Administracao
             }
 
             int userId = int.Parse(e.CommandArgument.ToString());
-            int utilizadorAtualId = (int)Session["UserId"];
 
-            if (userId == utilizadorAtualId)
+            if (userId == UserId)
             {
                 NotificacaoService.Erro("Não podes alterar o teu próprio estado ou eliminar-te.");
                 CarregarUtilizadores();
                 return;
             }
 
-            switch (e.CommandName)
+            try
             {
-                case "Bloquear":
-                    _userRepository.AlterarStatus(userId, "Bloqueado", utilizadorAtualId);
-                    NotificacaoService.Sucesso("Utilizador bloqueado.");
-                    break;
+                switch (e.CommandName)
+                {
+                    case "Bloquear":
+                        _userRepository.AlterarStatus(userId, "Bloqueado", UserId);
+                        _auditService.Registar(UserId, "Update", "User", userId.ToString(), "Status: Bloqueado");
+                        NotificacaoService.Sucesso("Utilizador bloqueado.");
+                        break;
 
-                case "Ativar":
-                    _userRepository.AlterarStatus(userId, "Ativo", utilizadorAtualId);
-                    NotificacaoService.Sucesso("Utilizador ativado.");
-                    break;
+                    case "Ativar":
+                        _userRepository.AlterarStatus(userId, "Ativo", UserId);
+                        _auditService.Registar(UserId, "Update", "User", userId.ToString(), "Status: Ativo");
+                        NotificacaoService.Sucesso("Utilizador ativado.");
+                        break;
 
-                case "Eliminar":
-                    _userRepository.EliminarLogico(userId, utilizadorAtualId);
-                    NotificacaoService.Sucesso("Utilizador eliminado.");
-                    break;
+                    case "Eliminar":
+                        _userRepository.EliminarLogico(userId, UserId);
+                        _auditService.Registar(UserId, "Delete", "User", userId.ToString());
+                        NotificacaoService.Sucesso("Utilizador eliminado.");
+                        break;
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                NotificacaoService.Erro("Este utilizador foi alterado por outro utilizador entretanto. A lista foi atualizada — tenta novamente.");
             }
 
             CarregarUtilizadores();
