@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
-using CRM.Business.Services;
+using CRM.Services;
 using CRM.Data.Repositories;
 using CRM.Web.Helpers;
 

@@ -1,8 +1,10 @@
-﻿using CRM.Models.Entities.Clientes;
-using CRM.Models.Entities.Documentos;
-using CRM.Models.Entities.ListasAuxiliares;
+﻿using System.Data.Entity;
 using CRM.Models.Entities.Seguranca;
-using System.Data.Entity;
+using CRM.Models.Entities.Clientes;
+using CRM.Models.Entities.ListasAuxiliares;
+using CRM.Models.Entities.Catalogo;
+using CRM.Models.Entities.Documentos;
+using CRM.Models.Entities.Leads;
 
 namespace CRM.Data.Context
 {
@@ -22,8 +24,21 @@ namespace CRM.Data.Context
         public DbSet<Sector> Sectors { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Contact> Contacts { get; set; }
+
+        // Catálogo
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<TaxRate> TaxRates { get; set; }
+        public DbSet<Product> Products { get; set; }
+
+        // Documentos
         public DbSet<Document> Documents { get; set; }
         public DbSet<DocumentAccessLog> DocumentAccessLogs { get; set; }
+
+        // Leads
+        public DbSet<Lead> Leads { get; set; }
+        public DbSet<LeadStatusHistory> LeadStatusHistories { get; set; }
+        public DbSet<LeadSource> LeadSources { get; set; }
+        public DbSet<LossReason> LossReasons { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -64,6 +79,20 @@ namespace CRM.Data.Context
                 .HasForeignKey(ct => ct.ClientId)
                 .WillCascadeOnDelete(false);
 
+            // Catálogo
+            modelBuilder.Entity<Product>()
+                .HasRequired(p => p.Category)
+                .WithMany()
+                .HasForeignKey(p => p.CategoryId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Product>()
+                .HasRequired(p => p.TaxRate)
+                .WithMany()
+                .HasForeignKey(p => p.TaxRateId)
+                .WillCascadeOnDelete(false);
+
+            // Documentos
             modelBuilder.Entity<Document>()
                 .HasOptional(d => d.RelatedClient)
                 .WithMany()
@@ -74,6 +103,43 @@ namespace CRM.Data.Context
                 .HasRequired(l => l.Document)
                 .WithMany()
                 .HasForeignKey(l => l.DocumentId)
+                .WillCascadeOnDelete(false);
+
+            // Leads
+            modelBuilder.Entity<Lead>()
+                .HasRequired(l => l.LeadSource)
+                .WithMany()
+                .HasForeignKey(l => l.LeadSourceId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Lead>()
+                .HasOptional(l => l.LossReason)
+                .WithMany()
+                .HasForeignKey(l => l.LossReasonId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Lead>()
+                .HasRequired(l => l.Owner)
+                .WithMany()
+                .HasForeignKey(l => l.OwnerId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Lead>()
+                .HasOptional(l => l.ConvertedClient)
+                .WithMany()
+                .HasForeignKey(l => l.ConvertedClientId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Lead>()
+                .HasOptional(l => l.ConvertedContact)
+                .WithMany()
+                .HasForeignKey(l => l.ConvertedContactId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<LeadStatusHistory>()
+                .HasRequired(h => h.Lead)
+                .WithMany()
+                .HasForeignKey(h => h.LeadId)
                 .WillCascadeOnDelete(false);
         }
     }

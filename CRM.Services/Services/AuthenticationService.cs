@@ -3,7 +3,7 @@ using CRM.Business.Security;
 using CRM.Data.Repositories;
 using CRM.Models.Entities.Seguranca;
 
-namespace CRM.Business.Services
+namespace CRM.Services
 {
     public enum LoginResult
     {

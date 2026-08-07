@@ -3,7 +3,7 @@ using CRM.Models.Entities.Seguranca;
 using System;
 using System.Collections.Generic;
 
-namespace CRM.Business.Services
+namespace CRM.Services
 {
     /// <summary>
     /// Regista ações relevantes (criação, alteração, eliminação) na tabela AuditLogs.

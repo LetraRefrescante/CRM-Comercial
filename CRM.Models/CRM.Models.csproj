@@ -42,10 +42,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Catalogo\Category.cs" />
+    <Compile Include="Entities\Catalogo\Product.cs" />
+    <Compile Include="Entities\Catalogo\TaxRate.cs" />
     <Compile Include="Entities\Clientes\Contact.cs" />
     <Compile Include="Entities\Documentos\Document.cs" />
     <Compile Include="Entities\Documentos\DocumentAccessLog.cs" />
+    <Compile Include="Entities\Leads\Lead.cs" />
+    <Compile Include="Entities\Leads\LeadStatusHistory.cs" />
     <Compile Include="Entities\ListasAuxiliares\Country.cs" />
+    <Compile Include="Entities\ListasAuxiliares\LeadSource.cs" />
+    <Compile Include="Entities\ListasAuxiliares\LossReason.cs" />
     <Compile Include="Entities\ListasAuxiliares\Sector.cs" />
     <Compile Include="Entities\Seguranca\AuditLog.cs" />
     <Compile Include="Entities\Clientes\Client.cs" />

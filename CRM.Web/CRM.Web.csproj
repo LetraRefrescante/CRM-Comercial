@@ -142,6 +142,9 @@
     <Content Include="Controls\Mensagens.ascx" />
     <Content Include="Controls\ConfirmacaoModal.ascx" />
     <Content Include="Controls\Paginacao.ascx" />
+    <Content Include="Paginas\Catalogo\CategoriasLista.aspx" />
+    <Content Include="Paginas\Catalogo\ProdutoEditar.aspx" />
+    <Content Include="Paginas\Catalogo\ProdutosLista.aspx" />
     <Content Include="Paginas\Clientes\ClientesImportar.aspx" />
     <Content Include="Paginas\Clientes\ContactoDetalhe.aspx" />
     <Content Include="Paginas\Clientes\ContactoEditar.aspx" />
@@ -153,6 +156,8 @@
     <Content Include="Paginas\Clientes\ClienteDetalhe.aspx" />
     <Content Include="Paginas\Clientes\ClienteEditar.aspx" />
     <Content Include="Paginas\Clientes\ClienteLista.aspx" />
+    <Content Include="Paginas\Leads\LeadEditar.aspx" />
+    <Content Include="Paginas\Leads\LeadsLista.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -326,6 +331,27 @@
     <Compile Include="Controls\Paginacao.ascx.designer.cs">
       <DependentUpon>Paginacao.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Paginas\Catalogo\CategoriasLista.aspx.cs">
+      <DependentUpon>CategoriasLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\CategoriasLista.aspx.designer.cs">
+      <DependentUpon>CategoriasLista.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\ProdutoEditar.aspx.cs">
+      <DependentUpon>ProdutoEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\ProdutoEditar.aspx.designer.cs">
+      <DependentUpon>ProdutoEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\ProdutosLista.aspx.cs">
+      <DependentUpon>ProdutosLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\ProdutosLista.aspx.designer.cs">
+      <DependentUpon>ProdutosLista.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Paginas\Clientes\ClientesImportar.aspx.cs">
       <DependentUpon>ClientesImportar.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -392,6 +418,20 @@
     </Compile>
     <Compile Include="Paginas\Clientes\ClienteLista.aspx.designer.cs">
       <DependentUpon>ClienteLista.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Leads\LeadEditar.aspx.cs">
+      <DependentUpon>LeadEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Leads\LeadEditar.aspx.designer.cs">
+      <DependentUpon>LeadEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Leads\LeadsLista.aspx.cs">
+      <DependentUpon>LeadsLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Leads\LeadsLista.aspx.designer.cs">
+      <DependentUpon>LeadsLista.aspx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\PaginaBase.cs">
       <SubType>ASPXCodeBehind</SubType>

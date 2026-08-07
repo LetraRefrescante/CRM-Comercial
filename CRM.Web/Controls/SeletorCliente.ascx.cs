@@ -1,5 +1,5 @@
 ﻿using System;
-using CRM.Business.Services;
+using CRM.Services;
 using CRM.Data.Repositories;
 
 namespace CRM.Web.Controls

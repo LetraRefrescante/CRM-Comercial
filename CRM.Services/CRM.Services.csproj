@@ -45,9 +45,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AuditService.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
+    <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\ClientService.cs" />
     <Compile Include="Services\ContactService.cs" />
     <Compile Include="Services\DocumentService.cs" />
+    <Compile Include="Services\LeadService.cs" />
+    <Compile Include="Services\ProductService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CRM.Business\CRM.Business.csproj">

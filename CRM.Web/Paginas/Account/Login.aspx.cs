@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.Security;
-using CRM.Business.Services;
+using CRM.Services;
 using CRM.Data.Repositories;
 using UserEntity = CRM.Models.Entities.Seguranca.User;
 

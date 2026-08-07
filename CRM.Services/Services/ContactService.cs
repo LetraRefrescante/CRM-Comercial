@@ -1,7 +1,7 @@
 ﻿using CRM.Data.Repositories;
 using CRM.Models.Entities.Clientes;
 
-namespace CRM.Business.Services
+namespace CRM.Services
 {
     public enum ResultadoGuardarContacto
     {

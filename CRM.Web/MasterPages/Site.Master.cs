@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
-using CRM.Business.Services;
+using CRM.Services;
 
 namespace CRM.Web.MasterPages
 {

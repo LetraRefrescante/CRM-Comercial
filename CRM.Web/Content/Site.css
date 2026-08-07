@@ -408,3 +408,23 @@ html, body {
 .crm-validation-message {
     display: block;
 }
+
+.badge-novo {
+    background-color: #6c757d;
+}
+
+.badge-em-contacto {
+    background-color: #0d6efd;
+}
+
+.badge-qualificado {
+    background-color: #198754;
+}
+
+.badge-nao-qualificado {
+    background-color: #dc3545;
+}
+
+.badge-convertido {
+    background-color: #6f42c1;
+}

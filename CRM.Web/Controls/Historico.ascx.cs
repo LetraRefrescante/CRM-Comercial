@@ -1,6 +1,5 @@
-﻿using CRM.Business.Services;
+﻿using CRM.Services;
 using CRM.Data.Repositories;
-using CRM.Services;
 using System.Linq;
 
 namespace CRM.Web.Controls

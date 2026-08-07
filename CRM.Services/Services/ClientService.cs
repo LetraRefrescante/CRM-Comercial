@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using CRM.Data.Repositories;
 using CRM.Models.Entities.Clientes;
 
-namespace CRM.Business.Services
+namespace CRM.Services
 {
     public enum ResultadoGuardarCliente
     {
@@ -25,20 +25,6 @@ namespace CRM.Business.Services
 
         public bool PodeEliminar(string perfil) =>
             perfil == "Administrador" || perfil == "Diretor";
-
-        // ---------------------------------------------------------------
-        // Validações de negócio (blueprint: "CRM.Business: regras de
-        // negócio, validações e autorização" — não podem viver no
-        // Code-Behind das páginas). Usadas por ClienteEditar.aspx.cs
-        // (validação do formulário) e ClientesImportar.aspx.cs (validação
-        // da importação CSV), para garantir a mesma regra nas duas portas
-        // de entrada.
-        //
-        // Nota: esta classe não acede ao CrmDbContext diretamente — isso
-        // mantém-se dentro de CRM.Data, conforme a arquitetura da
-        // blueprint. É por isso que PaisEhPortugal delega no
-        // CountryRepository em vez de abrir um CrmDbContext aqui.
-        // ---------------------------------------------------------------
 
         /// <summary>
         /// Determina se o país indicado é Portugal, pelo IsoCode "PT" da tabela Countries.
