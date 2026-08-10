@@ -9,6 +9,7 @@ namespace CRM.Services
     public class LeadService
     {
         private readonly LeadRepository _leadRepository = new LeadRepository();
+        private readonly AuditService _auditService = new AuditService();
 
         public const string StatusNovo = "Novo";
         public const string StatusEmContacto = "Em Contacto";
@@ -17,9 +18,6 @@ namespace CRM.Services
         public const string StatusConvertido = "Convertido";
 
         private static readonly string[] EstadosAtivos = { StatusNovo, StatusEmContacto, StatusQualificado };
-
-        // ===================== Permissões (matriz do blueprint) =====================
-        // Administrador/Diretor: TOTAL · Comercial: PRÓPRIOS · Financeiro/Consulta: CONSULTA
 
         public bool TemAmbitoProprios(string perfil) => perfil == "Comercial";
 
@@ -31,8 +29,6 @@ namespace CRM.Services
 
         public bool PodeConverter(string perfil) =>
             perfil == "Administrador" || perfil == "Diretor" || perfil == "Comercial";
-
-        // ===================== Validação =====================
 
         public List<string> Validar(Lead lead)
         {
@@ -56,14 +52,8 @@ namespace CRM.Services
             return erros;
         }
 
-        /// <summary>
-        /// Blueprint: "Evitar duplicados por email, telefone ou NIF, apresentando avisos."
-        /// É um AVISO — a gravação pode prosseguir mesmo com duplicados encontrados.
-        /// </summary>
         public List<Lead> ProcurarPossiveisDuplicados(string email, string phone, int? ignorarLeadId = null)
             => _leadRepository.ProcurarPossiveisDuplicados(email, phone, ignorarLeadId);
-
-        // ===================== Operações =====================
 
         public Lead GetById(int leadId) => _leadRepository.GetById(leadId);
 
@@ -75,21 +65,40 @@ namespace CRM.Services
             => _leadRepository.Listar(pesquisa, status, leadSourceId, ownerId, scoreMin, scoreMax,
                 dataInicio, dataFim, pagina, tamanhoPagina, out totalRegistos, sortColumn, sortAscending);
 
-        public int Criar(Lead lead) => _leadRepository.Criar(lead);
+        public int Criar(Lead lead)
+        {
+            int leadId = _leadRepository.Criar(lead);
+            _auditService.Registar(lead.CreatedBy, "Create", "Lead", leadId.ToString(), $"{lead.Name} — estado inicial: {lead.Status}");
+            return leadId;
+        }
 
-        public void Atualizar(Lead lead, int alteradoPor) => _leadRepository.Atualizar(lead, alteradoPor);
+        public void Atualizar(Lead lead, int alteradoPor, string perfil)
+        {
+            var existente = _leadRepository.GetById(lead.LeadId);
+            if (existente == null)
+                throw new InvalidOperationException("Lead não encontrado.");
+
+            if (EstaBloqueadoParaEdicao(existente))
+                throw new InvalidOperationException("Este lead já foi convertido e está bloqueado para edição.");
+
+            if (TemAmbitoProprios(perfil) && existente.OwnerId != alteradoPor)
+                throw new InvalidOperationException("Não tens permissão para editar este lead.");
+
+            _leadRepository.Atualizar(lead, alteradoPor);
+
+            _auditService.Registar(alteradoPor, "Update", "Lead", lead.LeadId.ToString(),
+                existente.Status != lead.Status ? $"Estado: {existente.Status} → {lead.Status}" : null);
+        }
 
         public bool Eliminar(int leadId, int userId, string perfil)
         {
             if (!PodeEliminar(perfil)) return false;
 
             _leadRepository.EliminarLogico(leadId, userId);
+            _auditService.Registar(userId, "Delete", "Lead", leadId.ToString());
             return true;
         }
 
-        /// <summary>
-        /// Regra: "Após a conversão, o lead fica bloqueado para edição comercial."
-        /// </summary>
         public bool EstaBloqueadoParaEdicao(Lead lead) => lead.Status == StatusConvertido;
 
         public List<LeadStatusHistory> ListarHistoricoEstados(int leadId) => _leadRepository.ListarHistoricoEstados(leadId);

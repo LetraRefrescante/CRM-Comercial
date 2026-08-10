@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using CRM.Models.Entities.Clientes;
 using CRM.Models.Entities.ListasAuxiliares;
+using CRM.Models.Entities.Oportunidades;
 using CRM.Models.Entities.Seguranca;
 
 namespace CRM.Models.Entities.Leads
@@ -15,22 +16,34 @@ namespace CRM.Models.Entities.Leads
         public string CompanyName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+
         public int LeadSourceId { get; set; }
         public LeadSource LeadSource { get; set; }
+
         public string Status { get; set; }
         public int? Score { get; set; }
+
         public int OwnerId { get; set; }
         public User Owner { get; set; }
+
         public DateTime? NextContactDate { get; set; }
+
         public int? LossReasonId { get; set; }
         public LossReason LossReason { get; set; }
+
+        // Preenchidos apenas na conversão (LeadConverter.aspx)
         public DateTime? ConvertedDate { get; set; }
         public int? ConvertedByUserId { get; set; }
+
         public int? ConvertedClientId { get; set; }
         public Client ConvertedClient { get; set; }
+
         public int? ConvertedContactId { get; set; }
         public Contact ConvertedContact { get; set; }
+
         public int? ConvertedOpportunityId { get; set; }
+        public Opportunity ConvertedOpportunity { get; set; }
+
         public DateTime CreatedDate { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }

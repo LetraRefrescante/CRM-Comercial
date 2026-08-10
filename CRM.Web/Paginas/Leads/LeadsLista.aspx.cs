@@ -1,6 +1,6 @@
-﻿using CRM.Data.Repositories;
+﻿using CRM.Services;
+using CRM.Data.Repositories;
 using CRM.Models.Entities.Leads;
-using CRM.Services;
 using CRM.Web.Helpers;
 using System;
 

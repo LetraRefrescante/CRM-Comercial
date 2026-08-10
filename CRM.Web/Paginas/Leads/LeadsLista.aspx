@@ -79,16 +79,16 @@
             </HeaderTemplate>
             <ItemTemplate>
                 <tr>
-                    <td><%# Eval("Name") %></td>
-                    <td><%# Eval("CompanyName") ?? "—" %></td>
-                    <td><%# Eval("LeadSource.Name") %></td>
+                    <td><%#: Eval("Name") %></td>
+                    <td><%#: Eval("CompanyName") ?? "—" %></td>
+                    <td><%#: Eval("LeadSource.Name") %></td>
                     <td>
                         <span class="badge <%# GetBadgeClasse(Eval("Status").ToString()) %>">
-                            <%# Eval("Status") %>
+                            <%#: Eval("Status") %>
                         </span>
                     </td>
                     <td><%# Eval("Score") ?? "—" %></td>
-                    <td><%# Eval("Owner.Name") %></td>
+                    <td><%#: Eval("Owner.Name") %></td>
                     <td><%# Eval("NextContactDate", "{0:dd/MM/yyyy HH:mm}") %></td>
                     <td class="text-end crm-row-actions">
                         <a href="LeadDetalhe.aspx?id=<%# Eval("LeadId") %>" class="btn btn-sm btn-outline-secondary" title="Ver">
@@ -107,7 +107,7 @@
                         <asp:PlaceHolder ID="phEliminar" runat="server">
                             <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-danger" ToolTip="Eliminar"
                                 CommandName="Eliminar" CommandArgument='<%# Eval("LeadId") %>'
-                                data-confirm='<%# "Eliminar o lead " + Eval("Name") + "?" %>'>
+                                data-confirm='<%#: "Eliminar o lead " + Eval("Name") + "?" %>'>
                                 <i class="fas fa-trash"></i>
                             </asp:LinkButton>
                         </asp:PlaceHolder>

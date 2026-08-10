@@ -174,5 +174,15 @@ namespace CRM.Data.Repositories
                 context.SaveChanges();
             }
         }
+        public List<Product> ListarAtivos()
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Products
+                    .Where(p => p.IsActive && !p.IsDeleted)
+                    .OrderBy(p => p.Name)
+                    .ToList();
+            }
+        }
     }
 }

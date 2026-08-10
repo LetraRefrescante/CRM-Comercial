@@ -33,16 +33,35 @@ namespace CRM.Web.Paginas.Leads
                 return;
             }
 
+            // Corre em TODOS os pedidos (não só no !IsPostBack), para que um POST
+            // direto ao Guardar não consiga contornar o âmbito "próprios" do
+            // Comercial — mesmo padrão de LeadDetalhe.aspx.cs e LeadConverter.aspx.cs.
+            Lead lead = null;
+            if (LeadId.HasValue)
+            {
+                lead = _leadService.GetById(LeadId.Value);
+                if (lead == null)
+                {
+                    Response.Redirect("~/Leads/LeadsLista.aspx");
+                    return;
+                }
+
+                if (_leadService.TemAmbitoProprios(Perfil) && lead.OwnerId != UserId)
+                {
+                    Response.Redirect("~/AcessoNegado.aspx");
+                    return;
+                }
+            }
+
             if (!IsPostBack)
             {
                 CarregarOrigens();
                 CarregarComerciais();
                 CarregarMotivosPerda();
-                AtualizarVisibilidadeMotivoPerda();
 
-                if (LeadId.HasValue)
+                if (lead != null)
                 {
-                    CarregarLead(LeadId.Value);
+                    PreencherFormulario(lead);
                 }
                 else if (_leadService.TemAmbitoProprios(Perfil))
                 {
@@ -50,6 +69,11 @@ namespace CRM.Web.Paginas.Leads
                     ddlComercial.SelectedValue = UserId.ToString();
                 }
             }
+
+            // Visible em controlos HTML não é guardado em ViewState, por isso tem de
+            // ser recalculado em TODOS os postbacks (não só no primeiro load), senão
+            // o campo reaparece sempre que o postback não vem do próprio ddlEstado.
+            AtualizarVisibilidadeMotivoPerda();
         }
 
         private void CarregarOrigens()
@@ -85,22 +109,11 @@ namespace CRM.Web.Paginas.Leads
             }
         }
 
-        private void CarregarLead(int leadId)
+        // Antes chamava-se CarregarLead(int) e fazia GetById + verificação de dono +
+        // preenchimento. O GetById e a verificação passaram para o Page_Load (correm
+        // sempre); isto só preenche os campos a partir do lead já validado.
+        private void PreencherFormulario(Lead lead)
         {
-            var lead = _leadService.GetById(leadId);
-            if (lead == null)
-            {
-                Response.Redirect("~/Leads/LeadsLista.aspx");
-                return;
-            }
-
-            // Comercial só pode editar os próprios leads.
-            if (_leadService.TemAmbitoProprios(Perfil) && lead.OwnerId != UserId)
-            {
-                Response.Redirect("~/AcessoNegado.aspx");
-                return;
-            }
-
             txtNome.Text = lead.Name;
             txtEmpresa.Text = lead.CompanyName;
             txtEmail.Text = lead.Email;
@@ -121,8 +134,6 @@ namespace CRM.Web.Paginas.Leads
             {
                 DesativarFormulario();
             }
-
-            AtualizarVisibilidadeMotivoPerda();
         }
 
         private void DesativarFormulario()
@@ -152,6 +163,14 @@ namespace CRM.Web.Paginas.Leads
 
         private Lead MontarLeadDoFormulario()
         {
+            // Um Comercial nunca escolhe o dono pelo dropdown — o campo fica
+            // desativado no ecrã, mas isso não impede um pedido forjado de vir
+            // com outro valor. O dono é sempre forçado aqui quando o utilizador
+            // tem âmbito "próprios", ignorando o que veio do form.
+            int ownerId = _leadService.TemAmbitoProprios(Perfil)
+                ? UserId
+                : int.Parse(ddlComercial.SelectedValue);
+
             var lead = new Lead
             {
                 Name = txtNome.Text.Trim(),
@@ -161,7 +180,7 @@ namespace CRM.Web.Paginas.Leads
                 LeadSourceId = int.Parse(ddlOrigem.SelectedValue),
                 Status = ddlEstado.SelectedValue,
                 Score = string.IsNullOrWhiteSpace(txtPontuacao.Text) ? (int?)null : int.Parse(txtPontuacao.Text),
-                OwnerId = int.Parse(ddlComercial.SelectedValue),
+                OwnerId = ownerId,
                 NextContactDate = string.IsNullOrWhiteSpace(txtProximoContacto.Text)
                     ? (DateTime?)null
                     : DateTime.Parse(txtProximoContacto.Text),
@@ -199,7 +218,7 @@ namespace CRM.Web.Paginas.Leads
             if (duplicados.Count > 0 && !chkConfirmarDuplicado.Checked)
             {
                 phDuplicados.Visible = true;
-                litDuplicados.Text = string.Join(", ", duplicados.Select(d => d.Name));
+                litDuplicados.Text = string.Join(", ", duplicados.Select(d => Server.HtmlEncode(d.Name)));
                 return;
             }
 
@@ -208,7 +227,7 @@ namespace CRM.Web.Paginas.Leads
                 if (LeadId.HasValue)
                 {
                     lead.UpdatedBy = UserId;
-                    _leadService.Atualizar(lead, UserId);
+                    _leadService.Atualizar(lead, UserId, Perfil);
                     NotificacaoService.Sucesso("Lead atualizado.");
                 }
                 else
@@ -219,6 +238,11 @@ namespace CRM.Web.Paginas.Leads
                     Response.Redirect($"~/Leads/LeadEditar.aspx?id={novoId}");
                     return;
                 }
+            }
+            catch (InvalidOperationException ex)
+            {
+                NotificacaoService.Erro(ex.Message);
+                return;
             }
             catch (System.Data.Entity.Infrastructure.DbUpdateConcurrencyException)
             {

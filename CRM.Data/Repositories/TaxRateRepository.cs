@@ -17,5 +17,13 @@ namespace CRM.Data.Repositories
                     .ToList();
             }
         }
+
+        public TaxRate GetById(int taxRateId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.TaxRates.Find(taxRateId);
+            }
+        }
     }
 }

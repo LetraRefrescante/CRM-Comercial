@@ -145,6 +145,8 @@
     <Content Include="Paginas\Catalogo\CategoriasLista.aspx" />
     <Content Include="Paginas\Catalogo\ProdutoEditar.aspx" />
     <Content Include="Paginas\Catalogo\ProdutosLista.aspx" />
+    <Content Include="Paginas\Catalogo\TabelaPrecoDetalhe.aspx" />
+    <Content Include="Paginas\Catalogo\TabelasPreco.aspx" />
     <Content Include="Paginas\Clientes\ClientesImportar.aspx" />
     <Content Include="Paginas\Clientes\ContactoDetalhe.aspx" />
     <Content Include="Paginas\Clientes\ContactoEditar.aspx" />
@@ -156,8 +158,12 @@
     <Content Include="Paginas\Clientes\ClienteDetalhe.aspx" />
     <Content Include="Paginas\Clientes\ClienteEditar.aspx" />
     <Content Include="Paginas\Clientes\ClienteLista.aspx" />
+    <Content Include="Paginas\Leads\LeadConverter.aspx" />
+    <Content Include="Paginas\Leads\LeadDetalhe.aspx" />
     <Content Include="Paginas\Leads\LeadEditar.aspx" />
     <Content Include="Paginas\Leads\LeadsLista.aspx" />
+    <Content Include="Paginas\Oportunidades\OportunidadesLista.aspx" />
+    <Content Include="Paginas\Oportunidades\Pipeline.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -186,6 +192,7 @@
     <Content Include="Content\bootstrap-grid.rtl.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
+    <Content Include="Paginas\Oportunidades\MudarFaseHandler.ashx" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -352,6 +359,20 @@
     <Compile Include="Paginas\Catalogo\ProdutosLista.aspx.designer.cs">
       <DependentUpon>ProdutosLista.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Paginas\Catalogo\TabelaPrecoDetalhe.aspx.cs">
+      <DependentUpon>TabelaPrecoDetalhe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\TabelaPrecoDetalhe.aspx.designer.cs">
+      <DependentUpon>TabelaPrecoDetalhe.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\TabelasPreco.aspx.cs">
+      <DependentUpon>TabelasPreco.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\TabelasPreco.aspx.designer.cs">
+      <DependentUpon>TabelasPreco.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Paginas\Clientes\ClientesImportar.aspx.cs">
       <DependentUpon>ClientesImportar.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -419,6 +440,20 @@
     <Compile Include="Paginas\Clientes\ClienteLista.aspx.designer.cs">
       <DependentUpon>ClienteLista.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Paginas\Leads\LeadConverter.aspx.cs">
+      <DependentUpon>LeadConverter.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Leads\LeadConverter.aspx.designer.cs">
+      <DependentUpon>LeadConverter.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Leads\LeadDetalhe.aspx.cs">
+      <DependentUpon>LeadDetalhe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Leads\LeadDetalhe.aspx.designer.cs">
+      <DependentUpon>LeadDetalhe.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Paginas\Leads\LeadEditar.aspx.cs">
       <DependentUpon>LeadEditar.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -432,6 +467,23 @@
     </Compile>
     <Compile Include="Paginas\Leads\LeadsLista.aspx.designer.cs">
       <DependentUpon>LeadsLista.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\MudarFaseHandler.ashx.cs">
+      <DependentUpon>MudarFaseHandler.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\OportunidadesLista.aspx.cs">
+      <DependentUpon>OportunidadesLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\OportunidadesLista.aspx.designer.cs">
+      <DependentUpon>OportunidadesLista.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\Pipeline.aspx.cs">
+      <DependentUpon>Pipeline.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\Pipeline.aspx.designer.cs">
+      <DependentUpon>Pipeline.aspx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\PaginaBase.cs">
       <SubType>ASPXCodeBehind</SubType>

@@ -5,6 +5,8 @@ using CRM.Models.Entities.ListasAuxiliares;
 using CRM.Models.Entities.Catalogo;
 using CRM.Models.Entities.Documentos;
 using CRM.Models.Entities.Leads;
+using CRM.Models.Entities.Atividades;
+using CRM.Models.Entities.Oportunidades;
 
 namespace CRM.Data.Context
 {
@@ -30,6 +32,10 @@ namespace CRM.Data.Context
         public DbSet<TaxRate> TaxRates { get; set; }
         public DbSet<Product> Products { get; set; }
 
+        // Tabuleiros / Tabelas de Preço
+        public DbSet<PriceTable> PriceTables { get; set; }
+        public DbSet<PriceTableItem> PriceTableItems { get; set; }
+
         // Documentos
         public DbSet<Document> Documents { get; set; }
         public DbSet<DocumentAccessLog> DocumentAccessLogs { get; set; }
@@ -39,6 +45,14 @@ namespace CRM.Data.Context
         public DbSet<LeadStatusHistory> LeadStatusHistories { get; set; }
         public DbSet<LeadSource> LeadSources { get; set; }
         public DbSet<LossReason> LossReasons { get; set; }
+
+        // Atividades
+        public DbSet<Activity> Activities { get; set; }
+
+        // Oportunidades
+        public DbSet<Opportunity> Opportunities { get; set; }
+        public DbSet<OpportunityStage> OpportunityStages { get; set; }
+        public DbSet<OpportunityStageHistory> OpportunityStageHistories { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -92,6 +106,18 @@ namespace CRM.Data.Context
                 .HasForeignKey(p => p.TaxRateId)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<PriceTableItem>()
+                .HasRequired(p => p.PriceTable)
+                .WithMany()
+                .HasForeignKey(p => p.PriceTableId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PriceTableItem>()
+                .HasRequired(i => i.Product)
+                .WithMany()
+                .HasForeignKey(i => i.ProductId)
+                .WillCascadeOnDelete(false);
+
             // Documentos
             modelBuilder.Entity<Document>()
                 .HasOptional(d => d.RelatedClient)
@@ -136,10 +162,84 @@ namespace CRM.Data.Context
                 .HasForeignKey(l => l.ConvertedContactId)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<Lead>()
+                .HasOptional(l => l.ConvertedOpportunity)
+                .WithMany()
+                .HasForeignKey(l => l.ConvertedOpportunityId)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<LeadStatusHistory>()
                 .HasRequired(h => h.Lead)
                 .WithMany()
                 .HasForeignKey(h => h.LeadId)
+                .WillCascadeOnDelete(false);
+
+            // Atividades
+            modelBuilder.Entity<Activity>()
+                .HasOptional(a => a.RelatedClient)
+                .WithMany()
+                .HasForeignKey(a => a.RelatedClientId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Activity>()
+                .HasOptional(a => a.RelatedLead)
+                .WithMany()
+                .HasForeignKey(a => a.RelatedLeadId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Activity>()
+                .HasRequired(a => a.AssignedTo)
+                .WithMany()
+                .HasForeignKey(a => a.AssignedToUserId)
+                .WillCascadeOnDelete(false);
+
+            // Oportunidades
+            modelBuilder.Entity<Opportunity>()
+                .HasRequired(o => o.Client)
+                .WithMany()
+                .HasForeignKey(o => o.ClientId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasOptional(o => o.Contact)
+                .WithMany()
+                .HasForeignKey(o => o.ContactId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasRequired(o => o.Stage)
+                .WithMany()
+                .HasForeignKey(o => o.StageId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasRequired(o => o.Owner)
+                .WithMany()
+                .HasForeignKey(o => o.OwnerId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasOptional(o => o.LossReason)
+                .WithMany()
+                .HasForeignKey(o => o.LossReasonId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<OpportunityStageHistory>()
+                .HasRequired(h => h.Opportunity)
+                .WithMany()
+                .HasForeignKey(h => h.OpportunityId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<OpportunityStageHistory>()
+                .HasOptional(h => h.PreviousStage)
+                .WithMany()
+                .HasForeignKey(h => h.PreviousStageId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<OpportunityStageHistory>()
+                .HasRequired(h => h.NewStage)
+                .WithMany()
+                .HasForeignKey(h => h.NewStageId)
                 .WillCascadeOnDelete(false);
         }
     }

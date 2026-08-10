@@ -30,6 +30,7 @@ namespace CRM.Web.MasterPages
             phClientes.Visible = true;
             phLeads.Visible = true;
             phOportunidades.Visible = true;
+            phCatalogo.Visible = true;
             phPropostas.Visible = true;
             phVendas.Visible = true;
             phRelatorios.Visible = perfil == "Administrador" || perfil == "Diretor" ||

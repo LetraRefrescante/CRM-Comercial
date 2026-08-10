@@ -33,34 +33,82 @@ namespace CRM.Web.Paginas.Catalogo
 
             if (!IsPostBack)
             {
-                CarregarCategorias();
-                CarregarTaxasIva();
+                Product product = null;
 
                 if (ProductId.HasValue)
                 {
-                    CarregarProduto(ProductId.Value);
+                    product = _productService.GetById(ProductId.Value);
+                    if (product == null)
+                    {
+                        Response.Redirect("~/Catalogo/ProdutosLista.aspx");
+                        return;
+                    }
+                }
+
+                CarregarCategorias(product?.CategoryId);
+                CarregarTaxasIva(product?.TaxRateId);
+
+                if (product != null)
+                {
+                    PreencherFormulario(product);
                 }
             }
         }
 
-        private void CarregarCategorias()
+        private void CarregarCategorias(int? categoriaAtualId = null)
         {
             ddlCategoria.Items.Clear();
             ddlCategoria.Items.Add(new System.Web.UI.WebControls.ListItem("Seleciona...", ""));
+
             foreach (var categoria in _categoryRepository.ListarAtivas())
             {
                 ddlCategoria.Items.Add(new System.Web.UI.WebControls.ListItem(categoria.Name, categoria.CategoryId.ToString()));
             }
+
+            AdicionarValorAtualSeInativo(ddlCategoria, categoriaAtualId,
+                () => _categoryRepository.GetById(categoriaAtualId.Value)?.Name);
         }
 
-        private void CarregarTaxasIva()
+        private void CarregarTaxasIva(int? taxaAtualId = null)
         {
             ddlTaxaIva.Items.Clear();
             ddlTaxaIva.Items.Add(new System.Web.UI.WebControls.ListItem("Seleciona...", ""));
+
             foreach (var taxa in _taxRateRepository.ListarAtivas())
             {
                 ddlTaxaIva.Items.Add(new System.Web.UI.WebControls.ListItem($"{taxa.Name} ({taxa.Percentage}%)", taxa.TaxRateId.ToString()));
             }
+
+            AdicionarValorAtualSeInativo(ddlTaxaIva, taxaAtualId, () =>
+            {
+                var taxa = _taxRateRepository.GetById(taxaAtualId.Value);
+                return taxa != null ? $"{taxa.Name} ({taxa.Percentage}%)" : null;
+            });
+        }
+        private void AdicionarValorAtualSeInativo(System.Web.UI.WebControls.DropDownList ddl, int? valorAtualId, Func<string> obterTexto)
+        {
+            if (!valorAtualId.HasValue) return;
+            if (ddl.Items.FindByValue(valorAtualId.Value.ToString()) != null) return;
+
+            string texto = obterTexto();
+            if (texto == null) return;
+
+            ddl.Items.Add(new System.Web.UI.WebControls.ListItem($"{texto} (inativa)", valorAtualId.Value.ToString()));
+        }
+
+        private void PreencherFormulario(Product product)
+        {
+            txtCodigo.Text = product.Code;
+            ddlTipo.SelectedValue = product.Type;
+            txtNome.Text = product.Name;
+            ddlCategoria.SelectedValue = product.CategoryId.ToString();
+            ddlTaxaIva.SelectedValue = product.TaxRateId.ToString();
+            ddlUnidade.SelectedValue = product.Unit;
+            txtPrecoBase.Text = product.BasePrice.ToString("0.00");
+            chkAtivo.Checked = product.IsActive;
+            txtDescricao.Text = product.Description;
+
+            ViewState["RowVersion"] = Convert.ToBase64String(product.RowVersion);
         }
 
         private void CarregarProduto(int productId)
