@@ -49,6 +49,8 @@
     <Compile Include="Entities\Catalogo\PriceTable.cs" />
     <Compile Include="Entities\Catalogo\PriceTableItem.cs" />
     <Compile Include="Entities\Catalogo\Product.cs" />
+    <Compile Include="Entities\Catalogo\Proposal.cs" />
+    <Compile Include="Entities\Catalogo\ProposalLine.cs" />
     <Compile Include="Entities\Catalogo\TaxRate.cs" />
     <Compile Include="Entities\Clientes\Contact.cs" />
     <Compile Include="Entities\Documentos\Document.cs" />
@@ -59,6 +61,7 @@
     <Compile Include="Entities\ListasAuxiliares\LeadSource.cs" />
     <Compile Include="Entities\ListasAuxiliares\LossReason.cs" />
     <Compile Include="Entities\ListasAuxiliares\OpportunityStage.cs" />
+    <Compile Include="Entities\ListasAuxiliares\PaymentTerm.cs" />
     <Compile Include="Entities\ListasAuxiliares\Sector.cs" />
     <Compile Include="Entities\Oportunidades\Opportunity.cs" />
     <Compile Include="Entities\Oportunidades\OpportunityStageHistory.cs" />
@@ -69,6 +72,9 @@
     <Compile Include="Entities\Seguranca\Role.cs" />
     <Compile Include="Entities\Seguranca\RolePermission.cs" />
     <Compile Include="Entities\Seguranca\User.cs" />
+    <Compile Include="Entities\Vendas\Payment.cs" />
+    <Compile Include="Entities\Vendas\Sale.cs" />
+    <Compile Include="Entities\Vendas\SaleLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

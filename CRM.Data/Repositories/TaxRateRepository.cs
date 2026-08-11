@@ -17,6 +17,15 @@ namespace CRM.Data.Repositories
                     .ToList();
             }
         }
+        public List<TaxRate> ListarTodas()
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.TaxRates
+                    .OrderBy(t => t.Percentage)
+                    .ToList();
+            }
+        }
 
         public TaxRate GetById(int taxRateId)
         {

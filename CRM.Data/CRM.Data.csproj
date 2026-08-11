@@ -69,12 +69,16 @@
     <Compile Include="Repositories\OpportunityRepository.cs" />
     <Compile Include="Repositories\OpportunityStageRepository.cs" />
     <Compile Include="Repositories\PasswordResetTokenRepository.cs" />
+    <Compile Include="Repositories\PaymentRepository.cs" />
+    <Compile Include="Repositories\PaymentTermRepository.cs" />
     <Compile Include="Repositories\PermissionRepository.cs" />
     <Compile Include="Repositories\PriceTableItemRepository.cs" />
     <Compile Include="Repositories\PriceTableRepository.cs" />
     <Compile Include="Repositories\ProductRepository.cs" />
+    <Compile Include="Repositories\ProposalRepository.cs" />
     <Compile Include="Repositories\RolePermissionRepository.cs" />
     <Compile Include="Repositories\RoleRepository.cs" />
+    <Compile Include="Repositories\SaleRepository.cs" />
     <Compile Include="Repositories\SectorRepository.cs" />
     <Compile Include="Repositories\TaxRateRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />

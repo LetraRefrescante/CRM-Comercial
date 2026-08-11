@@ -7,6 +7,7 @@ using CRM.Models.Entities.Documentos;
 using CRM.Models.Entities.Leads;
 using CRM.Models.Entities.Atividades;
 using CRM.Models.Entities.Oportunidades;
+using CRM.Models.Entities.Vendas;
 
 namespace CRM.Data.Context
 {
@@ -24,6 +25,7 @@ namespace CRM.Data.Context
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Sector> Sectors { get; set; }
+        public DbSet<PaymentTerm> PaymentTerms { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Contact> Contacts { get; set; }
 
@@ -53,6 +55,15 @@ namespace CRM.Data.Context
         public DbSet<Opportunity> Opportunities { get; set; }
         public DbSet<OpportunityStage> OpportunityStages { get; set; }
         public DbSet<OpportunityStageHistory> OpportunityStageHistories { get; set; }
+
+        // Propostas
+        public DbSet<Proposal> Proposals { get; set; }
+        public DbSet<ProposalLine> ProposalLines { get; set; }
+
+        // Vendas
+        public DbSet<Sale> Sales { get; set; }
+        public DbSet<SaleLine> SaleLines { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -240,6 +251,99 @@ namespace CRM.Data.Context
                 .HasRequired(h => h.NewStage)
                 .WithMany()
                 .HasForeignKey(h => h.NewStageId)
+                .WillCascadeOnDelete(false);
+
+            // Propostas
+            modelBuilder.Entity<Proposal>()
+                .HasRequired(p => p.Client)
+                .WithMany()
+                .HasForeignKey(p => p.ClientId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Proposal>()
+                .HasOptional(p => p.Opportunity)
+                .WithMany()
+                .HasForeignKey(p => p.OpportunityId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Proposal>()
+                .HasOptional(p => p.PaymentTerm)
+                .WithMany()
+                .HasForeignKey(p => p.PaymentTermId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Proposal>()
+                .HasOptional(p => p.AcceptedByUser)
+                .WithMany()
+                .HasForeignKey(p => p.AcceptedByUserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Proposal>()
+                .HasOptional(p => p.ParentProposal)
+                .WithMany()
+                .HasForeignKey(p => p.ParentProposalId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ProposalLine>()
+                .HasRequired(l => l.Proposal)
+                .WithMany(p => p.Lines)
+                .HasForeignKey(l => l.ProposalId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ProposalLine>()
+                .HasRequired(l => l.Product)
+                .WithMany()
+                .HasForeignKey(l => l.ProductId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ProposalLine>()
+                .HasRequired(l => l.TaxRate)
+                .WithMany()
+                .HasForeignKey(l => l.TaxRateId)
+                .WillCascadeOnDelete(false);
+
+            // ===================== Vendas (NOVO) =====================
+
+            modelBuilder.Entity<Sale>()
+                .HasRequired(s => s.Client)
+                .WithMany()
+                .HasForeignKey(s => s.ClientId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Sale>()
+                .HasOptional(s => s.Proposal)
+                .WithMany()
+                .HasForeignKey(s => s.ProposalId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Sale>()
+                .HasRequired(s => s.Owner)
+                .WithMany()
+                .HasForeignKey(s => s.OwnerId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<SaleLine>()
+                .HasRequired(l => l.Sale)
+                .WithMany(s => s.Lines)
+                .HasForeignKey(l => l.SaleId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<SaleLine>()
+                .HasRequired(l => l.Product)
+                .WithMany()
+                .HasForeignKey(l => l.ProductId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<SaleLine>()
+                .HasRequired(l => l.TaxRate)
+                .WithMany()
+                .HasForeignKey(l => l.TaxRateId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Payment>()
+                .HasRequired(p => p.Sale)
+                .WithMany(s => s.Payments)
+                .HasForeignKey(p => p.SaleId)
                 .WillCascadeOnDelete(false);
         }
     }

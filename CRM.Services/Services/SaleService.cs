@@ -1,0 +1,256 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CRM.Data.Repositories;
+using CRM.Models.Entities.Catalogo;
+using CRM.Models.Entities.Vendas;
+
+namespace CRM.Services
+{
+    public class SaleService
+    {
+        private readonly SaleRepository _saleRepository = new SaleRepository();
+        private readonly PaymentRepository _paymentRepository = new PaymentRepository();
+        private readonly TaxRateRepository _taxRateRepository = new TaxRateRepository();
+        private readonly AuditService _auditService = new AuditService();
+
+        public const string StatusPendente = "Pendente";
+        public const string StatusConfirmada = "Confirmada";
+        public const string StatusParcial = "Parcial";
+        public const string StatusConcluida = "Concluída";
+        public const string StatusCancelada = "Cancelada";
+
+        public const string OrigemProposta = "Proposta";
+        public const string OrigemManual = "Manual";
+
+        // ===================== Permissões (matriz do blueprint) =====================
+
+        public bool TemAmbitoProprios(string perfil) => perfil == "Comercial";
+
+        public bool PodeCriarOuEditar(string perfil) =>
+            perfil == "Administrador" || perfil == "Financeiro" || perfil == "Comercial";
+
+        public bool PodeAceder(Sale sale, int userId, string perfil)
+        {
+            if (sale == null) return false;
+            if (!TemAmbitoProprios(perfil)) return true;
+            return EhDono(sale, userId);
+        }
+        public bool PodeEliminar(string perfil) =>
+            perfil == "Administrador" || perfil == "Financeiro";
+
+        public bool PodeCancelar(Sale sale, int userId, string perfil)
+        {
+            if (sale.Status == StatusCancelada) return false;
+            if (perfil == "Administrador" || perfil == "Financeiro") return true;
+            if (perfil == "Comercial") return EhDono(sale, userId);
+            return false;
+        }
+
+        public bool PodeRegistarPagamento(Sale sale, int userId, string perfil) =>
+            sale != null && sale.Status != StatusCancelada && PodeAceder(sale, userId, perfil) && PodeCriarOuEditar(perfil);
+
+        private bool EhDono(Sale sale, int userId) => sale.OwnerId == userId;
+
+        // ===================== Edição direta =====================
+        public bool PodeEditarDiretamente(Sale sale) =>
+            sale.Status == StatusPendente || sale.Status == StatusConfirmada;
+
+        // ===================== Validação =====================
+
+        public List<string> Validar(Sale sale)
+        {
+            var erros = new List<string>();
+
+            if (sale.ClientId <= 0)
+                erros.Add("O cliente é obrigatório.");
+
+            if (sale.OwnerId <= 0)
+                erros.Add("O comercial responsável é obrigatório.");
+
+            if (string.IsNullOrWhiteSpace(sale.Origin))
+                erros.Add("A origem (Proposta ou Manual) é obrigatória.");
+
+            if (sale.Origin == OrigemProposta && !sale.ProposalId.HasValue)
+                erros.Add("Uma venda de origem \"Proposta\" tem de referenciar a proposta de origem.");
+
+            erros.AddRange(ValidarLinhas(sale));
+
+            return erros;
+        }
+
+        public List<string> ValidarLinhas(Sale sale)
+        {
+            var erros = new List<string>();
+
+            if (sale.Lines == null || !sale.Lines.Any())
+            {
+                erros.Add("A venda tem de ter pelo menos uma linha.");
+                return erros;
+            }
+
+            foreach (var linha in sale.Lines)
+            {
+                if (linha.Quantity <= 0)
+                    erros.Add($"A quantidade da linha \"{linha.Description}\" tem de ser superior a zero.");
+
+                if (linha.DiscountPercent < 0 || linha.DiscountPercent > 100)
+                    erros.Add($"O desconto da linha \"{linha.Description}\" tem de estar entre 0 e 100.");
+            }
+
+            return erros;
+        }
+
+        public List<string> ValidarCancelamento(string motivo)
+        {
+            var erros = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(motivo))
+                erros.Add("O motivo de cancelamento é obrigatório.");
+
+            return erros;
+        }
+
+        // ===================== Cálculo de totais =====================
+
+        public void CalcularTotais(Sale sale)
+        {
+            var taxasIva = _taxRateRepository.ListarTodas();
+
+            decimal subTotal = 0;
+            decimal taxTotal = 0;
+
+            foreach (var linha in sale.Lines)
+            {
+                linha.LineTotal = Math.Round(linha.Quantity * linha.UnitPrice * (1 - linha.DiscountPercent / 100m), 2);
+                subTotal += linha.LineTotal;
+
+                var taxa = taxasIva.SingleOrDefault(t => t.TaxRateId == linha.TaxRateId);
+                decimal percentagem = taxa?.Percentage ?? 0;
+                taxTotal += Math.Round(linha.LineTotal * (percentagem / 100m), 2);
+            }
+
+            sale.SubTotal = subTotal;
+            sale.TaxTotal = taxTotal;
+            sale.Total = subTotal + taxTotal;
+        }
+
+        // ===================== Criar a partir de Proposta =====================
+
+        public Sale MontarAPartirDeProposta(Proposal proposal)
+        {
+            return new Sale
+            {
+                ClientId = proposal.ClientId,
+                ProposalId = proposal.ProposalId,
+                Origin = OrigemProposta,
+                SaleDate = DateTime.Today,
+                SubTotal = proposal.SubTotal,
+                TaxTotal = proposal.TaxTotal,
+                Total = proposal.Total,
+                Lines = proposal.Lines.Select(l => new SaleLine
+                {
+                    ProductId = l.ProductId,
+                    LineOrder = l.LineOrder,
+                    Description = l.Description,
+                    Quantity = l.Quantity,
+                    UnitPrice = l.UnitPrice,
+                    DiscountPercent = l.DiscountPercent,
+                    TaxRateId = l.TaxRateId,
+                    LineTotal = l.LineTotal
+                }).ToList()
+            };
+        }
+
+        // ===================== Consulta / Listagem =====================
+
+        public Sale GetById(int saleId) => _saleRepository.GetById(saleId);
+
+        public List<Sale> Listar(
+            string pesquisa, string status, int? clientId, int? ownerId,
+            DateTime? dataInicio, DateTime? dataFim,
+            int pagina, int tamanhoPagina, out int totalRegistos,
+            string sortColumn, bool sortAscending)
+            => _saleRepository.Listar(pesquisa, status, clientId, ownerId, dataInicio, dataFim,
+                pagina, tamanhoPagina, out totalRegistos, sortColumn, sortAscending);
+
+        // ===================== Gravação =====================
+
+        public Sale Criar(Sale sale, int userId)
+        {
+            sale.CreatedBy = userId;
+            sale.CreatedDate = DateTime.UtcNow;
+            sale.Status = StatusPendente;
+            CalcularTotais(sale);
+            var criada = _saleRepository.Criar(sale);
+
+            _auditService.Registar(userId, "Criar", "Sale", criada.SaleId.ToString());
+
+            return criada;
+        }
+
+        public void Atualizar(Sale sale, int userId)
+        {
+            sale.UpdatedBy = userId;
+            sale.UpdatedDate = DateTime.UtcNow;
+            CalcularTotais(sale);
+            _saleRepository.Atualizar(sale);
+
+            _auditService.Registar(userId, "Editar", "Sale", sale.SaleId.ToString());
+        }
+
+        public bool Cancelar(int saleId, string motivo, int userId, string perfil)
+        {
+            var sale = _saleRepository.GetById(saleId);
+            if (sale == null) return false;
+            if (!PodeCancelar(sale, userId, perfil)) return false;
+
+            _saleRepository.AtualizarEstado(saleId, StatusCancelada, motivo, userId);
+            _auditService.Registar(userId, "Cancelar", "Sale", saleId.ToString(), motivo);
+
+            return true;
+        }
+
+        public bool Eliminar(int saleId, int userId, string perfil)
+        {
+            if (!PodeEliminar(perfil)) return false;
+
+            var sale = _saleRepository.GetById(saleId);
+            if (sale == null) return false;
+
+            _saleRepository.EliminarLogico(saleId, userId);
+            _auditService.Registar(userId, "Eliminar", "Sale", saleId.ToString());
+
+            return true;
+        }
+
+        public bool ConfirmarManualmente(int saleId, int userId, string perfil)
+        {
+            var sale = _saleRepository.GetById(saleId);
+            if (sale == null || sale.Status != StatusPendente) return false;
+            if (!PodeAceder(sale, userId, perfil) || !PodeCriarOuEditar(perfil)) return false;
+
+            _saleRepository.AtualizarEstado(saleId, StatusConfirmada, null, userId);
+            _auditService.Registar(userId, "Confirmar", "Sale", saleId.ToString());
+
+            return true;
+        }
+
+        // ===================== Estado financeiro =====================
+        public void RecalcularEstadoFinanceiro(int saleId, int userId)
+        {
+            var sale = _saleRepository.GetById(saleId);
+            if (sale == null || sale.Status == StatusCancelada) return;
+
+            decimal totalPago = _paymentRepository.TotalPagoPorVenda(saleId);
+
+            string novoStatus =
+                totalPago <= 0 ? sale.Status :
+                totalPago >= sale.Total ? StatusConcluida :
+                StatusParcial;
+
+            if (novoStatus != sale.Status)
+                _saleRepository.AtualizarEstado(saleId, novoStatus, sale.CancellationReason, userId);
+        }
+    }
+}

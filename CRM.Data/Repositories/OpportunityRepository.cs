@@ -21,6 +21,16 @@ namespace CRM.Data.Repositories
                     .FirstOrDefault(o => o.OpportunityId == opportunityId && !o.IsDeleted);
             }
         }
+        public List<Opportunity> ListarPorCliente(int clientId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Opportunities
+                    .Where(o => o.ClientId == clientId && !o.IsDeleted)
+                    .OrderByDescending(o => o.CreatedDate)
+                    .ToList();
+            }
+        }
 
         public List<Opportunity> Listar(
             string pesquisa,

@@ -112,6 +112,7 @@
     <Content Include="Controls\Anexos.ascx" />
     <Content Include="Controls\Historico.ascx" />
     <Content Include="Controls\SeletorCliente.ascx" />
+    <Content Include="Controls\SeletorProduto.ascx" />
     <Content Include="Paginas\Account\AlterarPassword.aspx" />
     <Content Include="Paginas\Account\Login.aspx" />
     <Content Include="Paginas\Account\RecuperarPassword.aspx" />
@@ -145,6 +146,8 @@
     <Content Include="Paginas\Catalogo\CategoriasLista.aspx" />
     <Content Include="Paginas\Catalogo\ProdutoEditar.aspx" />
     <Content Include="Paginas\Catalogo\ProdutosLista.aspx" />
+    <Content Include="Paginas\Catalogo\PropostaEditar.aspx" />
+    <Content Include="Paginas\Catalogo\PropostasLista.aspx" />
     <Content Include="Paginas\Catalogo\TabelaPrecoDetalhe.aspx" />
     <Content Include="Paginas\Catalogo\TabelasPreco.aspx" />
     <Content Include="Paginas\Clientes\ClientesImportar.aspx" />
@@ -164,6 +167,8 @@
     <Content Include="Paginas\Leads\LeadsLista.aspx" />
     <Content Include="Paginas\Oportunidades\OportunidadesLista.aspx" />
     <Content Include="Paginas\Oportunidades\Pipeline.aspx" />
+    <Content Include="Paginas\Vendas\VendaEditar.aspx" />
+    <Content Include="Paginas\Vendas\VendasLista.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -244,6 +249,13 @@
     </Compile>
     <Compile Include="Controls\SeletorCliente.ascx.designer.cs">
       <DependentUpon>SeletorCliente.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SeletorProduto.ascx.cs">
+      <DependentUpon>SeletorProduto.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\SeletorProduto.ascx.designer.cs">
+      <DependentUpon>SeletorProduto.ascx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\Account\AlterarPassword.aspx.cs">
       <DependentUpon>AlterarPassword.aspx</DependentUpon>
@@ -358,6 +370,20 @@
     </Compile>
     <Compile Include="Paginas\Catalogo\ProdutosLista.aspx.designer.cs">
       <DependentUpon>ProdutosLista.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\PropostaEditar.aspx.cs">
+      <DependentUpon>PropostaEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\PropostaEditar.aspx.designer.cs">
+      <DependentUpon>PropostaEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\PropostasLista.aspx.cs">
+      <DependentUpon>PropostasLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\PropostasLista.aspx.designer.cs">
+      <DependentUpon>PropostasLista.aspx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\Catalogo\TabelaPrecoDetalhe.aspx.cs">
       <DependentUpon>TabelaPrecoDetalhe.aspx</DependentUpon>
@@ -487,6 +513,20 @@
     </Compile>
     <Compile Include="Paginas\PaginaBase.cs">
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Vendas\VendaEditar.aspx.cs">
+      <DependentUpon>VendaEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Vendas\VendaEditar.aspx.designer.cs">
+      <DependentUpon>VendaEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Vendas\VendasLista.aspx.cs">
+      <DependentUpon>VendasLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Vendas\VendasLista.aspx.designer.cs">
+      <DependentUpon>VendasLista.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MasterPages\Site.Master.cs">
