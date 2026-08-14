@@ -78,6 +78,9 @@
                     <td><%# Eval("Total", "{0:C}") %></td>
                     <td><%# Eval("Client.AccountManager.Name") %></td>
                     <td class="text-end crm-row-actions">
+                        <a href="PropostaDetalhe.aspx?id=<%# Eval("ProposalId") %>" class="btn btn-sm btn-outline-secondary" title="Detalhe">
+                            <i class="fas fa-eye"></i>
+                        </a>
                         <asp:PlaceHolder ID="phEditar" runat="server">
                             <a href="PropostaEditar.aspx?id=<%# Eval("ProposalId") %>" class="btn btn-sm btn-outline-secondary" title="Editar">
                                 <i class="fas fa-pen"></i>

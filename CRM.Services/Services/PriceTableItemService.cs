@@ -7,6 +7,7 @@ namespace CRM.Services
     public class PriceTableItemService
     {
         private readonly PriceTableItemRepository _priceTableItemRepository = new PriceTableItemRepository();
+        private readonly AuditService _auditService = new AuditService();
 
         public List<string> Validar(PriceTableItem item, bool produtoJaTemPreco)
         {
@@ -30,10 +31,31 @@ namespace CRM.Services
         public bool ExisteProdutoNaTabela(int priceTableId, int productId, int? ignorarPriceTableItemId = null)
             => _priceTableItemRepository.ExisteProdutoNaTabela(priceTableId, productId, ignorarPriceTableItemId);
 
-        public int Criar(PriceTableItem item) => _priceTableItemRepository.Criar(item);
+        public int Criar(PriceTableItem item)
+        {
+            var id = _priceTableItemRepository.Criar(item);
 
-        public void Atualizar(PriceTableItem item) => _priceTableItemRepository.Atualizar(item);
+            _auditService.Registar(item.CreatedBy, "Create", "PriceTableItem", id.ToString(),
+                $"Preço do produto #{item.ProductId} adicionado à tabela #{item.PriceTableId}.");
 
-        public void Eliminar(int priceTableItemId) => _priceTableItemRepository.Eliminar(priceTableItemId);
+            return id;
+        }
+
+        public void Atualizar(PriceTableItem item)
+        {
+            _priceTableItemRepository.Atualizar(item);
+
+            _auditService.Registar(item.UpdatedBy, "Update", "PriceTableItem", item.PriceTableItemId.ToString(),
+                $"Preço do item #{item.PriceTableItemId} atualizado.");
+        }
+
+        // Passa a receber currentUserId para poder auditar quem eliminou.
+        public void Eliminar(int priceTableItemId, int currentUserId)
+        {
+            _priceTableItemRepository.Eliminar(priceTableItemId);
+
+            _auditService.Registar(currentUserId, "Delete", "PriceTableItem", priceTableItemId.ToString(),
+                $"Preço #{priceTableItemId} removido.");
+        }
     }
 }

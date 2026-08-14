@@ -70,13 +70,17 @@ namespace CRM.Data.Repositories
                     .ToList();
             }
         }
-
-        /// <summary>
-        /// Devolve o nome de qualquer utilizador (ativo, inativo ou de outro perfil),
-        /// ao contrário de ListarComerciaisAtivos(). Usado em ecrãs de histórico
-        /// (ex: LeadStatusHistory.ChangedBy) onde quem fez a ação pode já não ser
-        /// comercial ativo — um admin, ou alguém entretanto desativado.
-        /// </summary>
+        public List<User> ListarAtivos()
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Users
+                    .Include(u => u.Role)
+                    .Where(u => !u.IsDeleted && u.Status == "Ativo")
+                    .OrderBy(u => u.Name)
+                    .ToList();
+            }
+        }
         public Dictionary<int, string> ObterNomesPorIds(IEnumerable<int> userIds)
         {
             using (var context = new CrmDbContext())

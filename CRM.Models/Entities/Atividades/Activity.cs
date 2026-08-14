@@ -19,6 +19,8 @@ namespace CRM.Models.Entities.Atividades
 
         public int? RelatedLeadId { get; set; }
         public Lead RelatedLead { get; set; }
+
+        // TODO: adicionar navegação "RelatedOpportunity" quando o módulo de Oportunidades existir
         public int? RelatedOpportunityId { get; set; }
 
         public int AssignedToUserId { get; set; }

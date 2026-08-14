@@ -47,11 +47,10 @@ GO
 -- 1 = Administrador, 2 = Diretor, 3 = Comercial, 4 = Financeiro, 5 = Consulta
 -- =============================================
 
--- Administrador: TOTAL em tudo
 INSERT INTO RolePermissions (RoleId, PermissionId)
 SELECT r.RoleId, p.PermissionId
 FROM Roles r CROSS JOIN Permissions p
-WHERE r.Name = 'Administrador';
+WHERE r.Name = 'Administrador' AND p.Code LIKE '%.Total';
 GO
 
 -- Diretor: Utilizadores CONSULTA, Clientes/Leads/Oportunidades/Propostas TOTAL, Vendas CONSULTA, Relatorios TOTAL, Configuracoes CONSULTA

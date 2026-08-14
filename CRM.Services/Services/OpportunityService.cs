@@ -9,14 +9,19 @@ namespace CRM.Services
     {
         private readonly OpportunityRepository _opportunityRepository = new OpportunityRepository();
         private readonly OpportunityStageRepository _stageRepository = new OpportunityStageRepository();
+        private readonly ClientRepository _clientRepository = new ClientRepository();
         private readonly AuditService _auditService = new AuditService();
+        private readonly PermissionService _permissionService = new PermissionService();
 
-        // ---------- Âmbito e permissões (matriz da blueprint) ----------
+        private const string Modulo = "Oportunidades";
 
-        public bool TemAmbitoProprios(string perfil) => perfil == "Comercial";
+        // ---------- Âmbito e permissões (tabela Permissions/RolePermissions) ----------
+
+        public bool TemAmbitoProprios(string perfil) =>
+            _permissionService.ObterNivel(perfil, Modulo) == NivelAcesso.Proprios;
 
         public bool PodeEditar(string perfil) =>
-            perfil == "Administrador" || perfil == "Diretor" || perfil == "Comercial";
+            _permissionService.ObterNivel(perfil, Modulo) >= NivelAcesso.Proprios;
 
         public bool PodeFechar(string perfil) => PodeEditar(perfil);
 
@@ -35,21 +40,49 @@ namespace CRM.Services
             int? ownerId = TemAmbitoProprios(perfil) ? userId : (int?)null;
             return _opportunityRepository.ListarAbertasParaPipeline(ownerId);
         }
+
         public Opportunity ObterPorId(int opportunityId, string perfil, int userId)
         {
             var opportunity = _opportunityRepository.GetById(opportunityId);
             if (opportunity == null) return null;
 
-            if (TemAmbitoProprios(perfil) && opportunity.OwnerId != userId)
+            if (TemAmbitoProprios(perfil))
+            {
+                if (opportunity.OwnerId != userId) return null;
+            }
+            else if (_permissionService.ObterNivel(perfil, Modulo) < NivelAcesso.Consulta)
+            {
                 return null;
+            }
 
             return opportunity;
         }
+        public List<OpportunityStageHistory> ListarHistoricoFases(int opportunityId) =>
+    _opportunityRepository.ListarHistoricoFases(opportunityId);
 
         // ---------- Escrita ----------
 
-        public void Criar(Opportunity opportunity, int userId)
+        /// <summary>
+        /// Antes só recebia (opportunity, userId) e não validava permissão nem âmbito —
+        /// isso ficava por conta de quem chamava (ex.: código da página). Alinhado agora com
+        /// o padrão do ClientService: um Comercial (âmbito "próprios") só pode criar
+        /// oportunidades atribuídas a si mesmo, e apenas para clientes que já são seus.
+        /// </summary>
+        public string Criar(Opportunity opportunity, string perfil, int userId)
         {
+            if (!PodeEditar(perfil))
+                return "Sem permissão para criar oportunidades.";
+
+            if (TemAmbitoProprios(perfil))
+            {
+                if (opportunity.OwnerId != userId)
+                    return "Só podes atribuir oportunidades a ti próprio.";
+
+                var cliente = _clientRepository.GetById(opportunity.ClientId);
+                if (cliente == null || cliente.AccountManagerId != userId)
+                    return "Só podes criar oportunidades para clientes atribuídos a ti.";
+            }
+
             var fase = _stageRepository.ObterPorId(opportunity.StageId);
             if (opportunity.Probability == 0 && fase != null)
                 opportunity.Probability = fase.DefaultProbability;
@@ -70,10 +103,35 @@ namespace CRM.Services
             });
 
             _auditService.Registar(userId, "Criação", "Opportunity", opportunity.OpportunityId.ToString());
+
+            return null;
         }
 
-        public void Atualizar(Opportunity opportunity, int faseAnterior, int userId)
+        /// <summary>
+        /// Igual ao Criar: passa a validar permissão e âmbito. Reconsulta o registo
+        /// existente (não o objeto vindo do formulário) para confirmar a posse — o
+        /// mesmo cuidado que o ClientService.Atualizar já tinha, para não confiar
+        /// apenas no que veio no postback.
+        /// </summary>
+        public string Atualizar(Opportunity opportunity, int faseAnterior, string perfil, int userId)
         {
+            if (!PodeEditar(perfil))
+                return "Sem permissão para editar oportunidades.";
+
+            if (TemAmbitoProprios(perfil))
+            {
+                var existente = _opportunityRepository.GetById(opportunity.OpportunityId);
+                if (existente == null || existente.OwnerId != userId)
+                    return "Sem permissão para editar esta oportunidade.";
+
+                if (opportunity.OwnerId != userId)
+                    return "Só podes atribuir oportunidades a ti próprio.";
+
+                var cliente = _clientRepository.GetById(opportunity.ClientId);
+                if (cliente == null || cliente.AccountManagerId != userId)
+                    return "Só podes atribuir oportunidades a clientes atribuídos a ti.";
+            }
+
             opportunity.UpdatedDate = DateTime.UtcNow;
             opportunity.UpdatedBy = userId;
 
@@ -92,6 +150,8 @@ namespace CRM.Services
             }
 
             _auditService.Registar(userId, "Alteração", "Opportunity", opportunity.OpportunityId.ToString());
+
+            return null;
         }
 
         public string MudarFase(int opportunityId, int novaFaseId, string perfil, int userId)
@@ -129,13 +189,25 @@ namespace CRM.Services
             return null;
         }
 
-        public string Fechar(int opportunityId, bool ganho, int? lossReasonId, int userId)
+        /// <summary>
+        /// Passa a receber "perfil" e a validar PodeFechar + âmbito próprio (antes não
+        /// validava nada disto — qualquer utilizador autenticado conseguia fechar qualquer
+        /// oportunidade, desde que soubesse o Id).
+        /// </summary>
+        public string Fechar(int opportunityId, bool ganho, int? lossReasonId, string perfil, int userId)
         {
+            if (!PodeFechar(perfil))
+                return "Sem permissão para fechar oportunidades.";
+
             if (!ganho && !lossReasonId.HasValue)
                 return "É obrigatório indicar o motivo de perda.";
 
             var opportunity = _opportunityRepository.GetById(opportunityId);
             if (opportunity == null) return "Oportunidade não encontrada.";
+
+            if (TemAmbitoProprios(perfil) && opportunity.OwnerId != userId)
+                return "Sem permissão para fechar esta oportunidade.";
+
             if (opportunity.IsClosed) return "Esta oportunidade já está fechada.";
 
             var faseFecho = _stageRepository.ObterFaseFechamento(isClosedWon: ganho);

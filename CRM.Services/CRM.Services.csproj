@@ -50,15 +50,18 @@
     <Compile Include="Services\ClientService.cs" />
     <Compile Include="Services\ContactService.cs" />
     <Compile Include="Services\DocumentService.cs" />
+    <Compile Include="Services\EmailServices.cs" />
     <Compile Include="Services\LeadConversionService.cs" />
     <Compile Include="Services\LeadService.cs" />
     <Compile Include="Services\OpportunityService.cs" />
     <Compile Include="Services\PaymentService.cs" />
+    <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\PriceTableItemService.cs" />
     <Compile Include="Services\PriceTableService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\ProposalService.cs" />
     <Compile Include="Services\SaleService.cs" />
+    <Compile Include="Services\TaskService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CRM.Business\CRM.Business.csproj">

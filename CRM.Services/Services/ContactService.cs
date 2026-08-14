@@ -14,16 +14,22 @@ namespace CRM.Services
         private readonly ContactRepository _contactRepository = new ContactRepository();
         private readonly ClientRepository _clientRepository = new ClientRepository();
         private readonly AuditService _auditService = new AuditService();
+        private readonly PermissionService _permissionService = new PermissionService();
+
+        // Contactos não têm coluna própria na matriz — partilham o módulo "Clientes"
+        // (o blueprint trata Contactos como sub-secção de Clientes, e não há Permissions
+        // com prefixo "Contactos." no seed).
+        private const string Modulo = "Clientes";
 
         public bool PodeCriarOuEditar(string perfil) =>
-            perfil == "Administrador" || perfil == "Diretor" || perfil == "Comercial";
+            _permissionService.ObterNivel(perfil, Modulo) >= NivelAcesso.Proprios;
 
         public bool PodeEliminar(string perfil) =>
-            perfil == "Administrador" || perfil == "Diretor";
+            _permissionService.ObterNivel(perfil, Modulo) == NivelAcesso.Total;
 
         public bool TemAcessoAoCliente(int clientId, string perfil, int userId)
         {
-            if (perfil != "Comercial") return true;
+            if (_permissionService.ObterNivel(perfil, Modulo) != NivelAcesso.Proprios) return true;
 
             var client = _clientRepository.GetById(clientId);
             return client != null && client.AccountManagerId == userId;

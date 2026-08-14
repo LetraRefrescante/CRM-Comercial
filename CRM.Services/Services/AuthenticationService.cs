@@ -51,7 +51,15 @@ namespace CRM.Services
 
             _auditService.Registar(user.UserId, "PasswordResetRequested", "User", user.UserId.ToString());
 
-            EnviarEmailRecuperacao(user.Email, token);
+            try
+            {
+                EnviarEmailRecuperacao(user.Email, token);
+            }
+            catch (NotImplementedException)
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    $"Email de recuperação não enviado (serviço de email por implementar). Token gerado para o utilizador {user.UserId}.");
+            }
         }
         public bool TokenValido(string token)
         {

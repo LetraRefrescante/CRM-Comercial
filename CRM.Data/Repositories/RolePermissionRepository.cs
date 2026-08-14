@@ -20,6 +20,18 @@ namespace CRM.Data.Repositories
             }
         }
 
+        public HashSet<string> ObterCodigosDoRole(int roleId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return new HashSet<string>(
+                    context.RolePermissions
+                        .Where(rp => rp.RoleId == roleId)
+                        .Select(rp => rp.Permission.Code)
+                );
+            }
+        }
+
         public void AtualizarPermissoesDoRole(int roleId, List<int> permissionIds, int alteradoPor)
         {
             using (var context = new CrmDbContext())

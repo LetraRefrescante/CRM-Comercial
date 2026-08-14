@@ -26,6 +26,16 @@ namespace CRM.Data.Repositories
             }
         }
 
+        // Usado por PropostaDetalhe.aspx para decidir se mostra o botão "Criar Venda"
+        // (evita ambiguidade quando já existe uma venda criada a partir da mesma proposta).
+        public bool ExisteVendaParaProposta(int proposalId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Sales.Any(s => s.ProposalId == proposalId && !s.IsDeleted);
+            }
+        }
+
         public List<Sale> Listar(
             string pesquisa,
             string status,

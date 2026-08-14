@@ -143,10 +143,18 @@
     <Content Include="Controls\Mensagens.ascx" />
     <Content Include="Controls\ConfirmacaoModal.ascx" />
     <Content Include="Controls\Paginacao.ascx" />
+    <Content Include="Paginas\Atividades\Agenda.aspx" />
+    <Content Include="Paginas\Atividades\AtividadeEditar.aspx" />
+    <Content Include="Paginas\Atividades\AtividadesLista.aspx" />
+    <Content Include="Paginas\Atividades\TarefaEditar.aspx" />
+    <Content Include="Paginas\Atividades\TarefasLista.aspx" />
     <Content Include="Paginas\Catalogo\CategoriasLista.aspx" />
     <Content Include="Paginas\Catalogo\ProdutoEditar.aspx" />
     <Content Include="Paginas\Catalogo\ProdutosLista.aspx" />
+    <Content Include="Paginas\Catalogo\PropostaDetalhe.aspx" />
     <Content Include="Paginas\Catalogo\PropostaEditar.aspx" />
+    <Content Include="Paginas\Catalogo\PropostaEnviar.aspx" />
+    <Content Include="Paginas\Catalogo\PropostaPDF.aspx" />
     <Content Include="Paginas\Catalogo\PropostasLista.aspx" />
     <Content Include="Paginas\Catalogo\TabelaPrecoDetalhe.aspx" />
     <Content Include="Paginas\Catalogo\TabelasPreco.aspx" />
@@ -165,6 +173,9 @@
     <Content Include="Paginas\Leads\LeadDetalhe.aspx" />
     <Content Include="Paginas\Leads\LeadEditar.aspx" />
     <Content Include="Paginas\Leads\LeadsLista.aspx" />
+    <Content Include="Paginas\Oportunidades\OportunidadeDetalhe.aspx" />
+    <Content Include="Paginas\Oportunidades\OportunidadeEditar.aspx" />
+    <Content Include="Paginas\Oportunidades\OportunidadeFechar.aspx" />
     <Content Include="Paginas\Oportunidades\OportunidadesLista.aspx" />
     <Content Include="Paginas\Oportunidades\Pipeline.aspx" />
     <Content Include="Paginas\Vendas\VendaEditar.aspx" />
@@ -198,6 +209,7 @@
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
     <Content Include="Paginas\Oportunidades\MudarFaseHandler.ashx" />
+    <Content Include="Paginas\Oportunidades\ClienteBuscaHandler.ashx" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -350,6 +362,41 @@
     <Compile Include="Controls\Paginacao.ascx.designer.cs">
       <DependentUpon>Paginacao.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Paginas\Atividades\Agenda.aspx.cs">
+      <DependentUpon>Agenda.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Atividades\Agenda.aspx.designer.cs">
+      <DependentUpon>Agenda.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Atividades\AtividadeEditar.aspx.cs">
+      <DependentUpon>AtividadeEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Atividades\AtividadeEditar.aspx.designer.cs">
+      <DependentUpon>AtividadeEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Atividades\AtividadesLista.aspx.cs">
+      <DependentUpon>AtividadesLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Atividades\AtividadesLista.aspx.designer.cs">
+      <DependentUpon>AtividadesLista.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Atividades\TarefaEditar.aspx.cs">
+      <DependentUpon>TarefaEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Atividades\TarefaEditar.aspx.designer.cs">
+      <DependentUpon>TarefaEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Atividades\TarefasLista.aspx.cs">
+      <DependentUpon>TarefasLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Atividades\TarefasLista.aspx.designer.cs">
+      <DependentUpon>TarefasLista.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Paginas\Catalogo\CategoriasLista.aspx.cs">
       <DependentUpon>CategoriasLista.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -371,12 +418,33 @@
     <Compile Include="Paginas\Catalogo\ProdutosLista.aspx.designer.cs">
       <DependentUpon>ProdutosLista.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Paginas\Catalogo\PropostaDetalhe.aspx.cs">
+      <DependentUpon>PropostaDetalhe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\PropostaDetalhe.aspx.designer.cs">
+      <DependentUpon>PropostaDetalhe.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Paginas\Catalogo\PropostaEditar.aspx.cs">
       <DependentUpon>PropostaEditar.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Paginas\Catalogo\PropostaEditar.aspx.designer.cs">
       <DependentUpon>PropostaEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\PropostaEnviar.aspx.cs">
+      <DependentUpon>PropostaEnviar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\PropostaEnviar.aspx.designer.cs">
+      <DependentUpon>PropostaEnviar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\PropostaPDF.aspx.cs">
+      <DependentUpon>PropostaPDF.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Catalogo\PropostaPDF.aspx.designer.cs">
+      <DependentUpon>PropostaPDF.aspx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\Catalogo\PropostasLista.aspx.cs">
       <DependentUpon>PropostasLista.aspx</DependentUpon>
@@ -494,8 +562,32 @@
     <Compile Include="Paginas\Leads\LeadsLista.aspx.designer.cs">
       <DependentUpon>LeadsLista.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Paginas\Oportunidades\ClienteBuscaHandler.ashx.cs">
+      <DependentUpon>ClienteBuscaHandler.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Paginas\Oportunidades\MudarFaseHandler.ashx.cs">
       <DependentUpon>MudarFaseHandler.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\OportunidadeDetalhe.aspx.cs">
+      <DependentUpon>OportunidadeDetalhe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\OportunidadeDetalhe.aspx.designer.cs">
+      <DependentUpon>OportunidadeDetalhe.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\OportunidadeEditar.aspx.cs">
+      <DependentUpon>OportunidadeEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\OportunidadeEditar.aspx.designer.cs">
+      <DependentUpon>OportunidadeEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\OportunidadeFechar.aspx.cs">
+      <DependentUpon>OportunidadeFechar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Oportunidades\OportunidadeFechar.aspx.designer.cs">
+      <DependentUpon>OportunidadeFechar.aspx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\Oportunidades\OportunidadesLista.aspx.cs">
       <DependentUpon>OportunidadesLista.aspx</DependentUpon>

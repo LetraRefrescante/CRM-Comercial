@@ -7,6 +7,7 @@ namespace CRM.Services
     public class PriceTableService
     {
         private readonly PriceTableRepository _priceTableRepository = new PriceTableRepository();
+        private readonly AuditService _auditService = new AuditService();
 
         public bool PodeGerir(string perfil) => perfil == "Administrador" || perfil == "Diretor";
 
@@ -33,12 +34,24 @@ namespace CRM.Services
 
         public bool ExisteNome(string name, int? ignorarPriceTableId = null) => _priceTableRepository.ExisteNome(name, ignorarPriceTableId);
 
-        public int Criar(PriceTable priceTable) => _priceTableRepository.Criar(priceTable);
+        public int Criar(PriceTable priceTable)
+        {
+            var id = _priceTableRepository.Criar(priceTable);
 
-        public void Atualizar(PriceTable priceTable) => _priceTableRepository.Atualizar(priceTable);
+            _auditService.Registar(priceTable.CreatedBy, "Create", "PriceTable", id.ToString(),
+                $"Tabela de preços '{priceTable.Name}' criada.");
 
-        // Regra: a tabela predefinida tem de estar sempre ativa — não pode ser desativada
-        // sem antes definires outra como predefinida.
+            return id;
+        }
+
+        public void Atualizar(PriceTable priceTable)
+        {
+            _priceTableRepository.Atualizar(priceTable);
+
+            _auditService.Registar(priceTable.UpdatedBy, "Update", "PriceTable", priceTable.PriceTableId.ToString(),
+                $"Tabela de preços '{priceTable.Name}' atualizada.");
+        }
+
         public bool AlternarEstado(int priceTableId, int alteradoPor)
         {
             var priceTable = _priceTableRepository.GetById(priceTableId);
@@ -47,6 +60,10 @@ namespace CRM.Services
             if (priceTable.IsActive && priceTable.IsDefault) return false;
 
             _priceTableRepository.AlternarEstado(priceTableId, alteradoPor);
+
+            _auditService.Registar(alteradoPor, priceTable.IsActive ? "Deactivate" : "Activate", "PriceTable", priceTableId.ToString(),
+                $"Tabela de preços '{priceTable.Name}' {(priceTable.IsActive ? "desativada" : "ativada")}.");
+
             return true;
         }
     }

@@ -13,6 +13,9 @@ namespace CRM.Services
         private readonly PaymentRepository _paymentRepository = new PaymentRepository();
         private readonly TaxRateRepository _taxRateRepository = new TaxRateRepository();
         private readonly AuditService _auditService = new AuditService();
+        private readonly PermissionService _permissionService = new PermissionService();
+
+        private const string Modulo = "Vendas";
 
         public const string StatusPendente = "Pendente";
         public const string StatusConfirmada = "Confirmada";
@@ -23,27 +26,31 @@ namespace CRM.Services
         public const string OrigemProposta = "Proposta";
         public const string OrigemManual = "Manual";
 
-        // ===================== Permissões (matriz do blueprint) =====================
+        // ===================== Permissões (agora tabela Permissions/RolePermissions) =====================
 
-        public bool TemAmbitoProprios(string perfil) => perfil == "Comercial";
+        public bool TemAmbitoProprios(string perfil) =>
+            _permissionService.ObterNivel(perfil, Modulo) == NivelAcesso.Proprios;
 
         public bool PodeCriarOuEditar(string perfil) =>
-            perfil == "Administrador" || perfil == "Financeiro" || perfil == "Comercial";
+            _permissionService.ObterNivel(perfil, Modulo) >= NivelAcesso.Proprios;
 
         public bool PodeAceder(Sale sale, int userId, string perfil)
         {
             if (sale == null) return false;
-            if (!TemAmbitoProprios(perfil)) return true;
+            if (!TemAmbitoProprios(perfil)) return _permissionService.ObterNivel(perfil, Modulo) >= NivelAcesso.Consulta;
             return EhDono(sale, userId);
         }
+
         public bool PodeEliminar(string perfil) =>
-            perfil == "Administrador" || perfil == "Financeiro";
+            _permissionService.ObterNivel(perfil, Modulo) == NivelAcesso.Total;
 
         public bool PodeCancelar(Sale sale, int userId, string perfil)
         {
             if (sale.Status == StatusCancelada) return false;
-            if (perfil == "Administrador" || perfil == "Financeiro") return true;
-            if (perfil == "Comercial") return EhDono(sale, userId);
+
+            var nivel = _permissionService.ObterNivel(perfil, Modulo);
+            if (nivel == NivelAcesso.Total) return true;
+            if (nivel == NivelAcesso.Proprios) return EhDono(sale, userId);
             return false;
         }
 
@@ -166,6 +173,8 @@ namespace CRM.Services
 
         public Sale GetById(int saleId) => _saleRepository.GetById(saleId);
 
+        public bool ExisteVendaParaProposta(int proposalId) => _saleRepository.ExisteVendaParaProposta(proposalId);
+
         public List<Sale> Listar(
             string pesquisa, string status, int? clientId, int? ownerId,
             DateTime? dataInicio, DateTime? dataFim,
@@ -241,11 +250,12 @@ namespace CRM.Services
         {
             var sale = _saleRepository.GetById(saleId);
             if (sale == null || sale.Status == StatusCancelada) return;
+            if (sale.Status == StatusPendente) return;
 
             decimal totalPago = _paymentRepository.TotalPagoPorVenda(saleId);
 
             string novoStatus =
-                totalPago <= 0 ? sale.Status :
+                totalPago <= 0 ? StatusConfirmada :
                 totalPago >= sale.Total ? StatusConcluida :
                 StatusParcial;
 

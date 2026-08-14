@@ -190,7 +190,7 @@ namespace CRM.Web.Paginas.Leads
                 return;
             }
 
-            _activityService.Criar(atividade);
+            _activityService.Criar(atividade, UserId, Perfil);
             NotificacaoService.Sucesso("Atividade registada.");
 
             txtAssunto.Text = "";

@@ -21,16 +21,11 @@ namespace CRM.Web.Paginas.Catalogo
                 return null;
             }
         }
+
         protected string NomeTabela
         {
-            get
-            {
-                return ViewState["NomeTabela"] as string ?? "Preços da Tabela";
-            }
-            set
-            {
-                ViewState["NomeTabela"] = value;
-            }
+            get { return ViewState["NomeTabela"] as string ?? "Preços da Tabela"; }
+            set { ViewState["NomeTabela"] = value; }
         }
 
         private int? PriceTableItemIdEmEdicao
@@ -190,7 +185,7 @@ namespace CRM.Web.Paginas.Catalogo
 
             if (e.CommandName == "Remover")
             {
-                _priceTableItemService.Eliminar(priceTableItemId);
+                _priceTableItemService.Eliminar(priceTableItemId, UserId);
                 NotificacaoService.Sucesso("Preço removido.");
                 CarregarItens();
             }

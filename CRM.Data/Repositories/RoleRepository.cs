@@ -27,5 +27,15 @@ namespace CRM.Data.Repositories
                     .SingleOrDefault();
             }
         }
+
+        public Role ObterPorNome(string nome)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Roles
+                    .Where(r => r.Name == nome && !r.IsDeleted)
+                    .SingleOrDefault();
+            }
+        }
     }
 }

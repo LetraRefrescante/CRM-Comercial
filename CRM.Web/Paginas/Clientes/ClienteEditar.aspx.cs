@@ -37,8 +37,6 @@ namespace CRM.Web.Paginas.Clientes
 
             if (!IsPostBack)
             {
-                CarregarListas();
-
                 if (ClientId.HasValue)
                 {
                     litTitulo.Text = "Editar Cliente";
@@ -47,13 +45,14 @@ namespace CRM.Web.Paginas.Clientes
                 }
                 else
                 {
+                    CarregarListas();
                     litTitulo.Text = "Novo Cliente";
                     litTituloBreadcrumb.Text = "Novo";
                 }
             }
         }
 
-        private void CarregarListas()
+        private void CarregarListas(int? countryIdAtual = null, int? sectorIdAtual = null, int? accountManagerIdAtual = null)
         {
             using (var context = new CrmDbContext())
             {
@@ -62,20 +61,35 @@ namespace CRM.Web.Paginas.Clientes
                 ddlPais.DataValueField = "CountryId";
                 ddlPais.DataBind();
 
+                if (countryIdAtual.HasValue && ddlPais.Items.FindByValue(countryIdAtual.Value.ToString()) == null)
+                {
+                    var pais = context.Countries.Find(countryIdAtual.Value);
+                    if (pais != null) ddlPais.Items.Add(new ListItem($"{pais.Name} (inativo)", pais.CountryId.ToString()));
+                }
+
                 ddlSetor.Items.Add(new ListItem("(Sem setor)", ""));
-                var setores = context.Sectors.Where(s => s.IsActive).OrderBy(s => s.Name).ToList();
-                foreach (var setor in setores)
+                foreach (var setor in context.Sectors.Where(s => s.IsActive).OrderBy(s => s.Name).ToList())
                 {
                     ddlSetor.Items.Add(new ListItem(setor.Name, setor.SectorId.ToString()));
                 }
+
+                if (sectorIdAtual.HasValue && ddlSetor.Items.FindByValue(sectorIdAtual.Value.ToString()) == null)
+                {
+                    var setor = context.Sectors.Find(sectorIdAtual.Value);
+                    if (setor != null) ddlSetor.Items.Add(new ListItem($"{setor.Name} (inativo)", setor.SectorId.ToString()));
+                }
             }
 
-            // Regra da blueprint: "Comercial Responsável ... Utilizador ativo com perfil comercial"
             ddlComercial.Items.Add(new ListItem("-- Selecionar --", ""));
-            var comerciais = _userRepository.ListarComerciaisAtivos();
-            foreach (var user in comerciais)
+            foreach (var user in _userRepository.ListarComerciaisAtivos())
             {
                 ddlComercial.Items.Add(new ListItem(user.Name, user.UserId.ToString()));
+            }
+
+            if (accountManagerIdAtual.HasValue && ddlComercial.Items.FindByValue(accountManagerIdAtual.Value.ToString()) == null)
+            {
+                var user = _userRepository.GetById(accountManagerIdAtual.Value);
+                if (user != null) ddlComercial.Items.Add(new ListItem($"{user.Name} (inativo)", user.UserId.ToString()));
             }
         }
 
@@ -95,6 +109,8 @@ namespace CRM.Web.Paginas.Clientes
                 Response.Redirect("~/Clientes/ClienteLista.aspx");
                 return;
             }
+
+            CarregarListas(client.CountryId, client.SectorId, client.AccountManagerId);
 
             ViewState["RowVersion"] = Convert.ToBase64String(client.RowVersion);
 
@@ -186,12 +202,12 @@ namespace CRM.Web.Paginas.Clientes
                 {
                     client.ClientId = ClientId.Value;
                     client.RowVersion = Convert.FromBase64String(ViewState["RowVersion"] as string ?? "");
-                    resultado = _clientService.Atualizar(client, Perfil);
+                    resultado = _clientService.Atualizar(client, Perfil, UserId);
                 }
                 else
                 {
                     client.CreatedBy = UserId;
-                    resultado = _clientService.Criar(client, Perfil);
+                    resultado = _clientService.Criar(client, Perfil, UserId);
                 }
             }
             catch (DbUpdateConcurrencyException)

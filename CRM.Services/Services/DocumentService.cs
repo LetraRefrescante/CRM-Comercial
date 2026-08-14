@@ -21,13 +21,16 @@ namespace CRM.Services
 
         public bool TamanhoPermitido(long fileSizeBytes) => fileSizeBytes <= TamanhoMaximoBytes;
 
-        // Só "Client" está ligado a uma entidade real por agora.
         public List<Document> Listar(string entityType, int entityId)
         {
             switch (entityType)
             {
                 case "Client":
                     return _documentRepository.ListarPorCliente(entityId);
+                case "Sale":
+                    return _documentRepository.ListarPorVenda(entityId);
+                case "Proposal":
+                    return _documentRepository.ListarPorProposta(entityId);
                 default:
                     throw new NotSupportedException($"Tipo de entidade '{entityType}' ainda não suportado em Documentos.");
             }
@@ -52,6 +55,12 @@ namespace CRM.Services
             {
                 case "Client":
                     document.RelatedClientId = entityId;
+                    break;
+                case "Sale":
+                    document.RelatedSaleId = entityId;
+                    break;
+                case "Proposal":
+                    document.RelatedProposalId = entityId;
                     break;
                 default:
                     throw new NotSupportedException($"Tipo de entidade '{entityType}' ainda não suportado em Documentos.");

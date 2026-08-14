@@ -7,6 +7,8 @@ namespace CRM.Services
     public class CategoryService
     {
         private readonly CategoryRepository _categoryRepository = new CategoryRepository();
+        private readonly AuditService _auditService = new AuditService();
+
         public bool PodeGerir(string perfil) => perfil == "Administrador" || perfil == "Diretor";
 
         public List<string> Validar(Category category, bool nomeJaExiste)
@@ -32,10 +34,30 @@ namespace CRM.Services
 
         public bool ExisteNome(string name, int? ignorarCategoryId = null) => _categoryRepository.ExisteNome(name, ignorarCategoryId);
 
-        public int Criar(Category category) => _categoryRepository.Criar(category);
+        public int Criar(Category category)
+        {
+            int categoryId = _categoryRepository.Criar(category);
 
-        public void Atualizar(Category category) => _categoryRepository.Atualizar(category);
+            _auditService.Registar(category.CreatedBy, "Criar", "Category", categoryId.ToString(),
+                $"Categoria '{category.Name}' criada.");
 
-        public void AlternarEstado(int categoryId, int alteradoPor) => _categoryRepository.AlternarEstado(categoryId, alteradoPor);
+            return categoryId;
+        }
+
+        public void Atualizar(Category category)
+        {
+            _categoryRepository.Atualizar(category);
+
+            _auditService.Registar(category.UpdatedBy, "Atualizar", "Category", category.CategoryId.ToString(),
+                $"Categoria '{category.Name}' atualizada.");
+        }
+
+        public void AlternarEstado(int categoryId, int alteradoPor)
+        {
+            _categoryRepository.AlternarEstado(categoryId, alteradoPor);
+
+            _auditService.Registar(alteradoPor, "AlternarEstado", "Category", categoryId.ToString(),
+                "Estado da categoria alternado (ativa/inativa).");
+        }
     }
 }

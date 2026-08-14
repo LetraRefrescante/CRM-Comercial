@@ -17,39 +17,31 @@ namespace CRM.Services
         private readonly ClientRepository _clientRepository = new ClientRepository();
         private readonly CountryRepository _countryRepository = new CountryRepository();
         private readonly AuditService _auditService = new AuditService();
+        private readonly PermissionService _permissionService = new PermissionService();
 
-        public bool TemAmbitoProprios(string perfil) => perfil == "Comercial";
+        private const string Modulo = "Clientes";
+
+        public bool TemAmbitoProprios(string perfil) =>
+            _permissionService.ObterNivel(perfil, Modulo) == NivelAcesso.Proprios;
 
         public bool PodeCriarOuEditar(string perfil) =>
-            perfil == "Administrador" || perfil == "Diretor" || perfil == "Comercial";
+            _permissionService.ObterNivel(perfil, Modulo) >= NivelAcesso.Proprios;
 
         public bool PodeEliminar(string perfil) =>
-            perfil == "Administrador" || perfil == "Diretor";
+            _permissionService.ObterNivel(perfil, Modulo) == NivelAcesso.Total;
 
-        /// <summary>
-        /// Determina se o país indicado é Portugal, pelo IsoCode "PT" da tabela Countries.
-        /// </summary>
         public bool PaisEhPortugal(int countryId) => _countryRepository.EhPortugal(countryId);
 
-        /// <summary>
-        /// Valida o NIF. Fora de Portugal a blueprint não define regra de formato,
-        /// por isso só se aplica o algoritmo de dígito de controlo quando país == PT.
-        /// </summary>
         public bool NifValido(string nif, bool paisEhPortugal)
         {
             if (!paisEhPortugal) return true;
-
             if (string.IsNullOrWhiteSpace(nif)) return false;
-
             nif = nif.Trim();
-
             if (!Regex.IsMatch(nif, @"^\d{9}$")) return false;
 
             int soma = 0;
             for (int i = 0; i < 8; i++)
-            {
                 soma += (nif[i] - '0') * (9 - i);
-            }
 
             int resto = soma % 11;
             int digitoControlo = resto < 2 ? 0 : 11 - resto;
@@ -57,13 +49,9 @@ namespace CRM.Services
             return digitoControlo == (nif[8] - '0');
         }
 
-        /// <summary>
-        /// Telefone é opcional em ambos os pontos de entrada — vazio é sempre válido.
-        /// </summary>
         public bool TelefoneValido(string telefone, bool paisEhPortugal)
         {
             if (string.IsNullOrWhiteSpace(telefone)) return true;
-
             telefone = telefone.Trim();
 
             return paisEhPortugal
@@ -71,23 +59,21 @@ namespace CRM.Services
                 : Regex.IsMatch(telefone, @"^\+?[\d\s\-]{7,20}$");
         }
 
-        /// <summary>
-        /// Código postal é opcional; formato só é imposto para Portugal (1234-567).
-        /// A blueprint pede "formato por país" mas ainda não há regras definidas para
-        /// outros países, por isso qualquer valor é aceite fora de PT.
-        /// </summary>
         public bool CodigoPostalValido(string codigoPostal, bool paisEhPortugal)
         {
             if (string.IsNullOrWhiteSpace(codigoPostal)) return true;
-
             if (!paisEhPortugal) return true;
-
             return Regex.IsMatch(codigoPostal.Trim(), @"^\d{4}-\d{3}$");
         }
 
-        public ResultadoGuardarCliente Criar(Client client, string perfil)
+        public ResultadoGuardarCliente Criar(Client client, string perfil, int userId)
         {
             if (!PodeCriarOuEditar(perfil))
+                return ResultadoGuardarCliente.SemPermissao;
+
+            // Um Comercial (âmbito "próprios") só pode criar clientes atribuídos a si mesmo —
+            // não pode, por exemplo, criar um cliente e atribuí-lo a um colega.
+            if (TemAmbitoProprios(perfil) && client.AccountManagerId != userId)
                 return ResultadoGuardarCliente.SemPermissao;
 
             if (_clientRepository.NifAtivoExiste(client.VatNumber))
@@ -102,10 +88,19 @@ namespace CRM.Services
             return ResultadoGuardarCliente.Sucesso;
         }
 
-        public ResultadoGuardarCliente Atualizar(Client client, string perfil)
+        public ResultadoGuardarCliente Atualizar(Client client, string perfil, int userId)
         {
             if (!PodeCriarOuEditar(perfil))
                 return ResultadoGuardarCliente.SemPermissao;
+
+            // Um Comercial só pode editar clientes que já são seus — impede editar o cliente
+            // de um colega mesmo sabendo o ClientId (ex: alterando o Id na URL).
+            if (TemAmbitoProprios(perfil))
+            {
+                var existente = _clientRepository.GetById(client.ClientId);
+                if (existente == null || existente.AccountManagerId != userId)
+                    return ResultadoGuardarCliente.SemPermissao;
+            }
 
             if (_clientRepository.NifAtivoExiste(client.VatNumber, client.ClientId))
                 return ResultadoGuardarCliente.NifDuplicado;

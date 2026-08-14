@@ -22,6 +22,16 @@ namespace CRM.Data.Repositories
                     .SingleOrDefault();
             }
         }
+        public List<Lead> ListarParaSelecao()
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Leads
+                    .Where(l => !l.IsDeleted && l.Status != "Convertido")
+                    .OrderBy(l => l.Name)
+                    .ToList();
+            }
+        }
 
         public List<Lead> Listar(
             string pesquisa,

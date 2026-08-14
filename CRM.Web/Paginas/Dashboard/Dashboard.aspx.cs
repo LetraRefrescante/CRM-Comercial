@@ -2,11 +2,11 @@
 
 namespace CRM.Web.Paginas.Dashboard
 {
-    public partial class Dashboard : System.Web.UI.Page
+    public partial class Dashboard : PaginaBase
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            litNomeUtilizador.Text = Server.HtmlEncode(Session["UserName"] as string ?? "");
+            litNomeUtilizador.Text = Server.HtmlEncode(Session["UserName"] as string ?? Perfil);
         }
     }
 }

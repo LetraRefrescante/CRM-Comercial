@@ -45,6 +45,7 @@
     <Compile Include="DTOs\LeadConversionRequest.cs" />
     <Compile Include="DTOs\LeadConversionResult.cs" />
     <Compile Include="Entities\Atividades\Activity.cs" />
+    <Compile Include="Entities\Atividades\TaskItem.cs" />
     <Compile Include="Entities\Catalogo\Category.cs" />
     <Compile Include="Entities\Catalogo\PriceTable.cs" />
     <Compile Include="Entities\Catalogo\PriceTableItem.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Entities\ListasAuxiliares\OpportunityStage.cs" />
     <Compile Include="Entities\ListasAuxiliares\PaymentTerm.cs" />
     <Compile Include="Entities\ListasAuxiliares\Sector.cs" />
+    <Compile Include="Entities\ListasAuxiliares\Settings.cs" />
     <Compile Include="Entities\Oportunidades\Opportunity.cs" />
     <Compile Include="Entities\Oportunidades\OpportunityStageHistory.cs" />
     <Compile Include="Entities\Seguranca\AuditLog.cs" />
@@ -75,6 +77,8 @@
     <Compile Include="Entities\Vendas\Payment.cs" />
     <Compile Include="Entities\Vendas\Sale.cs" />
     <Compile Include="Entities\Vendas\SaleLine.cs" />
+    <Compile Include="Filtros\ActivityFiltro.cs" />
+    <Compile Include="Filtros\TaskFiltro.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

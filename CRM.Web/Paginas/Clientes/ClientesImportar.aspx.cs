@@ -81,7 +81,7 @@ namespace CRM.Web.Paginas.Clientes
                     try
                     {
                         var client = ConstruirClientDoCsv(campos);
-                        var resultado = _clientService.Criar(client, Perfil);
+                        var resultado = _clientService.Criar(client, Perfil, UserId);
 
                         switch (resultado)
                         {

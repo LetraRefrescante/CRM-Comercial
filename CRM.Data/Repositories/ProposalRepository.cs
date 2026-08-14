@@ -52,6 +52,18 @@ namespace CRM.Data.Repositories
             }
         }
 
+        public List<Proposal> ListarPorOportunidade(int opportunityId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Proposals
+                    .Where(p => !p.IsDeleted && p.OpportunityId == opportunityId)
+                    .OrderByDescending(p => p.IssueDate)
+                    .ThenByDescending(p => p.VersionNumber)
+                    .ToList();
+            }
+        }
+
         private IQueryable<Proposal> ConstruirQuery(
             CrmDbContext context,
             string pesquisa,
@@ -254,6 +266,113 @@ namespace CRM.Data.Repositories
                 context.Proposals.Add(novaVersao);
                 context.SaveChanges();
                 return novaVersao;
+            }
+        }
+
+        // ===================== Versões =====================
+
+        public List<Proposal> ListarVersoes(int proposalId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                var atual = context.Proposals.SingleOrDefault(p => p.ProposalId == proposalId && !p.IsDeleted);
+                if (atual == null) return new List<Proposal>();
+
+                int raizId = atual.ParentProposalId ?? atual.ProposalId;
+
+                return context.Proposals
+                    .Where(p => !p.IsDeleted && (p.ProposalId == raizId || p.ParentProposalId == raizId))
+                    .OrderBy(p => p.VersionNumber)
+                    .ToList();
+            }
+        }
+
+        // ===================== Envio / Aceitação / Recusa / Expiração =====================
+
+        public void RegistarEnvio(int proposalId, string sentToEmail, int userId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                var proposal = context.Proposals.Find(proposalId);
+                if (proposal == null) return;
+
+                proposal.Status = "Enviada";
+                proposal.SentDate = DateTime.UtcNow;
+                proposal.SentToEmail = sentToEmail;
+                proposal.UpdatedDate = DateTime.UtcNow;
+                proposal.UpdatedBy = userId;
+
+                context.SaveChanges();
+            }
+        }
+
+        public void RegistarAceitacao(int proposalId, int acceptedByUserId, string acceptanceNotes)
+        {
+            using (var context = new CrmDbContext())
+            {
+                var proposal = context.Proposals.Find(proposalId);
+                if (proposal == null) return;
+
+                proposal.Status = "Aceite";
+                proposal.AcceptedDate = DateTime.UtcNow;
+                proposal.AcceptedByUserId = acceptedByUserId;
+                proposal.AcceptanceNotes = acceptanceNotes;
+                proposal.UpdatedDate = DateTime.UtcNow;
+                proposal.UpdatedBy = acceptedByUserId;
+
+                context.SaveChanges();
+            }
+        }
+
+        public void AtualizarStatus(int proposalId, string novoStatus, int userId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                var proposal = context.Proposals.Find(proposalId);
+                if (proposal == null) return;
+
+                proposal.Status = novoStatus;
+                proposal.UpdatedDate = DateTime.UtcNow;
+                proposal.UpdatedBy = userId;
+
+                context.SaveChanges();
+            }
+        }
+        public List<Proposal> ListarAceitesPorCliente(int clientId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Proposals
+                    .Where(p =>
+                        !p.IsDeleted &&
+                        p.ClientId == clientId &&
+                        p.Status == "Aceite")
+                    .OrderByDescending(p => p.IssueDate)
+                    .ThenByDescending(p => p.ProposalId)
+                    .ToList();
+            }
+        }
+
+        // Regra: "Propostas expiradas são detetadas diariamente ou ao abrir listagem".
+        // Chamado a partir de PropostasLista.aspx.cs antes de listar.
+        public int MarcarExpiradas()
+        {
+            using (var context = new CrmDbContext())
+            {
+                var hoje = DateTime.Today;
+
+                var propostas = context.Proposals
+                    .Where(p => !p.IsDeleted && p.Status == "Enviada" && p.ValidUntil < hoje)
+                    .ToList();
+
+                foreach (var proposal in propostas)
+                {
+                    proposal.Status = "Expirada";
+                    proposal.UpdatedDate = DateTime.UtcNow;
+                }
+
+                context.SaveChanges();
+                return propostas.Count;
             }
         }
 

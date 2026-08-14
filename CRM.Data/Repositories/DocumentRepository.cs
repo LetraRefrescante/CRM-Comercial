@@ -19,6 +19,28 @@ namespace CRM.Data.Repositories
             }
         }
 
+        public List<Document> ListarPorVenda(int saleId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Documents
+                    .Where(d => d.RelatedSaleId == saleId && !d.IsDeleted)
+                    .OrderByDescending(d => d.CreatedDate)
+                    .ToList();
+            }
+        }
+
+        public List<Document> ListarPorProposta(int proposalId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Documents
+                    .Where(d => d.RelatedProposalId == proposalId && !d.IsDeleted)
+                    .OrderByDescending(d => d.CreatedDate)
+                    .ToList();
+            }
+        }
+
         public Document GetById(int documentId)
         {
             using (var context = new CrmDbContext())

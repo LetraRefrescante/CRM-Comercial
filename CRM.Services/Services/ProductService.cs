@@ -8,6 +8,7 @@ namespace CRM.Services
     public class ProductService
     {
         private readonly ProductRepository _productRepository = new ProductRepository();
+        private readonly AuditService _auditService = new AuditService();
 
         public const string TipoProduto = "Produto";
         public const string TipoServico = "Serviço";
@@ -55,15 +56,33 @@ namespace CRM.Services
 
         public bool ExisteCodigo(string code, int? ignorarProductId = null) => _productRepository.ExisteCodigo(code, ignorarProductId);
 
-        public int Criar(Product product) => _productRepository.Criar(product);
+        public int Criar(Product product)
+        {
+            int productId = _productRepository.Criar(product);
 
-        public void Atualizar(Product product) => _productRepository.Atualizar(product);
+            _auditService.Registar(product.CreatedBy, "Criar", "Product", productId.ToString(),
+                $"Produto '{product.Name}' (código {product.Code}) criado.");
+
+            return productId;
+        }
+
+        public void Atualizar(Product product)
+        {
+            _productRepository.Atualizar(product);
+
+            _auditService.Registar(product.UpdatedBy, "Atualizar", "Product", product.ProductId.ToString(),
+                $"Produto '{product.Name}' atualizado.");
+        }
 
         public bool Eliminar(int productId, int userId, string perfil)
         {
             if (!PodeGerir(perfil)) return false;
 
             _productRepository.EliminarLogico(productId, userId);
+
+            _auditService.Registar(userId, "Eliminar", "Product", productId.ToString(),
+                "Produto eliminado (soft delete + inativado).");
+
             return true;
         }
     }

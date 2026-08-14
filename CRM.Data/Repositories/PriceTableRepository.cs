@@ -89,6 +89,13 @@ namespace CRM.Data.Repositories
 
                 priceTable.Name = priceTableAtualizada.Name;
                 priceTable.IsDefault = priceTableAtualizada.IsDefault;
+
+                // Regra: a tabela predefinida tem de estar sempre ativa.
+                if (priceTableAtualizada.IsDefault)
+                {
+                    priceTable.IsActive = true;
+                }
+
                 priceTable.UpdatedDate = DateTime.UtcNow;
                 priceTable.UpdatedBy = priceTableAtualizada.UpdatedBy;
 

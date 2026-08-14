@@ -27,6 +27,9 @@ namespace CRM.Web.Paginas.Catalogo
         {
             if (!IsPostBack)
             {
+                // Regra: "Propostas expiradas são detetadas diariamente ou ao abrir listagem".
+                _proposalService.MarcarExpiradas(UserId);
+
                 CarregarComerciais();
                 CarregarPropostas();
             }

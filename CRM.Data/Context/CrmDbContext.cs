@@ -23,6 +23,7 @@ namespace CRM.Data.Context
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+        public DbSet<Settings> Settings { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Sector> Sectors { get; set; }
         public DbSet<PaymentTerm> PaymentTerms { get; set; }
@@ -50,6 +51,7 @@ namespace CRM.Data.Context
 
         // Atividades
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<TaskItem> Tasks { get; set; }
 
         // Oportunidades
         public DbSet<Opportunity> Opportunities { get; set; }

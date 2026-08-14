@@ -10,6 +10,9 @@ namespace CRM.Services
     {
         private readonly LeadRepository _leadRepository = new LeadRepository();
         private readonly AuditService _auditService = new AuditService();
+        private readonly PermissionService _permissionService = new PermissionService();
+
+        private const string Modulo = "Leads";
 
         public const string StatusNovo = "Novo";
         public const string StatusEmContacto = "Em Contacto";
@@ -19,16 +22,19 @@ namespace CRM.Services
 
         private static readonly string[] EstadosAtivos = { StatusNovo, StatusEmContacto, StatusQualificado };
 
-        public bool TemAmbitoProprios(string perfil) => perfil == "Comercial";
+        // ===================== Permissões (tabela Permissions/RolePermissions) =====================
+
+        public bool TemAmbitoProprios(string perfil) =>
+            _permissionService.ObterNivel(perfil, Modulo) == NivelAcesso.Proprios;
 
         public bool PodeCriarOuEditar(string perfil) =>
-            perfil == "Administrador" || perfil == "Diretor" || perfil == "Comercial";
+            _permissionService.ObterNivel(perfil, Modulo) >= NivelAcesso.Proprios;
 
         public bool PodeEliminar(string perfil) =>
-            perfil == "Administrador" || perfil == "Diretor";
+            _permissionService.ObterNivel(perfil, Modulo) == NivelAcesso.Total;
 
         public bool PodeConverter(string perfil) =>
-            perfil == "Administrador" || perfil == "Diretor" || perfil == "Comercial";
+            _permissionService.ObterNivel(perfil, Modulo) >= NivelAcesso.Proprios;
 
         public List<string> Validar(Lead lead)
         {
