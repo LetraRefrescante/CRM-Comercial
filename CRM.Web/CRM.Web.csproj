@@ -178,6 +178,8 @@
     <Content Include="Paginas\Oportunidades\OportunidadeFechar.aspx" />
     <Content Include="Paginas\Oportunidades\OportunidadesLista.aspx" />
     <Content Include="Paginas\Oportunidades\Pipeline.aspx" />
+    <Content Include="Paginas\Vendas\Pagamentos.aspx" />
+    <Content Include="Paginas\Vendas\VendaDetalhe.aspx" />
     <Content Include="Paginas\Vendas\VendaEditar.aspx" />
     <Content Include="Paginas\Vendas\VendasLista.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
@@ -605,6 +607,20 @@
     </Compile>
     <Compile Include="Paginas\PaginaBase.cs">
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Vendas\Pagamentos.aspx.cs">
+      <DependentUpon>Pagamentos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Vendas\Pagamentos.aspx.designer.cs">
+      <DependentUpon>Pagamentos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Vendas\VendaDetalhe.aspx.cs">
+      <DependentUpon>VendaDetalhe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Vendas\VendaDetalhe.aspx.designer.cs">
+      <DependentUpon>VendaDetalhe.aspx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\Vendas\VendaEditar.aspx.cs">
       <DependentUpon>VendaEditar.aspx</DependentUpon>

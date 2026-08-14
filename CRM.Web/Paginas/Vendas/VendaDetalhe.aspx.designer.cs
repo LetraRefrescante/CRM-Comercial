@@ -7,209 +7,272 @@
 // </gerado automaticamente>
 //------------------------------------------------------------------------------
 
-namespace CRM.Web.Paginas.Catalogo
+namespace CRM.Web.Paginas.Vendas
 {
 
 
-    public partial class TabelasPreco
+    public partial class VendaDetalhe
     {
 
         /// <summary>
-        /// Controle phFormularioTabela.
+        /// Controle lblNumero.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phFormularioTabela;
+        protected global::System.Web.UI.WebControls.Label lblNumero;
 
         /// <summary>
-        /// Controle valSummaryTabela.
+        /// Controle spanStatus.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ValidationSummary valSummaryTabela;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl spanStatus;
 
         /// <summary>
-        /// Controle cvRegrasTabela.
+        /// Controle lblCliente.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator cvRegrasTabela;
+        protected global::System.Web.UI.WebControls.Label lblCliente;
 
         /// <summary>
-        /// Controle litModoEdicaoTabela.
+        /// Controle lblData.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litModoEdicaoTabela;
+        protected global::System.Web.UI.WebControls.Label lblData;
 
         /// <summary>
-        /// Controle txtNomeTabela.
+        /// Controle lblComercial.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtNomeTabela;
+        protected global::System.Web.UI.WebControls.Label lblComercial;
 
         /// <summary>
-        /// Controle chkPredefinida.
+        /// Controle lblOrigem.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chkPredefinida;
+        protected global::System.Web.UI.WebControls.Label lblOrigem;
 
         /// <summary>
-        /// Controle btnGuardarTabela.
+        /// Controle phProposta.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnGuardarTabela;
+        protected global::System.Web.UI.WebControls.PlaceHolder phProposta;
 
         /// <summary>
-        /// Controle btnCancelarTabela.
+        /// Controle lnkProposta.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCancelarTabela;
+        protected global::System.Web.UI.WebControls.HyperLink lnkProposta;
 
         /// <summary>
-        /// Controle rptTabelas.
+        /// Controle lblMetodoPagamento.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptTabelas;
+        protected global::System.Web.UI.WebControls.Label lblMetodoPagamento;
 
         /// <summary>
-        /// Controle phVazioTabelas.
+        /// Controle lblDataVencimento.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phVazioTabelas;
+        protected global::System.Web.UI.WebControls.Label lblDataVencimento;
 
         /// <summary>
-        /// Controle phItens.
+        /// Controle lblComissao.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phItens;
+        protected global::System.Web.UI.WebControls.Label lblComissao;
 
         /// <summary>
-        /// Controle litNomeTabelaItens.
+        /// Controle phMotivoCancelamento.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litNomeTabelaItens;
+        protected global::System.Web.UI.WebControls.PlaceHolder phMotivoCancelamento;
 
         /// <summary>
-        /// Controle lnkFecharItens.
+        /// Controle lblMotivoCancelamento.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton lnkFecharItens;
+        protected global::System.Web.UI.WebControls.Label lblMotivoCancelamento;
 
         /// <summary>
-        /// Controle valSummaryItem.
+        /// Controle rptLinhas.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ValidationSummary valSummaryItem;
+        protected global::System.Web.UI.WebControls.Repeater rptLinhas;
 
         /// <summary>
-        /// Controle cvRegrasItem.
+        /// Controle lblSubTotal.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator cvRegrasItem;
+        protected global::System.Web.UI.WebControls.Label lblSubTotal;
 
         /// <summary>
-        /// Controle litModoEdicaoItem.
+        /// Controle lblIvaTotal.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litModoEdicaoItem;
+        protected global::System.Web.UI.WebControls.Label lblIvaTotal;
 
         /// <summary>
-        /// Controle ucSeletorProduto.
+        /// Controle lblTotalGeral.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::CRM.Web.Controls.SeletorProduto ucSeletorProduto;
+        protected global::System.Web.UI.WebControls.Label lblTotalGeral;
 
         /// <summary>
-        /// Controle txtPrecoItem.
+        /// Controle lnkGerirPagamentos.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPrecoItem;
+        protected global::System.Web.UI.WebControls.HyperLink lnkGerirPagamentos;
 
         /// <summary>
-        /// Controle btnGuardarItem.
+        /// Controle rptPagamentos.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnGuardarItem;
+        protected global::System.Web.UI.WebControls.Repeater rptPagamentos;
 
         /// <summary>
-        /// Controle btnCancelarItem.
+        /// Controle phSemPagamentos.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCancelarItem;
+        protected global::System.Web.UI.WebControls.PlaceHolder phSemPagamentos;
 
         /// <summary>
-        /// Controle rptItens.
+        /// Controle lblTotalPago.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptItens;
+        protected global::System.Web.UI.WebControls.Label lblTotalPago;
 
         /// <summary>
-        /// Controle phVazioItens.
+        /// Controle lblSaldo.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phVazioItens;
+        protected global::System.Web.UI.WebControls.Label lblSaldo;
+
+        /// <summary>
+        /// Controle phCancelar.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phCancelar;
+
+        /// <summary>
+        /// Controle txtMotivoCancelamento.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtMotivoCancelamento;
+
+        /// <summary>
+        /// Controle btnCancelar.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnCancelar;
+
+        /// <summary>
+        /// Controle lnkEditar.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink lnkEditar;
+
+        /// <summary>
+        /// Controle btnConfirmar.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnConfirmar;
+
+        /// <summary>
+        /// Controle ucAnexos.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::CRM.Web.Controls.Anexos ucAnexos;
+
+        /// <summary>
+        /// Controle ucHistorico.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::CRM.Web.Controls.Historico ucHistorico;
     }
 }

@@ -54,8 +54,17 @@ namespace CRM.Services
             return false;
         }
 
+        // BUG #1 (corrigido): uma venda só pode receber pagamentos depois de confirmada.
+        // Antes, PodeRegistarPagamento só excluía "Cancelada", pelo que era possível
+        // registar pagamentos numa venda ainda "Pendente" — e RecalcularEstadoFinanceiro
+        // ignora vendas Pendente, por isso o Total Pago subia mas o estado ficava preso
+        // em "Pendente", um ecrã inconsistente. Agora exige-se confirmação primeiro.
         public bool PodeRegistarPagamento(Sale sale, int userId, string perfil) =>
-            sale != null && sale.Status != StatusCancelada && PodeAceder(sale, userId, perfil) && PodeCriarOuEditar(perfil);
+            sale != null
+            && sale.Status != StatusCancelada
+            && sale.Status != StatusPendente
+            && PodeAceder(sale, userId, perfil)
+            && PodeCriarOuEditar(perfil);
 
         private bool EhDono(Sale sale, int userId) => sale.OwnerId == userId;
 
@@ -250,6 +259,7 @@ namespace CRM.Services
         {
             var sale = _saleRepository.GetById(saleId);
             if (sale == null || sale.Status == StatusCancelada) return;
+
             if (sale.Status == StatusPendente) return;
 
             decimal totalPago = _paymentRepository.TotalPagoPorVenda(saleId);
