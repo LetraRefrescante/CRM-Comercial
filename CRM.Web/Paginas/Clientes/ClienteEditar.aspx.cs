@@ -134,10 +134,6 @@ namespace CRM.Web.Paginas.Clientes
             // Só para reavaliar os validators visualmente no próximo submit; não precisa de lógica.
         }
 
-        /// <summary>
-        /// Wrapper fino sobre ClientService.PaisEhPortugal — a regra de negócio (o que
-        /// conta como "Portugal") vive na camada de serviço, não aqui.
-        /// </summary>
         private bool PaisEhPortugal()
         {
             if (string.IsNullOrEmpty(ddlPais.SelectedValue)) return false;
@@ -152,8 +148,6 @@ namespace CRM.Web.Paginas.Clientes
 
         protected void cvNomeLegal_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            // Opcional (blueprint: "Não" obrigatório), mas quando preenchido não pode
-            // exceder 200 caracteres — o MaxLength do TextBox só protege no browser.
             args.IsValid = string.IsNullOrEmpty(args.Value) || args.Value.Trim().Length <= 200;
         }
 

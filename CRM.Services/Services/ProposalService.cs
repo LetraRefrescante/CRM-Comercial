@@ -14,6 +14,7 @@ namespace CRM.Services
         private readonly AuditService _auditService = new AuditService();
         private readonly ActivityService _activityService = new ActivityService();
         private readonly PermissionService _permissionService = new PermissionService();
+        private readonly ClientRepository _clientRepository = new ClientRepository();
 
         private const string Modulo = "Propostas";
 
@@ -39,15 +40,6 @@ namespace CRM.Services
             if (nivel == NivelAcesso.Proprios) return EhDono(proposal, userId);
             return false;
         }
-
-        // Valida âmbito "próprios" ao aceder a uma proposta específica por Id.
-        // ASSUNÇÃO: "próprios" segue o comercial responsável do Cliente (Client.AccountManagerId),
-        // o mesmo critério já usado no filtro de listagem (PropostasLista.aspx.cs → ObterFiltroComercial).
-        //
-        // Alterado de "return true" para "nível >= Consulta" no ramo sem âmbito próprios — mesma
-        // correção aplicada no SaleService: um perfil sem qualquer permissão de Propostas (nível
-        // Nenhum) fica corretamente bloqueado, em vez de ver tudo por omissão. Não muda o
-        // comportamento de nenhum dos 5 perfis atuais (todos têm pelo menos Consulta).
         public bool PodeAceder(Proposal proposal, int userId, string perfil)
         {
             if (proposal == null) return false;
@@ -59,8 +51,6 @@ namespace CRM.Services
             proposal?.Client != null && proposal.Client.AccountManagerId == userId;
 
         // ===================== Edição direta vs. Nova Versão =====================
-        // ASSUNÇÃO: só uma proposta em Rascunho pode ser editada diretamente.
-        // Qualquer alteração a uma proposta já Enviada/Aceite/Recusada/etc. obriga a criar nova versão.
 
         public bool PodeEditarDiretamente(Proposal proposal) => proposal.Status == StatusRascunho;
 
@@ -160,8 +150,18 @@ namespace CRM.Services
 
         // ===================== Gravação =====================
 
-        public Proposal Criar(Proposal proposal, int userId)
+        public Proposal Criar(Proposal proposal, string perfil, int userId)
         {
+            if (!PodeCriarOuEditar(perfil))
+                throw new UnauthorizedAccessException("Sem permissão para criar propostas.");
+
+            if (TemAmbitoProprios(perfil))
+            {
+                var cliente = _clientRepository.GetById(proposal.ClientId);
+                if (cliente == null || cliente.AccountManagerId != userId)
+                    throw new UnauthorizedAccessException("Só podes criar propostas para clientes atribuídos a ti.");
+            }
+
             proposal.CreatedBy = userId;
             proposal.Status = StatusRascunho;
             proposal.VersionNumber = 1;
@@ -169,12 +169,21 @@ namespace CRM.Services
             var criada = _proposalRepository.Criar(proposal);
 
             _auditService.Registar(userId, "Criar", "Proposal", criada.ProposalId.ToString());
-
             return criada;
         }
 
-        public void Atualizar(Proposal proposal, int userId)
+        public void Atualizar(Proposal proposal, string perfil, int userId)
         {
+            var existente = _proposalRepository.GetById(proposal.ProposalId);
+            if (existente == null)
+                throw new InvalidOperationException("Proposta não encontrada.");
+
+            if (!PodeCriarOuEditar(perfil) || !PodeAceder(existente, userId, perfil))
+                throw new UnauthorizedAccessException("Sem permissão para editar esta proposta.");
+
+            if (!PodeEditarDiretamente(existente))
+                throw new InvalidOperationException("Só é possível editar diretamente propostas em Rascunho.");
+
             proposal.UpdatedBy = userId;
             proposal.UpdatedDate = DateTime.UtcNow;
             CalcularTotais(proposal);
@@ -236,8 +245,6 @@ namespace CRM.Services
             _proposalRepository.RegistarEnvio(proposalId, email, userId);
             _auditService.Registar(userId, "Enviar", "Proposal", proposalId.ToString(), $"Enviada para {email}");
 
-            // Regra: "Envio por email gera atividade e guarda destinatários." O registo da
-            // atividade é suplementar — uma falha aqui não deve impedir o envio da proposta.
             try
             {
                 _activityService.Criar(new Activity
@@ -254,7 +261,7 @@ namespace CRM.Services
             }
             catch
             {
-                // Não bloqueia o envio da proposta se o registo da atividade falhar.
+
             }
 
             return true;
@@ -279,9 +286,6 @@ namespace CRM.Services
             if (!PodeAceitarOuRecusar(proposal, userId, perfil)) return false;
 
             _proposalRepository.AtualizarStatus(proposalId, StatusRecusada, userId);
-
-            // Nota: não existe coluna própria para motivo de recusa em Proposals (só existe
-            // em Oportunidades). O motivo fica registado apenas no AuditLog por agora.
             _auditService.Registar(userId, "Recusar", "Proposal", proposalId.ToString(), motivo);
 
             return true;

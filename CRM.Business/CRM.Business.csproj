@@ -69,6 +69,7 @@
     <Content Include="Database\011_Notifications_Email.sql" />
     <Content Include="Database\012_Seed_Permissions.sql" />
     <Content Include="Database\013_Create_PasswordResetTokens.sql" />
+    <Content Include="Database\014_Sales_TechnicalFields_Fix.sql" />
     <Content Include="Database\999_SeedAdminUser.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

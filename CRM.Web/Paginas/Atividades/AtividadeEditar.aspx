@@ -16,7 +16,7 @@
         <div class="row g-3">
             <div class="col-md-3">
                 <label class="form-label">Tipo *</label>
-                <asp:DropDownList ID="ddlTipo" runat="server" CssClass="form-select">
+                <asp:DropDownList ID="ddlTipo" runat="server" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlTipo_SelectedIndexChanged">
                     <asp:ListItem Text="Chamada" Value="Chamada" />
                     <asp:ListItem Text="Email" Value="Email" />
                     <asp:ListItem Text="Reunião" Value="Reunião" />
@@ -72,6 +72,56 @@
             </div>
         </div>
     </div>
+
+    <!-- ===================== Participantes (só Reunião) ===================== -->
+    <asp:Panel ID="pnlParticipantes" runat="server" CssClass="crm-card mb-3" Visible="false">
+        <h5 class="crm-card-title">Participantes</h5>
+
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small">Utilizador Interno</label>
+                <asp:DropDownList ID="ddlParticipanteInterno" runat="server" CssClass="form-select" />
+            </div>
+            <div class="col-md-1 text-center text-muted small">ou</div>
+            <div class="col-md-3">
+                <label class="form-label small">Nome Externo</label>
+                <asp:TextBox ID="txtParticipanteExternoNome" runat="server" CssClass="form-control" MaxLength="150" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Email Externo</label>
+                <asp:TextBox ID="txtParticipanteExternoEmail" runat="server" CssClass="form-control" MaxLength="150" />
+            </div>
+            <div class="col-md-1">
+                <asp:Button ID="btnAdicionarParticipante" runat="server" Text="+" CssClass="btn btn-outline-primary w-100"
+                    OnClick="btnAdicionarParticipante_Click" CausesValidation="false" ToolTip="Adicionar participante" />
+            </div>
+        </div>
+
+        <asp:Repeater ID="rptParticipantes" runat="server" OnItemCommand="rptParticipantes_ItemCommand">
+            <HeaderTemplate>
+                <ul class="list-group mt-3">
+            </HeaderTemplate>
+            <ItemTemplate>
+                <li class="list-group-item d-flex justify-content-between align-items-center py-1">
+                    <span>
+                        <i class="fas <%# ((bool)Eval("EhInterno")) ? "fa-user" : "fa-user-clock text-muted" %>"></i>
+                        <%# GetNomeParticipante(Container.DataItem) %>
+                    </span>
+                    <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-danger" CommandName="Remover"
+                        CommandArgument="<%# Container.ItemIndex %>" CausesValidation="false">
+                        <i class="fas fa-times"></i>
+                    </asp:LinkButton>
+                </li>
+            </ItemTemplate>
+            <FooterTemplate>
+                </ul>
+            </FooterTemplate>
+        </asp:Repeater>
+
+        <asp:PlaceHolder ID="phSemParticipantes" runat="server">
+            <p class="text-muted small mt-2 mb-0">Ainda sem participantes adicionados.</p>
+        </asp:PlaceHolder>
+    </asp:Panel>
 
     <div class="crm-card mb-3">
         <h5 class="crm-card-title">Relacionado Com</h5>

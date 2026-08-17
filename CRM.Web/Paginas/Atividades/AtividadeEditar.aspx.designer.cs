@@ -96,6 +96,69 @@ namespace CRM.Web.Paginas.Atividades
         protected global::System.Web.UI.WebControls.TextBox txtDescricao;
 
         /// <summary>
+        /// Controle pnlParticipantes.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlParticipantes;
+
+        /// <summary>
+        /// Controle ddlParticipanteInterno.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlParticipanteInterno;
+
+        /// <summary>
+        /// Controle txtParticipanteExternoNome.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtParticipanteExternoNome;
+
+        /// <summary>
+        /// Controle txtParticipanteExternoEmail.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtParticipanteExternoEmail;
+
+        /// <summary>
+        /// Controle btnAdicionarParticipante.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnAdicionarParticipante;
+
+        /// <summary>
+        /// Controle rptParticipantes.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptParticipantes;
+
+        /// <summary>
+        /// Controle phSemParticipantes.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phSemParticipantes;
+
+        /// <summary>
         /// Controle ddlTipoRelacao.
         /// </summary>
         /// <remarks>

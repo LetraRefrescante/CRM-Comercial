@@ -32,6 +32,15 @@ namespace CRM.Data.Repositories
             }
         }
 
+        public List<Opportunity> ListarParaSelecao()
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Opportunities.Where(o => !o.IsDeleted)
+                    .OrderByDescending(o => o.CreatedDate).ToList();
+            }
+        }
+
         public List<Opportunity> Listar(
             string pesquisa,
             int? stageId,
@@ -100,11 +109,30 @@ namespace CRM.Data.Repositories
                 context.SaveChanges();
             }
         }
-        public void Atualizar(Opportunity opportunity)
+        public void Atualizar(Opportunity opportunityAtualizada)
         {
             using (var context = new CrmDbContext())
             {
-                context.Entry(opportunity).State = EntityState.Modified;
+                var opportunity = context.Opportunities.Find(opportunityAtualizada.OpportunityId);
+                if (opportunity == null) return;
+
+                opportunity.Title = opportunityAtualizada.Title;
+                opportunity.ClientId = opportunityAtualizada.ClientId;
+                opportunity.ContactId = opportunityAtualizada.ContactId;
+                opportunity.StageId = opportunityAtualizada.StageId;
+                opportunity.EstimatedValue = opportunityAtualizada.EstimatedValue;
+                opportunity.Probability = opportunityAtualizada.Probability;
+                opportunity.ExpectedCloseDate = opportunityAtualizada.ExpectedCloseDate;
+                opportunity.OwnerId = opportunityAtualizada.OwnerId;
+                opportunity.Competitor = opportunityAtualizada.Competitor;
+                opportunity.IsClosed = opportunityAtualizada.IsClosed;
+                opportunity.ClosedDate = opportunityAtualizada.ClosedDate;
+                opportunity.LossReasonId = opportunityAtualizada.LossReasonId;
+                opportunity.UpdatedDate = opportunityAtualizada.UpdatedDate;
+                opportunity.UpdatedBy = opportunityAtualizada.UpdatedBy;
+
+                context.Entry(opportunity).OriginalValues["RowVersion"] = opportunityAtualizada.RowVersion;
+
                 context.SaveChanges();
             }
         }

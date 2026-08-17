@@ -163,6 +163,9 @@
     <Content Include="Paginas\Clientes\ContactoEditar.aspx" />
     <Content Include="Paginas\Clientes\ContactosLista.aspx" />
     <Content Include="Paginas\Dashboard\Dashboard.aspx" />
+    <Content Include="Paginas\Documentos\DocumentoDownload.aspx" />
+    <Content Include="Paginas\Documentos\DocumentoEditar.aspx" />
+    <Content Include="Paginas\Documentos\DocumentosLista.aspx" />
     <Content Include="Paginas\Erro.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -173,6 +176,10 @@
     <Content Include="Paginas\Leads\LeadDetalhe.aspx" />
     <Content Include="Paginas\Leads\LeadEditar.aspx" />
     <Content Include="Paginas\Leads\LeadsLista.aspx" />
+    <Content Include="Paginas\Notificacoes\EmailCompor.aspx" />
+    <Content Include="Paginas\Notificacoes\EmailHistorico.aspx" />
+    <Content Include="Paginas\Notificacoes\Notificacoes.aspx" />
+    <Content Include="Paginas\Notificacoes\TemplatesEmail.aspx" />
     <Content Include="Paginas\Oportunidades\OportunidadeDetalhe.aspx" />
     <Content Include="Paginas\Oportunidades\OportunidadeEditar.aspx" />
     <Content Include="Paginas\Oportunidades\OportunidadeFechar.aspx" />
@@ -504,6 +511,27 @@
     <Compile Include="Paginas\Dashboard\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Paginas\Documentos\DocumentoDownload.aspx.cs">
+      <DependentUpon>DocumentoDownload.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Documentos\DocumentoDownload.aspx.designer.cs">
+      <DependentUpon>DocumentoDownload.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Documentos\DocumentoEditar.aspx.cs">
+      <DependentUpon>DocumentoEditar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Documentos\DocumentoEditar.aspx.designer.cs">
+      <DependentUpon>DocumentoEditar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Documentos\DocumentosLista.aspx.cs">
+      <DependentUpon>DocumentosLista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Documentos\DocumentosLista.aspx.designer.cs">
+      <DependentUpon>DocumentosLista.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Paginas\Erro.aspx.cs">
       <DependentUpon>Erro.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -563,6 +591,34 @@
     </Compile>
     <Compile Include="Paginas\Leads\LeadsLista.aspx.designer.cs">
       <DependentUpon>LeadsLista.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Notificacoes\EmailCompor.aspx.cs">
+      <DependentUpon>EmailCompor.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Notificacoes\EmailCompor.aspx.designer.cs">
+      <DependentUpon>EmailCompor.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Notificacoes\EmailHistorico.aspx.cs">
+      <DependentUpon>EmailHistorico.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Notificacoes\EmailHistorico.aspx.designer.cs">
+      <DependentUpon>EmailHistorico.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Notificacoes\Notificacoes.aspx.cs">
+      <DependentUpon>Notificacoes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Notificacoes\Notificacoes.aspx.designer.cs">
+      <DependentUpon>Notificacoes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Notificacoes\TemplatesEmail.aspx.cs">
+      <DependentUpon>TemplatesEmail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Notificacoes\TemplatesEmail.aspx.designer.cs">
+      <DependentUpon>TemplatesEmail.aspx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\Oportunidades\ClienteBuscaHandler.ashx.cs">
       <DependentUpon>ClienteBuscaHandler.ashx</DependentUpon>

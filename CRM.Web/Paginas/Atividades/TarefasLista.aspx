@@ -80,7 +80,7 @@
                         <asp:PlaceHolder ID="phEliminar" runat="server">
                             <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-danger" ToolTip="Eliminar"
                                 CommandName="Eliminar" CommandArgument='<%# Eval("TaskId") %>'
-                                data-confirm='<%# "Eliminar a tarefa \"" + Eval("Subject") + "\"? O registo é mantido para auditoria." %>'>
+                                OnClientClick="return confirm('Eliminar esta tarefa? O registo é mantido para auditoria.');">
                                 <i class="fas fa-trash"></i>
                             </asp:LinkButton>
                         </asp:PlaceHolder>

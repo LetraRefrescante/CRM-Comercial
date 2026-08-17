@@ -27,11 +27,11 @@ namespace CRM.Services
 
         // ---------- Consulta ----------
 
-        public List<Opportunity> Listar(string pesquisa, int? stageId, int? clientId, bool? isClosed,
+        public List<Opportunity> Listar(string pesquisa, int? stageId, int? clientId, int? ownerId, bool? isClosed,
             string perfil, int userId, int pagina, int tamanhoPagina, out int totalRegistos)
         {
-            int? ownerId = TemAmbitoProprios(perfil) ? userId : (int?)null;
-            return _opportunityRepository.Listar(pesquisa, stageId, ownerId, clientId, isClosed,
+            int? ownerIdEfetivo = TemAmbitoProprios(perfil) ? userId : ownerId;
+            return _opportunityRepository.Listar(pesquisa, stageId, ownerIdEfetivo, clientId, isClosed,
                 pagina, tamanhoPagina, out totalRegistos);
         }
 
@@ -58,16 +58,11 @@ namespace CRM.Services
             return opportunity;
         }
         public List<OpportunityStageHistory> ListarHistoricoFases(int opportunityId) =>
-    _opportunityRepository.ListarHistoricoFases(opportunityId);
+            _opportunityRepository.ListarHistoricoFases(opportunityId);
+        public List<Opportunity> ListarPorCliente(int clientId) =>
+            _opportunityRepository.ListarPorCliente(clientId);
 
         // ---------- Escrita ----------
-
-        /// <summary>
-        /// Antes só recebia (opportunity, userId) e não validava permissão nem âmbito —
-        /// isso ficava por conta de quem chamava (ex.: código da página). Alinhado agora com
-        /// o padrão do ClientService: um Comercial (âmbito "próprios") só pode criar
-        /// oportunidades atribuídas a si mesmo, e apenas para clientes que já são seus.
-        /// </summary>
         public string Criar(Opportunity opportunity, string perfil, int userId)
         {
             if (!PodeEditar(perfil))
@@ -106,13 +101,6 @@ namespace CRM.Services
 
             return null;
         }
-
-        /// <summary>
-        /// Igual ao Criar: passa a validar permissão e âmbito. Reconsulta o registo
-        /// existente (não o objeto vindo do formulário) para confirmar a posse — o
-        /// mesmo cuidado que o ClientService.Atualizar já tinha, para não confiar
-        /// apenas no que veio no postback.
-        /// </summary>
         public string Atualizar(Opportunity opportunity, int faseAnterior, string perfil, int userId)
         {
             if (!PodeEditar(perfil))
@@ -188,12 +176,6 @@ namespace CRM.Services
             _auditService.Registar(userId, "Mudança de Fase", "Opportunity", opportunityId.ToString());
             return null;
         }
-
-        /// <summary>
-        /// Passa a receber "perfil" e a validar PodeFechar + âmbito próprio (antes não
-        /// validava nada disto — qualquer utilizador autenticado conseguia fechar qualquer
-        /// oportunidade, desde que soubesse o Id).
-        /// </summary>
         public string Fechar(int opportunityId, bool ganho, int? lossReasonId, string perfil, int userId)
         {
             if (!PodeFechar(perfil))

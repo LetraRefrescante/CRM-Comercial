@@ -1,104 +1,173 @@
 ﻿<%@ Page Title="Proposta" Language="C#" MasterPageFile="~/MasterPages/Site.Master"
     AutoEventWireup="true" CodeBehind="PropostaEditar.aspx.cs" Inherits="CRM.Web.Paginas.Catalogo.PropostaEditar" %>
-<%@ Register TagPrefix="uc" TagName="SeletorProduto" Src="~/Controls/SeletorProduto.ascx" %>
+
 <%@ Register TagPrefix="uc" TagName="SeletorCliente" Src="~/Controls/SeletorCliente.ascx" %>
+<%@ Register TagPrefix="uc" TagName="SeletorProduto" Src="~/Controls/SeletorProduto.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Breadcrumb" runat="server">
-    <li class="breadcrumb-item"><a href="PropostasLista.aspx">Propostas</a></li>
-    <li class="breadcrumb-item active">Editar</li>
+    <li class="breadcrumb-item"><a href="~/Catalogo/PropostasLista.aspx" runat="server">Propostas</a></li>
+    <li class="breadcrumb-item active"><%: TituloPagina %></li>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
     <div class="crm-list-header">
-        <h2>Proposta <asp:Label ID="lblNumero" runat="server" CssClass="text-muted fs-6" /></h2>
-        <span id="spanStatus" runat="server" class="badge bg-secondary"></span>
+        <h2><%: TituloPagina %></h2>
+        <asp:PlaceHolder ID="phBadgeEstado" runat="server" Visible="false">
+            <span id="spanEstado" runat="server" class="badge fs-6"></span>
+        </asp:PlaceHolder>
     </div>
 
-    <asp:PlaceHolder ID="phAvisoSoLeitura" runat="server" Visible="false">
+    <asp:PlaceHolder ID="phSoLeituraAviso" runat="server" Visible="false">
         <div class="alert alert-warning">
-            Esta proposta não está em Rascunho e não pode ser editada diretamente. Usa "Criar Nova Versão" para propor alterações.
+            <i class="fas fa-lock"></i>
+            Esta proposta já não está em Rascunho, por isso não pode ser editada diretamente.
+            Cria uma nova versão para alterar linhas, condições ou datas.
         </div>
     </asp:PlaceHolder>
 
-    <asp:Panel ID="pnlCamposEditaveis" runat="server" CssClass="crm-filter-card">
+    <asp:ValidationSummary ID="valSummary" runat="server" CssClass="alert alert-danger" DisplayMode="BulletList" ValidationGroup="Cabecalho" />
+    <asp:CustomValidator ID="cvRegrasNegocio" runat="server" Display="None" ValidationGroup="Cabecalho" OnServerValidate="cvRegrasNegocio_ServerValidate" />
+
+    <!-- ===================== Cabeçalho ===================== -->
+    <div class="crm-form-card mb-3">
         <div class="row g-3">
-            <div class="col-md-4">
+            <asp:PlaceHolder ID="phNumero" runat="server" Visible="false">
+                <div class="col-md-3">
+                    <label class="form-label">Número</label>
+                    <asp:TextBox ID="txtNumero" runat="server" CssClass="form-control mono" ReadOnly="true" TabIndex="-1" />
+                </div>
+            </asp:PlaceHolder>
+
+            <div class="col-md-6">
                 <label class="form-label">Cliente *</label>
                 <uc:SeletorCliente ID="ucCliente" runat="server" OnClienteSelecionado="ucCliente_ClienteSelecionado" />
             </div>
-            <div class="col-md-4">
-                <label class="form-label">Oportunidade</label>
-                <asp:DropDownList ID="ddlOportunidade" runat="server" CssClass="form-select" />
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Condições de Pagamento</label>
-                <asp:DropDownList ID="ddlCondicaoPagamento" runat="server" CssClass="form-select" />
-            </div>
+
             <div class="col-md-3">
-                <label class="form-label">Data de Emissão *</label>
-                <asp:TextBox ID="txtEmissao" runat="server" CssClass="form-control" />
+                <label class="form-label">Oportunidade</label>
+                <asp:DropDownList ID="ddlOportunidade" runat="server" CssClass="form-select">
+                    <asp:ListItem Text="(Sem oportunidade)" Value="" />
+                </asp:DropDownList>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Data Emissão *</label>
+                <asp:TextBox ID="txtDataEmissao" runat="server" CssClass="form-control" TextMode="Date" />
+                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDataEmissao" ValidationGroup="Cabecalho"
+                    CssClass="text-danger small" ErrorMessage="A data de emissão é obrigatória." Display="Dynamic" />
             </div>
             <div class="col-md-3">
                 <label class="form-label">Validade *</label>
-                <asp:TextBox ID="txtValidade" runat="server" CssClass="form-control" />
+                <asp:TextBox ID="txtValidade" runat="server" CssClass="form-control" TextMode="Date" />
+                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtValidade" ValidationGroup="Cabecalho"
+                    CssClass="text-danger small" ErrorMessage="A validade é obrigatória." Display="Dynamic" />
             </div>
             <div class="col-md-3">
                 <label class="form-label">Desconto Global (%)</label>
-                <asp:TextBox ID="txtDescontoGlobal" runat="server" CssClass="form-control" Text="0"
-                    AutoPostBack="true" OnTextChanged="txtDescontoGlobal_TextChanged" />
+                <asp:TextBox ID="txtDescontoGlobal" runat="server" CssClass="form-control" TextMode="Number" step="0.01" Text="0" AutoPostBack="true" OnTextChanged="CamposCabecalho_TextChanged" />
             </div>
+            <div class="col-md-3">
+                <label class="form-label">Condições de Pagamento</label>
+                <asp:DropDownList ID="ddlCondicoesPagamento" runat="server" CssClass="form-select">
+                    <asp:ListItem Text="(Nenhuma)" Value="" />
+                </asp:DropDownList>
+            </div>
+
             <div class="col-12">
                 <label class="form-label">Notas</label>
-                <asp:TextBox ID="txtNotas" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" />
+                <asp:TextBox ID="txtNotas" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" MaxLength="4000" />
+                <div class="form-text">Visíveis no PDF enviado ao cliente.</div>
             </div>
         </div>
-    </asp:Panel>
+    </div>
 
-    <div class="crm-table-card mt-3">
-        <div class="d-flex justify-content-between align-items-center p-3 pb-0">
-            <h5 class="mb-0">Linhas</h5>
-            <asp:Button ID="btnAdicionarLinha" runat="server" Text="+ Adicionar Linha" CssClass="btn btn-outline-primary btn-sm"
-                OnClick="btnAdicionarLinha_Click" CausesValidation="false" />
+    <!-- ===================== Linhas ===================== -->
+    <div class="crm-list-header">
+        <h4 class="mb-0">Linhas</h4>
+    </div>
+
+    <asp:PlaceHolder ID="phFormularioLinha" runat="server">
+        <div class="crm-form-card mb-3">
+            <asp:ValidationSummary ID="valSummaryLinha" runat="server" CssClass="alert alert-danger" DisplayMode="BulletList" ValidationGroup="Linha" />
+            <asp:CustomValidator ID="cvRegrasLinha" runat="server" Display="None" ValidationGroup="Linha" OnServerValidate="cvRegrasLinha_ServerValidate" />
+            <asp:Literal ID="litModoEdicaoLinha" runat="server" CssClass="text-muted small d-block mb-2" Visible="false" />
+
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small">Produto</label>
+                    <uc:SeletorProduto ID="ucSeletorProduto" runat="server" OnProdutoSelecionado="ucSeletorProduto_ProdutoSelecionado" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Descrição</label>
+                    <asp:TextBox ID="txtDescricaoLinha" runat="server" CssClass="form-control" MaxLength="300" />
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label small">Qtd.</label>
+                    <asp:TextBox ID="txtQuantidadeLinha" runat="server" CssClass="form-control" TextMode="Number" step="0.01" Text="1" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small">Preço Unit. (€)</label>
+                    <asp:TextBox ID="txtPrecoLinha" runat="server" CssClass="form-control" TextMode="Number" step="0.01" />
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label small">Desc. (%)</label>
+                    <asp:TextBox ID="txtDescontoLinha" runat="server" CssClass="form-control" TextMode="Number" step="0.01" Text="0" />
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label small">IVA</label>
+                    <asp:DropDownList ID="ddlTaxaIvaLinha" runat="server" CssClass="form-select" />
+                </div>
+                <div class="col-md-1">
+                    <asp:Button ID="btnGuardarLinha" runat="server" Text="Adicionar" CssClass="btn btn-primary w-100" ValidationGroup="Linha" OnClick="btnGuardarLinha_Click" />
+                </div>
+            </div>
+            <div class="mt-2">
+                <asp:Button ID="btnCancelarLinha" runat="server" Text="Cancelar edição da linha" CssClass="btn btn-sm btn-outline-secondary"
+                    OnClick="btnCancelarLinha_Click" CausesValidation="false" Visible="false" />
+            </div>
         </div>
+    </asp:PlaceHolder>
 
-        <asp:Repeater ID="rptLinhas" runat="server" OnItemDataBound="rptLinhas_ItemDataBound" OnItemCommand="rptLinhas_ItemCommand">
+    <div class="crm-table-card mb-3">
+        <asp:Repeater ID="rptLinhas" runat="server" OnItemCommand="rptLinhas_ItemCommand">
             <HeaderTemplate>
-                <table class="table mb-0 align-middle">
+                <table class="table table-hover mb-0 align-middle">
                     <thead>
                         <tr>
-                            <th style="width:24%">Produto</th>
-                            <th style="width:20%">Descrição</th>
-                            <th style="width:10%">Qtd.</th>
-                            <th style="width:12%">Preço Unit.</th>
-                            <th style="width:10%">Desc. %</th>
-                            <th style="width:8%">IVA</th>
-                            <th style="width:12%">Total Linha</th>
-                            <th></th>
+                            <th>Produto</th>
+                            <th>Descrição</th>
+                            <th class="text-end">Qtd.</th>
+                            <th class="text-end">Preço Unit.</th>
+                            <th class="text-end">Desc.</th>
+                            <th>IVA</th>
+                            <th class="text-end">Total Linha</th>
+                            <th class="text-end">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
             </HeaderTemplate>
             <ItemTemplate>
                 <tr>
-                    <td>
-                        <uc:SeletorProduto ID="ucProduto" runat="server" TextoBotao="Escolher" IconeBotao="fa-box" />
-                        <asp:HiddenField ID="hdnProposalLineId" runat="server" Value='<%# Eval("ProposalLineId") %>' />
-                        <asp:HiddenField ID="hdnUnitPrice" runat="server" />
-                        <asp:HiddenField ID="hdnTaxRateId" runat="server" />
-                    </td>
-                    <td><asp:TextBox ID="txtDescricao" runat="server" CssClass="form-control form-control-sm" Text='<%# Eval("Description") %>' /></td>
-                    <td><asp:TextBox ID="txtQuantidade" runat="server" CssClass="form-control form-control-sm" Text='<%# Eval("Quantity") %>'
-                            AutoPostBack="true" OnTextChanged="txtLinha_TextChanged" /></td>
-                    <td><asp:Label ID="lblPrecoUnit" runat="server" /></td>
-                    <td><asp:TextBox ID="txtDesconto" runat="server" CssClass="form-control form-control-sm" Text='<%# Eval("DiscountPercent") %>'
-                            AutoPostBack="true" OnTextChanged="txtLinha_TextChanged" /></td>
-                    <td><asp:Label ID="lblIva" runat="server" /></td>
-                    <td><asp:Label ID="lblTotalLinha" runat="server" /></td>
-                    <td>
-                        <asp:LinkButton ID="lnkRemover" runat="server" CommandName="Remover" CssClass="btn btn-sm btn-outline-danger" CausesValidation="false">
-                            <i class="fas fa-times"></i>
-                        </asp:LinkButton>
+                    <td class="mono small"><%# Eval("ProductCode") %></td>
+                    <td><%# Eval("Description") %></td>
+                    <td class="text-end"><%# Eval("Quantity") %></td>
+                    <td class="text-end"><%# Eval("UnitPrice", "{0:C}") %></td>
+                    <td class="text-end"><%# Eval("DiscountPercent") %>%</td>
+                    <td><%# Eval("TaxRateName") %></td>
+                    <td class="text-end fw-semibold"><%# Eval("LineTotal", "{0:C}") %></td>
+                    <td class="text-end crm-row-actions">
+                        <asp:PlaceHolder runat="server" Visible='<%# PodeEditarLinhas %>'>
+                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" ToolTip="Editar"
+                                CommandName="Editar" CommandArgument="<%# Container.ItemIndex %>">
+                                <i class="fas fa-pen"></i>
+                            </asp:LinkButton>
+                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-danger" ToolTip="Remover"
+                                CommandName="Eliminar" CommandArgument="<%# Container.ItemIndex %>"
+                                data-confirm="Remover esta linha da proposta?">
+                                <i class="fas fa-trash"></i>
+                            </asp:LinkButton>
+                        </asp:PlaceHolder>
                     </td>
                 </tr>
             </ItemTemplate>
@@ -108,28 +177,38 @@
             </FooterTemplate>
         </asp:Repeater>
 
-        <asp:PlaceHolder ID="phSemLinhas" runat="server" Visible="false">
+        <asp:PlaceHolder ID="phVazioLinhas" runat="server" Visible="false">
             <div class="crm-empty-state">
+                <i class="fas fa-list"></i>
                 <p class="mb-0">Ainda não há linhas nesta proposta.</p>
             </div>
         </asp:PlaceHolder>
     </div>
 
-    <div class="crm-filter-card mt-3" style="max-width: 340px; margin-left: auto;">
-        <div class="d-flex justify-content-between"><span>Subtotal</span><asp:Label ID="lblSubTotal" runat="server" /></div>
-        <div class="d-flex justify-content-between"><span>IVA</span><asp:Label ID="lblIvaTotal" runat="server" /></div>
-        <div class="d-flex justify-content-between fw-bold"><span>Total</span><asp:Label ID="lblTotalGeral" runat="server" /></div>
+    <!-- ===================== Totais ===================== -->
+    <div class="crm-form-card mb-3">
+        <div class="row g-2 justify-content-end text-end">
+            <div class="col-md-3">
+                <div class="text-muted small">Subtotal (com desconto)</div>
+                <div class="fs-5"><asp:Literal ID="litSubTotal" runat="server" /></div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small">IVA</div>
+                <div class="fs-5"><asp:Literal ID="litTaxTotal" runat="server" /></div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small">Total</div>
+                <div class="fs-4 fw-bold"><asp:Literal ID="litTotal" runat="server" /></div>
+            </div>
+        </div>
+        <div class="form-text text-end">Os totais recalculam ao adicionar, editar ou remover linhas, ou ao mudar o desconto global.</div>
     </div>
 
-    <asp:CustomValidator ID="cvLinhas" runat="server" Display="Dynamic" CssClass="text-danger d-block mt-2"
-        ErrorMessage="A proposta tem de ter pelo menos uma linha válida." OnServerValidate="cvLinhas_ServerValidate" />
-    <asp:ValidationSummary ID="vsResumo" runat="server" CssClass="alert alert-danger mt-2" />
-
-    <div class="mt-3">
+    <div class="d-flex gap-2">
         <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn btn-primary" OnClick="btnGuardar_Click" />
-        <asp:Button ID="btnCriarNovaVersao" runat="server" Text="Criar Nova Versão" CssClass="btn btn-outline-primary"
+        <asp:Button ID="btnCriarNovaVersao" runat="server" Text="Criar Nova Versão para Editar" CssClass="btn btn-primary" Visible="false"
             OnClick="btnCriarNovaVersao_Click" CausesValidation="false" />
-        <a href="PropostasLista.aspx" class="btn btn-outline-secondary">Cancelar</a>
+        <asp:HyperLink ID="lnkCancelar" runat="server" NavigateUrl="~/Catalogo/PropostasLista.aspx" CssClass="btn btn-outline-secondary">Cancelar</asp:HyperLink>
     </div>
 
 </asp:Content>

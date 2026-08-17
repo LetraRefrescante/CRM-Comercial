@@ -9,6 +9,7 @@ namespace CRM.Services
 {
     public class ActivityService
     {
+        private readonly ActivityParticipantRepository _participantRepository = new ActivityParticipantRepository();
         private readonly ActivityRepository _activityRepository = new ActivityRepository();
         private readonly UserRepository _userRepository = new UserRepository();
         private readonly AuditService _auditService = new AuditService();
@@ -173,5 +174,11 @@ namespace CRM.Services
             role == "Financeiro" || role == "Consulta";
         public List<Activity> ListarPorOportunidade(int opportunityId) =>
             _activityRepository.ListarPorOportunidade(opportunityId);
+
+        public List<ActivityParticipant> ListarParticipantes(int activityId) =>
+            _participantRepository.ListarPorAtividade(activityId);
+
+        public void SincronizarParticipantes(int activityId, List<ActivityParticipant> participantes) =>
+            _participantRepository.Sincronizar(activityId, participantes ?? new List<ActivityParticipant>());
     }
 }

@@ -12,6 +12,8 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
+    <asp:HiddenField ID="hdnRowVersion" runat="server" />
+
     <div class="crm-list-header">
         <h2>Venda <asp:Label ID="lblNumero" runat="server" CssClass="text-muted fs-6" /></h2>
         <span id="spanStatus" runat="server" class="badge bg-secondary"></span>

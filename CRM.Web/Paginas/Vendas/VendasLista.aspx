@@ -75,13 +75,13 @@
                     <td><%# Eval("Total", "{0:C}") %></td>
                     <td><%# Eval("Owner.Name") %></td>
                     <td class="text-end crm-row-actions">
-                        <a href="VendaEditar.aspx?id=<%# Eval("SaleId") %>" class="btn btn-sm btn-outline-secondary" title="Abrir">
-                            <i class="fas fa-pen"></i>
+                        <a href="VendaDetalhe.aspx?id=<%# Eval("SaleId") %>" class="btn btn-sm btn-outline-secondary" title="Abrir">
+                            <i class="fas fa-eye"></i>
                         </a>
                         <asp:PlaceHolder ID="phEliminar" runat="server">
                             <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-danger" ToolTip="Eliminar"
                                 CommandName="Eliminar" CommandArgument='<%# Eval("SaleId") %>'
-                                data-confirm='<%# "Eliminar a venda " + Eval("SaleNumber") + "? O registo é mantido para auditoria." %>'>
+                                OnClientClick="return confirm('Eliminar esta venda? O registo é mantido para auditoria.');">
                                 <i class="fas fa-trash"></i>
                             </asp:LinkButton>
                         </asp:PlaceHolder>

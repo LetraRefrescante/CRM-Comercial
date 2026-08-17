@@ -74,17 +74,12 @@ namespace CRM.Web.Oportunidades
             bool? isClosed = ddlEstado.SelectedValue == "aberta" ? false
                             : ddlEstado.SelectedValue == "fechada" ? true
                             : (bool?)null;
+            int? ownerId = phFiltroComercial.Visible && !string.IsNullOrEmpty(ddlComercial.SelectedValue)
+                ? int.Parse(ddlComercial.SelectedValue)
+                : (int?)null;
 
-            var lista = _opportunityService.Listar(
-                txtPesquisa.Text.Trim(),
-                stageId,
-                null,
-                isClosed,
-                Perfil,
-                UserId,
-                ucPaginacao.PaginaAtual,
-                ucPaginacao.TamanhoPagina,
-                out int totalRegistos);
+            var lista = _opportunityService.Listar(txtPesquisa.Text.Trim(), stageId, null, ownerId, isClosed,
+                Perfil, UserId, ucPaginacao.PaginaAtual, ucPaginacao.TamanhoPagina, out int totalRegistos);
 
             ucPaginacao.TotalRegistos = totalRegistos;
             rptOportunidades.DataSource = lista;

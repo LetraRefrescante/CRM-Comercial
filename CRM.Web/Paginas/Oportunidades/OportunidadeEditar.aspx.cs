@@ -128,7 +128,6 @@ namespace CRM.Web.Oportunidades
             ddlComercial.SelectedValue = opportunity.OwnerId.ToString();
         }
 
-        // Troca entre "caixa de pesquisa" e "cartão de cliente selecionado", e recarrega Contactos.
         private void SelecionarCliente(int clientId, string nomeCliente, string nif, int? contactIdSelecionar = null)
         {
             hdnClientId.Value = clientId.ToString();
@@ -165,14 +164,10 @@ namespace CRM.Web.Oportunidades
             var fase = _stageRepository.ObterPorId(int.Parse(ddlFase.SelectedValue));
             if (fase != null)
             {
-                // Conveniência: sugere a probabilidade por omissão da fase escolhida.
-                // O utilizador continua livre para ajustar antes de guardar.
                 txtProbabilidade.Text = fase.DefaultProbability.ToString();
             }
         }
 
-        // Chamado via JS (btnClienteSelecionado.click()) depois de escolher um resultado
-        // na pesquisa de clientes.
         protected void btnClienteSelecionado_Click(object sender, EventArgs e)
         {
             if (!int.TryParse(hdnClientId.Value, out int clientId)) return;
@@ -180,9 +175,6 @@ namespace CRM.Web.Oportunidades
             var cliente = _clientRepository.GetById(clientId);
             if (cliente == null) return;
 
-            // ASSUNÇÃO: mesma regra do ClientService — um Comercial só pode associar
-            // oportunidades a clientes que já são seus. O ClienteBuscaHandler.ashx já
-            // filtra por isto na origem; repete-se aqui como segunda camada de defesa.
             if (_opportunityService.TemAmbitoProprios(Perfil) && cliente.AccountManagerId != UserId)
             {
                 NotificacaoService.Erro("Só podes criar oportunidades para clientes atribuídos a ti.");
@@ -217,7 +209,7 @@ namespace CRM.Web.Oportunidades
 
         protected void cvValorEstimado_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            args.IsValid = decimal.TryParse(args.Value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal valor) && valor > 0;
+            args.IsValid = decimal.TryParse(args.Value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal valor) && valor >= 0;
         }
 
         protected void cvProbabilidade_ServerValidate(object source, ServerValidateEventArgs args)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Globalization;
 using System.Linq;
 using System.Web.UI;
@@ -64,24 +65,17 @@ namespace CRM.Web.Paginas.Vendas
             ddlOrigem.SelectedValue = SaleService.OrigemManual;
             phSeletorProposta.Visible = false;
             txtDataVenda.Text = DateTime.Today.ToString("dd/MM/yyyy");
-
             AplicarComercialPorDefeito();
-
             RebindLinhas(new List<SaleLine> { NovaLinhaVazia() });
-
             AtualizarVisibilidadeBotoes(null);
             phPagamentos.Visible = false;
             phCancelamento.Visible = false;
             phAnexosHistorico.Visible = false;
         }
 
-        // Entrada a partir de "Converter em Venda" numa proposta (~/Vendas/VendaEditar.aspx?proposalId=X).
-        // ASSUNÇÃO: só propostas Aceites podem originar uma venda — se a proposta não
-        // existir ou não estiver Aceite, cai-se para uma venda manual em vez de rebentar.
         private void CarregarNovaAPartirDeProposta(int proposalId)
         {
             var proposal = _proposalRepository.GetById(proposalId);
-
             if (proposal == null || proposal.Status != "Aceite")
             {
                 NotificacaoService.Erro("A proposta indicada não existe ou não está Aceite. Cria a venda manualmente ou escolhe outra proposta.");
@@ -93,19 +87,14 @@ namespace CRM.Web.Paginas.Vendas
 
             lblNumero.Text = "(gerado ao gravar)";
             AtualizarBadgeEstado(SaleService.StatusPendente);
-
             ucCliente.ClienteId = saleTemp.ClientId;
             ddlOrigem.SelectedValue = SaleService.OrigemProposta;
             phSeletorProposta.Visible = true;
             CarregarPropostasDoCliente(saleTemp.ClientId);
             ddlProposta.SelectedValue = proposalId.ToString();
-
             txtDataVenda.Text = DateTime.Today.ToString("dd/MM/yyyy");
-
             AplicarComercialPorDefeito();
-
             RebindLinhas(saleTemp.Lines);
-
             AtualizarVisibilidadeBotoes(null);
             phPagamentos.Visible = false;
             phCancelamento.Visible = false;
@@ -130,16 +119,16 @@ namespace CRM.Web.Paginas.Vendas
             ViewState["SaleId"] = sale.SaleId;
             ViewState["Status"] = sale.Status;
 
-            ucCliente.ClienteId = sale.ClientId;
+            hdnRowVersion.Value = sale.RowVersion != null ? Convert.ToBase64String(sale.RowVersion) : "";
 
+            ucCliente.ClienteId = sale.ClientId;
             lblNumero.Text = sale.SaleNumber;
             AtualizarBadgeEstado(sale.Status);
-
             ddlComercial.SelectedValue = sale.OwnerId.ToString();
             ddlComercial.Enabled = !_saleService.TemAmbitoProprios(Perfil);
-
             ddlOrigem.SelectedValue = sale.Origin;
             phSeletorProposta.Visible = sale.Origin == SaleService.OrigemProposta;
+
             if (sale.Origin == SaleService.OrigemProposta)
             {
                 CarregarPropostasDoCliente(sale.ClientId);
@@ -157,20 +146,13 @@ namespace CRM.Web.Paginas.Vendas
 
             AtualizarVisibilidadeBotoes(sale);
 
-            // Pagamentos
             phPagamentos.Visible = sale.Status != SaleService.StatusCancelada;
             if (phPagamentos.Visible)
                 CarregarPagamentos(sale);
-
-            // Cancelamento
             phCancelamento.Visible = _saleService.PodeCancelar(sale, UserId, Perfil);
-
-            // Confirmar (só Pendente)
             btnConfirmar.Visible = sale.Status == SaleService.StatusPendente
                 && _saleService.PodeCriarOuEditar(Perfil)
                 && _saleService.PodeAceder(sale, UserId, Perfil);
-
-            // Anexos e histórico
             phAnexosHistorico.Visible = true;
             ucAnexos.Inicializar("Sale", sale.SaleId, UserId);
             ucHistorico.Inicializar("Sale", sale.SaleId.ToString());
@@ -193,7 +175,6 @@ namespace CRM.Web.Paginas.Vendas
         {
             ddlProposta.Items.Clear();
             ddlProposta.Items.Add(new ListItem("(Selecionar)", ""));
-
             foreach (var proposal in _proposalRepository.ListarAceitesPorCliente(clientId))
                 ddlProposta.Items.Add(new ListItem($"{proposal.ProposalNumber} · {proposal.Total:C}", proposal.ProposalId.ToString()));
         }
@@ -286,7 +267,6 @@ namespace CRM.Web.Paginas.Vendas
         private void RebindLinhas(List<SaleLine> linhas)
         {
             var linhasValidas = linhas.Where(l => l.ProductId > 0).ToList();
-
             var saleTemp = new Sale { Lines = linhasValidas };
 
             if (linhasValidas.Any())
@@ -294,7 +274,6 @@ namespace CRM.Web.Paginas.Vendas
 
             rptLinhas.DataSource = linhas;
             rptLinhas.DataBind();
-
             phSemLinhas.Visible = !linhas.Any();
 
             lblSubTotal.Text = saleTemp.SubTotal.ToString("C");
@@ -308,7 +287,6 @@ namespace CRM.Web.Paginas.Vendas
                 return;
 
             var linha = (SaleLine)e.Item.DataItem;
-
             var ucProduto = (SeletorProduto)e.Item.FindControl("ucProduto");
             ucProduto.ProdutoId = linha.ProductId > 0 ? linha.ProductId : (int?)null;
             ucProduto.ProdutoSelecionado += (s, args) => ucProduto_ProdutoSelecionado(ucProduto, e.Item);
@@ -369,11 +347,9 @@ namespace CRM.Web.Paginas.Vendas
         private void AtualizarVisibilidadeBotoes(Sale sale)
         {
             bool ehNova = sale == null;
-
             bool temPermissaoPerfil = _saleService.PodeCriarOuEditar(Perfil);
             bool ehDono = ehNova || _saleService.PodeAceder(sale, UserId, Perfil);
             bool estadoPermiteEdicaoDireta = ehNova || _saleService.PodeEditarDiretamente(sale);
-
             bool podeEditar = temPermissaoPerfil && ehDono && estadoPermiteEdicaoDireta;
 
             pnlCamposEditaveis.Enabled = podeEditar;
@@ -412,6 +388,7 @@ namespace CRM.Web.Paginas.Vendas
             var sale = new Sale
             {
                 SaleId = SaleId ?? 0,
+                RowVersion = string.IsNullOrEmpty(hdnRowVersion.Value) ? null : Convert.FromBase64String(hdnRowVersion.Value),
                 ClientId = ucCliente.ClienteId ?? 0,
                 OwnerId = string.IsNullOrEmpty(ddlComercial.SelectedValue) ? 0 : int.Parse(ddlComercial.SelectedValue),
                 Origin = ddlOrigem.SelectedValue,
@@ -433,9 +410,18 @@ namespace CRM.Web.Paginas.Vendas
             if (SaleId.HasValue)
             {
                 sale.Status = StatusAtual;
-                _saleService.Atualizar(sale, UserId);
-                NotificacaoService.Sucesso("Venda atualizada.");
-                Response.Redirect($"VendaEditar.aspx?id={SaleId}");
+
+                try
+                {
+                    _saleService.Atualizar(sale, UserId);
+                    NotificacaoService.Sucesso("Venda atualizada.");
+                    Response.Redirect($"VendaEditar.aspx?id={SaleId}");
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    NotificacaoService.Erro("Esta venda foi alterada por outro utilizador entretanto. A página foi recarregada com os dados mais recentes — revê e grava novamente.");
+                    Response.Redirect($"VendaEditar.aspx?id={SaleId}");
+                }
             }
             else
             {
@@ -481,7 +467,6 @@ namespace CRM.Web.Paginas.Vendas
         private void CarregarPagamentos(Sale sale)
         {
             var pagamentos = _paymentService.ListarPorVenda(sale.SaleId);
-
             rptPagamentos.DataSource = pagamentos;
             rptPagamentos.DataBind();
             phSemPagamentos.Visible = pagamentos.Count == 0;
@@ -491,7 +476,6 @@ namespace CRM.Web.Paginas.Vendas
             lblSaldoEmAberto.Text = (sale.Total - totalPago).ToString("C");
 
             pnlNovoPagamento.Visible = _saleService.PodeRegistarPagamento(sale, UserId, Perfil);
-
             txtDataPagamento.Text = DateTime.Today.ToString("dd/MM/yyyy");
         }
 
@@ -542,7 +526,6 @@ namespace CRM.Web.Paginas.Vendas
 
             int paymentId = int.Parse(e.CommandArgument.ToString());
             _paymentService.Eliminar(paymentId, SaleId.Value, UserId);
-
             NotificacaoService.Sucesso("Pagamento eliminado.");
             Response.Redirect($"VendaEditar.aspx?id={SaleId}");
         }

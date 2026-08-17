@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.UI.WebControls;
 using CRM.Data.Repositories;
+using CRM.Models.DTOs;
 using CRM.Models.Entities.Atividades;
 using CRM.Services;
 using CRM.Web.Helpers;
@@ -23,6 +27,12 @@ namespace CRM.Web.Paginas.Atividades
             }
         }
 
+        private List<ParticipanteLinha> Participantes
+        {
+            get => ViewState["Participantes"] as List<ParticipanteLinha> ?? new List<ParticipanteLinha>();
+            set => ViewState["Participantes"] = value;
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -38,18 +48,26 @@ namespace CRM.Web.Paginas.Atividades
                 {
                     ddlEstado.SelectedValue = "Planeada";
 
-                    // Vindo da Agenda com um dia clicado (?data=yyyy-MM-dd) — pré-preenche o Início.
                     if (DateTime.TryParse(Request.QueryString["data"], CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dataPreenchida))
                         txtInicio.Text = dataPreenchida.ToString("yyyy-MM-ddTHH:mm");
                 }
+
+                AtualizarVisibilidadeParticipantes();
+                BindParticipantes();
             }
         }
 
         private void CarregarResponsaveis()
         {
             ddlResponsavel.Items.Clear();
+            ddlParticipanteInterno.Items.Clear();
+            ddlParticipanteInterno.Items.Add(new ListItem("Selecione...", ""));
+
             foreach (var user in _userRepository.ListarAtivos())
+            {
                 ddlResponsavel.Items.Add(new ListItem(user.Name, user.UserId.ToString()));
+                ddlParticipanteInterno.Items.Add(new ListItem(user.Name, user.UserId.ToString()));
+            }
         }
 
         private void CarregarLeads()
@@ -100,6 +118,19 @@ namespace CRM.Web.Paginas.Atividades
             }
 
             AtualizarVisibilidadeRelacao();
+
+            if (activity.Type == "Reunião")
+            {
+                Participantes = _activityService.ListarParticipantes(id)
+                    .Select(p => new ParticipanteLinha
+                    {
+                        UserId = p.UserId,
+                        NomeExibicao = p.User?.Name,
+                        ExternalName = p.ExternalName,
+                        ExternalEmail = p.ExternalEmail
+                    })
+                    .ToList();
+            }
         }
 
         protected void ddlTipoRelacao_SelectedIndexChanged(object sender, EventArgs e)
@@ -113,25 +144,132 @@ namespace CRM.Web.Paginas.Atividades
             pnlLead.Visible = ddlTipoRelacao.SelectedValue == "Lead";
         }
 
+        protected void ddlTipo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Só Reuniões têm participantes — muda para outro tipo limpa a lista,
+            // para não gravar participantes "escondidos" que ficaram em ViewState.
+            if (ddlTipo.SelectedValue != "Reunião")
+                Participantes = new List<ParticipanteLinha>();
+
+            AtualizarVisibilidadeParticipantes();
+            BindParticipantes();
+        }
+
+        private void AtualizarVisibilidadeParticipantes()
+        {
+            pnlParticipantes.Visible = ddlTipo.SelectedValue == "Reunião";
+        }
+
+        private void BindParticipantes()
+        {
+            var lista = Participantes;
+            rptParticipantes.DataSource = lista;
+            rptParticipantes.DataBind();
+            phSemParticipantes.Visible = lista.Count == 0;
+        }
+
+        protected void btnAdicionarParticipante_Click(object sender, EventArgs e)
+        {
+            var lista = Participantes;
+
+            if (!string.IsNullOrEmpty(ddlParticipanteInterno.SelectedValue))
+            {
+                int userId = int.Parse(ddlParticipanteInterno.SelectedValue);
+
+                if (lista.Any(p => p.UserId == userId))
+                {
+                    NotificacaoService.Erro("Este utilizador já está na lista de participantes.");
+                    BindParticipantes();
+                    return;
+                }
+
+                lista.Add(new ParticipanteLinha
+                {
+                    UserId = userId,
+                    NomeExibicao = ddlParticipanteInterno.SelectedItem.Text
+                });
+            }
+            else if (!string.IsNullOrWhiteSpace(txtParticipanteExternoNome.Text))
+            {
+                string email = txtParticipanteExternoEmail.Text.Trim();
+                if (!string.IsNullOrEmpty(email) && !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                {
+                    NotificacaoService.Erro("O email do participante externo não tem um formato válido.");
+                    BindParticipantes();
+                    return;
+                }
+
+                lista.Add(new ParticipanteLinha
+                {
+                    ExternalName = txtParticipanteExternoNome.Text.Trim(),
+                    ExternalEmail = string.IsNullOrEmpty(email) ? null : email
+                });
+            }
+            else
+            {
+                NotificacaoService.Erro("Seleciona um utilizador interno ou preenche o nome do participante externo.");
+                BindParticipantes();
+                return;
+            }
+
+            Participantes = lista;
+
+            ddlParticipanteInterno.SelectedIndex = 0;
+            txtParticipanteExternoNome.Text = "";
+            txtParticipanteExternoEmail.Text = "";
+
+            BindParticipantes();
+        }
+
+        protected void rptParticipantes_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName != "Remover") return;
+
+            int indice = int.Parse(e.CommandArgument.ToString());
+            var lista = Participantes;
+            if (indice >= 0 && indice < lista.Count)
+                lista.RemoveAt(indice);
+
+            Participantes = lista;
+            BindParticipantes();
+        }
+
+        protected string GetNomeParticipante(object dataItem)
+        {
+            var p = (ParticipanteLinha)dataItem;
+            return p.EhInterno ? p.NomeExibicao : $"{p.ExternalName} ({(string.IsNullOrEmpty(p.ExternalEmail) ? "sem email" : p.ExternalEmail)})";
+        }
+
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
             var activity = MontarAPartirDoFormulario();
 
             try
             {
+                int activityId;
+
                 if (ActivityId.HasValue)
                 {
                     activity.ActivityId = ActivityId.Value;
                     _activityService.Atualizar(activity, UserId, Perfil);
+                    activityId = ActivityId.Value;
                     NotificacaoService.Sucesso("Atividade atualizada.");
-                    CarregarAtividade(ActivityId.Value);
                 }
                 else
                 {
-                    var id = _activityService.Criar(activity, UserId, Perfil);
+                    activityId = _activityService.Criar(activity, UserId, Perfil);
                     NotificacaoService.Sucesso("Atividade criada.");
-                    Response.Redirect($"AtividadeEditar.aspx?id={id}");
                 }
+
+                _activityService.SincronizarParticipantes(activityId,
+                    Participantes.Select(p => new ActivityParticipant
+                    {
+                        UserId = p.UserId,
+                        ExternalName = p.ExternalName,
+                        ExternalEmail = p.ExternalEmail
+                    }).ToList());
+
+                Response.Redirect($"AtividadeEditar.aspx?id={activityId}");
             }
             catch (Exception ex) when (ex is InvalidOperationException || ex is UnauthorizedAccessException)
             {

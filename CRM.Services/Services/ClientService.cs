@@ -35,13 +35,18 @@ namespace CRM.Services
         public bool NifValido(string nif, bool paisEhPortugal)
         {
             if (!paisEhPortugal) return true;
+
             if (string.IsNullOrWhiteSpace(nif)) return false;
+
             nif = nif.Trim();
+
             if (!Regex.IsMatch(nif, @"^\d{9}$")) return false;
 
             int soma = 0;
             for (int i = 0; i < 8; i++)
+            {
                 soma += (nif[i] - '0') * (9 - i);
+            }
 
             int resto = soma % 11;
             int digitoControlo = resto < 2 ? 0 : 11 - resto;
@@ -52,6 +57,7 @@ namespace CRM.Services
         public bool TelefoneValido(string telefone, bool paisEhPortugal)
         {
             if (string.IsNullOrWhiteSpace(telefone)) return true;
+
             telefone = telefone.Trim();
 
             return paisEhPortugal
@@ -62,17 +68,16 @@ namespace CRM.Services
         public bool CodigoPostalValido(string codigoPostal, bool paisEhPortugal)
         {
             if (string.IsNullOrWhiteSpace(codigoPostal)) return true;
+
             if (!paisEhPortugal) return true;
+
             return Regex.IsMatch(codigoPostal.Trim(), @"^\d{4}-\d{3}$");
         }
-
         public ResultadoGuardarCliente Criar(Client client, string perfil, int userId)
         {
             if (!PodeCriarOuEditar(perfil))
                 return ResultadoGuardarCliente.SemPermissao;
 
-            // Um Comercial (âmbito "próprios") só pode criar clientes atribuídos a si mesmo —
-            // não pode, por exemplo, criar um cliente e atribuí-lo a um colega.
             if (TemAmbitoProprios(perfil) && client.AccountManagerId != userId)
                 return ResultadoGuardarCliente.SemPermissao;
 
@@ -87,18 +92,18 @@ namespace CRM.Services
 
             return ResultadoGuardarCliente.Sucesso;
         }
-
         public ResultadoGuardarCliente Atualizar(Client client, string perfil, int userId)
         {
             if (!PodeCriarOuEditar(perfil))
                 return ResultadoGuardarCliente.SemPermissao;
 
-            // Um Comercial só pode editar clientes que já são seus — impede editar o cliente
-            // de um colega mesmo sabendo o ClientId (ex: alterando o Id na URL).
             if (TemAmbitoProprios(perfil))
             {
                 var existente = _clientRepository.GetById(client.ClientId);
                 if (existente == null || existente.AccountManagerId != userId)
+                    return ResultadoGuardarCliente.SemPermissao;
+
+                if (client.AccountManagerId != userId)
                     return ResultadoGuardarCliente.SemPermissao;
             }
 

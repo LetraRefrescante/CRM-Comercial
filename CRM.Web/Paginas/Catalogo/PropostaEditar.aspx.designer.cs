@@ -15,40 +15,67 @@ namespace CRM.Web.Paginas.Catalogo
     {
 
         /// <summary>
-        /// Controle lblNumero.
+        /// Controle phBadgeEstado.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblNumero;
+        protected global::System.Web.UI.WebControls.PlaceHolder phBadgeEstado;
 
         /// <summary>
-        /// Controle spanStatus.
+        /// Controle spanEstado.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl spanStatus;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl spanEstado;
 
         /// <summary>
-        /// Controle phAvisoSoLeitura.
+        /// Controle phSoLeituraAviso.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phAvisoSoLeitura;
+        protected global::System.Web.UI.WebControls.PlaceHolder phSoLeituraAviso;
 
         /// <summary>
-        /// Controle pnlCamposEditaveis.
+        /// Controle valSummary.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlCamposEditaveis;
+        protected global::System.Web.UI.WebControls.ValidationSummary valSummary;
+
+        /// <summary>
+        /// Controle cvRegrasNegocio.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator cvRegrasNegocio;
+
+        /// <summary>
+        /// Controle phNumero.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phNumero;
+
+        /// <summary>
+        /// Controle txtNumero.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtNumero;
 
         /// <summary>
         /// Controle ucCliente.
@@ -69,22 +96,13 @@ namespace CRM.Web.Paginas.Catalogo
         protected global::System.Web.UI.WebControls.DropDownList ddlOportunidade;
 
         /// <summary>
-        /// Controle ddlCondicaoPagamento.
+        /// Controle txtDataEmissao.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlCondicaoPagamento;
-
-        /// <summary>
-        /// Controle txtEmissao.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEmissao;
+        protected global::System.Web.UI.WebControls.TextBox txtDataEmissao;
 
         /// <summary>
         /// Controle txtValidade.
@@ -105,6 +123,15 @@ namespace CRM.Web.Paginas.Catalogo
         protected global::System.Web.UI.WebControls.TextBox txtDescontoGlobal;
 
         /// <summary>
+        /// Controle ddlCondicoesPagamento.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlCondicoesPagamento;
+
+        /// <summary>
         /// Controle txtNotas.
         /// </summary>
         /// <remarks>
@@ -114,13 +141,112 @@ namespace CRM.Web.Paginas.Catalogo
         protected global::System.Web.UI.WebControls.TextBox txtNotas;
 
         /// <summary>
-        /// Controle btnAdicionarLinha.
+        /// Controle phFormularioLinha.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAdicionarLinha;
+        protected global::System.Web.UI.WebControls.PlaceHolder phFormularioLinha;
+
+        /// <summary>
+        /// Controle valSummaryLinha.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.ValidationSummary valSummaryLinha;
+
+        /// <summary>
+        /// Controle cvRegrasLinha.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator cvRegrasLinha;
+
+        /// <summary>
+        /// Controle litModoEdicaoLinha.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litModoEdicaoLinha;
+
+        /// <summary>
+        /// Controle ucSeletorProduto.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::CRM.Web.Controls.SeletorProduto ucSeletorProduto;
+
+        /// <summary>
+        /// Controle txtDescricaoLinha.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtDescricaoLinha;
+
+        /// <summary>
+        /// Controle txtQuantidadeLinha.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtQuantidadeLinha;
+
+        /// <summary>
+        /// Controle txtPrecoLinha.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtPrecoLinha;
+
+        /// <summary>
+        /// Controle txtDescontoLinha.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtDescontoLinha;
+
+        /// <summary>
+        /// Controle ddlTaxaIvaLinha.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlTaxaIvaLinha;
+
+        /// <summary>
+        /// Controle btnGuardarLinha.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnGuardarLinha;
+
+        /// <summary>
+        /// Controle btnCancelarLinha.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnCancelarLinha;
 
         /// <summary>
         /// Controle rptLinhas.
@@ -132,58 +258,40 @@ namespace CRM.Web.Paginas.Catalogo
         protected global::System.Web.UI.WebControls.Repeater rptLinhas;
 
         /// <summary>
-        /// Controle phSemLinhas.
+        /// Controle phVazioLinhas.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phSemLinhas;
+        protected global::System.Web.UI.WebControls.PlaceHolder phVazioLinhas;
 
         /// <summary>
-        /// Controle lblSubTotal.
+        /// Controle litSubTotal.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSubTotal;
+        protected global::System.Web.UI.WebControls.Literal litSubTotal;
 
         /// <summary>
-        /// Controle lblIvaTotal.
+        /// Controle litTaxTotal.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblIvaTotal;
+        protected global::System.Web.UI.WebControls.Literal litTaxTotal;
 
         /// <summary>
-        /// Controle lblTotalGeral.
+        /// Controle litTotal.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblTotalGeral;
-
-        /// <summary>
-        /// Controle cvLinhas.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator cvLinhas;
-
-        /// <summary>
-        /// Controle vsResumo.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ValidationSummary vsResumo;
+        protected global::System.Web.UI.WebControls.Literal litTotal;
 
         /// <summary>
         /// Controle btnGuardar.
@@ -202,5 +310,14 @@ namespace CRM.Web.Paginas.Catalogo
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCriarNovaVersao;
+
+        /// <summary>
+        /// Controle lnkCancelar.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink lnkCancelar;
     }
 }

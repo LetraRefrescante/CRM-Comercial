@@ -1,13 +1,14 @@
-﻿using System.Data.Entity;
-using CRM.Models.Entities.Seguranca;
-using CRM.Models.Entities.Clientes;
-using CRM.Models.Entities.ListasAuxiliares;
+﻿using CRM.Models.Entities.Atividades;
 using CRM.Models.Entities.Catalogo;
+using CRM.Models.Entities.Clientes;
 using CRM.Models.Entities.Documentos;
 using CRM.Models.Entities.Leads;
-using CRM.Models.Entities.Atividades;
+using CRM.Models.Entities.ListasAuxiliares;
+using CRM.Models.Entities.Notificacoes;
 using CRM.Models.Entities.Oportunidades;
+using CRM.Models.Entities.Seguranca;
 using CRM.Models.Entities.Vendas;
+using System.Data.Entity;
 
 namespace CRM.Data.Context
 {
@@ -51,7 +52,12 @@ namespace CRM.Data.Context
 
         // Atividades
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<ActivityParticipant> ActivityParticipants { get; set; }
         public DbSet<TaskItem> Tasks { get; set; }
+        // Email
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<EmailTemplate> EmailTemplates { get; set; }
+        public DbSet<EmailHistory> EmailHistories { get; set; }
 
         // Oportunidades
         public DbSet<Opportunity> Opportunities { get; set; }

@@ -63,7 +63,14 @@ namespace CRM.Data.Repositories
                     .ToList();
             }
         }
-
+        public List<Proposal> ListarParaSelecao()
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Proposals.Where(p => !p.IsDeleted)
+                    .OrderByDescending(p => p.CreatedDate).ToList();
+            }
+        }
         private IQueryable<Proposal> ConstruirQuery(
             CrmDbContext context,
             string pesquisa,
@@ -159,10 +166,6 @@ namespace CRM.Data.Repositories
             }
         }
 
-        // Atribuição explícita campo-a-campo. NÃO usar CurrentValues.SetValues(proposal) aqui:
-        // isso copiaria também CreatedDate/CreatedBy/RowVersion do objeto recebido (que vêm a
-        // default, não preenchidos no code-behind), apagando a auditoria de criação e mexendo
-        // no token de concorrência otimista.
         public void Atualizar(Proposal proposal)
         {
             using (var context = new CrmDbContext())
