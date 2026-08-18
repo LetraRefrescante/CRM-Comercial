@@ -1,538 +1,296 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
-using System.Globalization;
-using System.Linq;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using CRM.Data.Repositories;
+﻿using CRM.Data.Repositories;
 using CRM.Models.Entities.Catalogo;
 using CRM.Models.Entities.Vendas;
 using CRM.Services;
 using CRM.Web.Controls;
 using CRM.Web.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.UI.WebControls;
 
 namespace CRM.Web.Paginas.Vendas
 {
     public partial class VendaEditar : PaginaBase
     {
         private readonly SaleService _saleService = new SaleService();
-        private readonly PaymentService _paymentService = new PaymentService();
-        private readonly ProposalRepository _proposalRepository = new ProposalRepository();
         private readonly UserRepository _userRepository = new UserRepository();
         private readonly TaxRateRepository _taxRateRepository = new TaxRateRepository();
+        private readonly ProposalRepository _proposalRepository = new ProposalRepository();
 
-        private List<TaxRate> _taxasIva;
-        private List<TaxRate> GetTaxasIva() => _taxasIva ?? (_taxasIva = _taxRateRepository.ListarAtivas());
+        private int? SaleId
+        {
+            get => ViewState["SaleId"] as int?;
+            set => ViewState["SaleId"] = value;
+        }
 
-        private int? SaleId => ViewState["SaleId"] as int?;
-        private string StatusAtual => ViewState["Status"] as string ?? SaleService.StatusPendente;
+        private bool PodeEditar
+        {
+            get => ViewState["PodeEditar"] as bool? ?? true;
+            set => ViewState["PodeEditar"] = value;
+        }
+        private List<LinhaEdicao> Linhas
+        {
+            get => ViewState["Linhas"] as List<LinhaEdicao> ?? new List<LinhaEdicao>();
+            set => ViewState["Linhas"] = value;
+        }
+
+        [Serializable]
+        private class LinhaEdicao
+        {
+            public int SaleLineId { get; set; }
+            public int ProductId { get; set; }
+            public string ProductName { get; set; }
+            public int LineOrder { get; set; }
+            public string Description { get; set; }
+            public decimal Quantity { get; set; }
+            public decimal UnitPrice { get; set; }
+            public decimal DiscountPercent { get; set; }
+            public int TaxRateId { get; set; }
+            public decimal TaxPercentage { get; set; }
+            public decimal LineTotal { get; set; }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            ucCliente.Obrigatorio = true;
+
             if (!IsPostBack)
             {
-                CarregarListasAuxiliares();
+                CarregarComerciais();
 
-                if (int.TryParse(Request.QueryString["id"], out int id))
+                int saleId = ObterIdDaQueryString();
+                if (saleId > 0)
                 {
-                    CarregarVenda(id);
-                }
-                else if (int.TryParse(Request.QueryString["proposalId"], out int proposalId))
-                {
-                    CarregarNovaAPartirDeProposta(proposalId);
+                    CarregarVenda(saleId);
                 }
                 else
                 {
-                    CarregarNovaManual();
+                    NovaVenda();
+
+                    if (int.TryParse(Request.QueryString["proposalId"], out int proposalId) && proposalId > 0)
+                        PreencherAPartirDeProposta(proposalId);
                 }
+
+                lnkCancelar.NavigateUrl = SaleId.HasValue ? $"VendaDetalhe.aspx?id={SaleId}" : "VendasLista.aspx";
             }
         }
 
-        // ===================== Carregamento inicial =====================
-
-        private void CarregarListasAuxiliares()
+        protected void Page_PreRender(object sender, EventArgs e)
         {
-            ddlComercial.Items.Add(new ListItem("(Selecionar)", ""));
-            foreach (var user in _userRepository.ListarComerciaisAtivos())
-                ddlComercial.Items.Add(new ListItem(user.Name, user.UserId.ToString()));
+            RenderizarLinhas();
+            RecalcularTotais();
         }
 
-        private void CarregarNovaManual()
+        private int ObterIdDaQueryString()
+            => int.TryParse(Request.QueryString["id"], out int id) ? id : 0;
+
+        private void CarregarComerciais()
         {
-            lblNumero.Text = "(gerado ao gravar)";
-            AtualizarBadgeEstado(SaleService.StatusPendente);
+            ddlComercial.Items.Clear();
+
+            if (_saleService.TemAmbitoProprios(Perfil))
+            {
+                var utilizadorAtual = _userRepository.ListarComerciaisAtivos()
+                    .SingleOrDefault(u => u.UserId == UserId);
+
+                ddlComercial.Items.Add(new ListItem(utilizadorAtual?.Name ?? "Eu", UserId.ToString()));
+                ddlComercial.Enabled = false;
+            }
+            else
+            {
+                foreach (var user in _userRepository.ListarComerciaisAtivos())
+                    ddlComercial.Items.Add(new ListItem(user.Name, user.UserId.ToString()));
+            }
+        }
+
+        private void NovaVenda()
+        {
+            SaleId = null;
+            PodeEditar = _saleService.PodeCriarOuEditar(Perfil);
+
+            Linhas = new List<LinhaEdicao>();
+
+            lblNumero.Text = "(nova)";
+            spanStatus.InnerText = SaleService.StatusPendente;
+            spanStatus.Attributes["class"] = "badge " + EstadoParaClasseBadge(SaleService.StatusPendente);
+
+            ucCliente.Enabled = PodeEditar;
+
+            txtDataVenda.Text = DateTime.Today.ToString("dd/MM/yyyy");
             ddlOrigem.SelectedValue = SaleService.OrigemManual;
             phSeletorProposta.Visible = false;
-            txtDataVenda.Text = DateTime.Today.ToString("dd/MM/yyyy");
-            AplicarComercialPorDefeito();
-            RebindLinhas(new List<SaleLine> { NovaLinhaVazia() });
-            AtualizarVisibilidadeBotoes(null);
-            phPagamentos.Visible = false;
-            phCancelamento.Visible = false;
-            phAnexosHistorico.Visible = false;
+
+            phAvisoSoLeitura.Visible = false;
+            pnlCamposEditaveis.Enabled = PodeEditar;
+            btnGuardar.Visible = PodeEditar;
         }
 
-        private void CarregarNovaAPartirDeProposta(int proposalId)
+        private void PreencherAPartirDeProposta(int proposalId)
         {
+            if (!PodeEditar) return;
+
             var proposal = _proposalRepository.GetById(proposalId);
-            if (proposal == null || proposal.Status != "Aceite")
-            {
-                NotificacaoService.Erro("A proposta indicada não existe ou não está Aceite. Cria a venda manualmente ou escolhe outra proposta.");
-                CarregarNovaManual();
-                return;
-            }
+            if (proposal == null) return;
 
-            var saleTemp = _saleService.MontarAPartirDeProposta(proposal);
+            ucCliente.ClienteId = proposal.ClientId;
 
-            lblNumero.Text = "(gerado ao gravar)";
-            AtualizarBadgeEstado(SaleService.StatusPendente);
-            ucCliente.ClienteId = saleTemp.ClientId;
             ddlOrigem.SelectedValue = SaleService.OrigemProposta;
             phSeletorProposta.Visible = true;
-            CarregarPropostasDoCliente(saleTemp.ClientId);
-            ddlProposta.SelectedValue = proposalId.ToString();
-            txtDataVenda.Text = DateTime.Today.ToString("dd/MM/yyyy");
-            AplicarComercialPorDefeito();
-            RebindLinhas(saleTemp.Lines);
-            AtualizarVisibilidadeBotoes(null);
-            phPagamentos.Visible = false;
-            phCancelamento.Visible = false;
-            phAnexosHistorico.Visible = false;
+
+            CarregarPropostas(proposal.ClientId);
+
+            if (ddlProposta.Items.FindByValue(proposal.ProposalId.ToString()) == null)
+                ddlProposta.Items.Add(new ListItem(
+                    $"{proposal.ProposalNumber} — {proposal.Total:C}",
+                    proposal.ProposalId.ToString()));
+            ddlProposta.SelectedValue = proposal.ProposalId.ToString();
+
+            var vendaTemp = _saleService.MontarAPartirDeProposta(proposal);
+            Linhas = MapearLinhas(vendaTemp.Lines);
         }
 
         private void CarregarVenda(int saleId)
         {
             var sale = _saleService.GetById(saleId);
+
             if (sale == null)
             {
-                Response.Redirect("~/AcessoNegado.aspx");
+                NotificacaoService.Erro("Venda não encontrada.");
+                Response.Redirect("VendasLista.aspx");
                 return;
             }
 
             if (!_saleService.PodeAceder(sale, UserId, Perfil))
             {
-                Response.Redirect("~/AcessoNegado.aspx");
+                NotificacaoService.Erro("Não tens permissão para aceder a esta venda.");
+                Response.Redirect("VendasLista.aspx");
                 return;
             }
 
-            ViewState["SaleId"] = sale.SaleId;
-            ViewState["Status"] = sale.Status;
+            SaleId = sale.SaleId;
+            PodeEditar = _saleService.PodeEditarDiretamente(sale) && _saleService.PodeCriarOuEditar(Perfil);
 
-            hdnRowVersion.Value = sale.RowVersion != null ? Convert.ToBase64String(sale.RowVersion) : "";
+            lblNumero.Text = "#" + sale.SaleNumber;
+            spanStatus.InnerText = sale.Status;
+            spanStatus.Attributes["class"] = "badge " + EstadoParaClasseBadge(sale.Status);
 
             ucCliente.ClienteId = sale.ClientId;
-            lblNumero.Text = sale.SaleNumber;
-            AtualizarBadgeEstado(sale.Status);
+            ucCliente.Enabled = PodeEditar;
+
+            if (ddlComercial.Items.FindByValue(sale.OwnerId.ToString()) == null)
+                ddlComercial.Items.Insert(0, new ListItem(sale.Owner?.Name ?? $"Utilizador #{sale.OwnerId}", sale.OwnerId.ToString()));
             ddlComercial.SelectedValue = sale.OwnerId.ToString();
-            ddlComercial.Enabled = !_saleService.TemAmbitoProprios(Perfil);
+
             ddlOrigem.SelectedValue = sale.Origin;
             phSeletorProposta.Visible = sale.Origin == SaleService.OrigemProposta;
 
-            if (sale.Origin == SaleService.OrigemProposta)
+            if (phSeletorProposta.Visible)
             {
-                CarregarPropostasDoCliente(sale.ClientId);
+                CarregarPropostas(sale.ClientId);
+
                 if (sale.ProposalId.HasValue)
+                {
+                    if (ddlProposta.Items.FindByValue(sale.ProposalId.Value.ToString()) == null)
+                        ddlProposta.Items.Add(new ListItem(
+                            sale.Proposal?.ProposalNumber ?? $"Proposta #{sale.ProposalId}",
+                            sale.ProposalId.Value.ToString()));
+
                     ddlProposta.SelectedValue = sale.ProposalId.Value.ToString();
+                }
             }
 
             txtDataVenda.Text = sale.SaleDate.ToString("dd/MM/yyyy");
             txtDataVencimento.Text = sale.DueDate?.ToString("dd/MM/yyyy") ?? "";
             ddlMetodoPagamento.SelectedValue = sale.PaymentMethod ?? "";
-            txtComissao.Text = sale.CommissionValue?.ToString("0.##", CultureInfo.InvariantCulture) ?? "";
+            txtComissao.Text = sale.CommissionValue?.ToString("0.00") ?? "";
 
-            var linhas = sale.Lines.Any() ? sale.Lines.ToList() : new List<SaleLine> { NovaLinhaVazia() };
-            RebindLinhas(linhas);
+            Linhas = MapearLinhas(sale.Lines);
 
-            AtualizarVisibilidadeBotoes(sale);
-
-            phPagamentos.Visible = sale.Status != SaleService.StatusCancelada;
-            if (phPagamentos.Visible)
-                CarregarPagamentos(sale);
-            phCancelamento.Visible = _saleService.PodeCancelar(sale, UserId, Perfil);
-            btnConfirmar.Visible = sale.Status == SaleService.StatusPendente
-                && _saleService.PodeCriarOuEditar(Perfil)
-                && _saleService.PodeAceder(sale, UserId, Perfil);
-            phAnexosHistorico.Visible = true;
-            ucAnexos.Inicializar("Sale", sale.SaleId, UserId);
-            ucHistorico.Inicializar("Sale", sale.SaleId.ToString());
+            phAvisoSoLeitura.Visible = !PodeEditar;
+            pnlCamposEditaveis.Enabled = PodeEditar;
+            btnGuardar.Visible = PodeEditar;
         }
 
-        private void AplicarComercialPorDefeito()
-        {
-            if (_saleService.TemAmbitoProprios(Perfil))
-            {
-                ddlComercial.SelectedValue = UserId.ToString();
-                ddlComercial.Enabled = false;
-            }
-            else
-            {
-                ddlComercial.Enabled = true;
-            }
-        }
-
-        private void CarregarPropostasDoCliente(int clientId)
+        private void CarregarPropostas(int clientId)
         {
             ddlProposta.Items.Clear();
-            ddlProposta.Items.Add(new ListItem("(Selecionar)", ""));
-            foreach (var proposal in _proposalRepository.ListarAceitesPorCliente(clientId))
-                ddlProposta.Items.Add(new ListItem($"{proposal.ProposalNumber} · {proposal.Total:C}", proposal.ProposalId.ToString()));
-        }
+            ddlProposta.Items.Add(new ListItem("Selecionar...", ""));
 
-        private void AtualizarBadgeEstado(string status)
-        {
-            spanStatus.InnerText = status;
-            spanStatus.Attributes["class"] = "badge " + GetBadgeClasse(status);
-        }
+            var propostas = _proposalRepository.Listar(
+                pesquisa: null,
+                status: ProposalService.StatusAceite,
+                clientId: clientId,
+                accountManagerId: null,
+                dataInicio: null,
+                dataFim: null,
+                pagina: 1,
+                tamanhoPagina: 100,
+                totalRegistos: out int _,
+                sortColumn: "IssueDate",
+                sortAscending: false);
 
-        // ===================== Cliente / Origem / Proposta =====================
-
-        protected void ucCliente_ClienteSelecionado(object sender, EventArgs e)
-        {
-            if (!ucCliente.ClienteId.HasValue) return;
-
-            if (ddlOrigem.SelectedValue == SaleService.OrigemProposta)
+            foreach (var proposal in propostas)
             {
-                CarregarPropostasDoCliente(ucCliente.ClienteId.Value);
-                RebindLinhas(new List<SaleLine> { NovaLinhaVazia() });
-            }
-        }
-
-        protected void ddlOrigem_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            phSeletorProposta.Visible = ddlOrigem.SelectedValue == SaleService.OrigemProposta;
-
-            if (phSeletorProposta.Visible && ucCliente.ClienteId.HasValue)
-            {
-                CarregarPropostasDoCliente(ucCliente.ClienteId.Value);
-            }
-            else
-            {
-                ddlProposta.Items.Clear();
-            }
-
-            RebindLinhas(new List<SaleLine> { NovaLinhaVazia() });
-        }
-
-        protected void ddlProposta_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(ddlProposta.SelectedValue)) return;
-
-            var proposal = _proposalRepository.GetById(int.Parse(ddlProposta.SelectedValue));
-            if (proposal == null) return;
-
-            var saleTemp = _saleService.MontarAPartirDeProposta(proposal);
-            RebindLinhas(saleTemp.Lines);
-        }
-
-        // ===================== Repeater: colher / recompor (sem ViewModel) =====================
-
-        private SaleLine NovaLinhaVazia() => new SaleLine { Quantity = 1 };
-
-        private List<SaleLine> ColherLinhasDosControles()
-        {
-            var linhas = new List<SaleLine>();
-
-            foreach (RepeaterItem item in rptLinhas.Items)
-            {
-                if (item.ItemType != ListItemType.Item && item.ItemType != ListItemType.AlternatingItem)
+                if (_saleService.ExisteVendaParaProposta(proposal.ProposalId))
                     continue;
 
-                var ucProduto = (SeletorProduto)item.FindControl("ucProduto");
-                var hdnSaleLineId = (HiddenField)item.FindControl("hdnSaleLineId");
-                var hdnUnitPrice = (HiddenField)item.FindControl("hdnUnitPrice");
-                var hdnTaxRateId = (HiddenField)item.FindControl("hdnTaxRateId");
-                var txtDescricao = (TextBox)item.FindControl("txtDescricao");
-                var txtQuantidade = (TextBox)item.FindControl("txtQuantidade");
-                var txtDesconto = (TextBox)item.FindControl("txtDesconto");
-
-                int taxRateId = int.TryParse(hdnTaxRateId.Value, out int tid) ? tid : 0;
-
-                linhas.Add(new SaleLine
-                {
-                    SaleLineId = int.TryParse(hdnSaleLineId.Value, out int lid) ? lid : 0,
-                    ProductId = ucProduto.ProdutoId ?? 0,
-                    Description = txtDescricao.Text.Trim(),
-                    Quantity = decimal.TryParse(txtQuantidade.Text, out decimal q) ? q : 0,
-                    UnitPrice = decimal.TryParse(hdnUnitPrice.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal up) ? up : 0,
-                    DiscountPercent = decimal.TryParse(txtDesconto.Text, out decimal d) ? d : 0,
-                    TaxRateId = taxRateId,
-                    TaxRate = GetTaxasIva().SingleOrDefault(t => t.TaxRateId == taxRateId)
-                });
+                ddlProposta.Items.Add(new ListItem(
+                    $"{proposal.ProposalNumber} — {proposal.Total:C}",
+                    proposal.ProposalId.ToString()));
             }
-
-            return linhas;
         }
 
-        private void RebindLinhas(List<SaleLine> linhas)
+        private List<LinhaEdicao> MapearLinhas(IEnumerable<SaleLine> linhas)
         {
-            var linhasValidas = linhas.Where(l => l.ProductId > 0).ToList();
-            var saleTemp = new Sale { Lines = linhasValidas };
+            return linhas
+                .OrderBy(l => l.LineOrder)
+                .Select(l => new LinhaEdicao
+                {
+                    SaleLineId = l.SaleLineId,
+                    ProductId = l.ProductId,
+                    ProductName = l.Product?.Name,
+                    LineOrder = l.LineOrder,
+                    Description = l.Description,
+                    Quantity = l.Quantity,
+                    UnitPrice = l.UnitPrice,
+                    DiscountPercent = l.DiscountPercent,
+                    TaxRateId = l.TaxRateId,
+                    TaxPercentage = l.TaxRate?.Percentage ?? 0,
+                    LineTotal = l.LineTotal
+                })
+                .ToList();
+        }
 
-            if (linhasValidas.Any())
-                _saleService.CalcularTotais(saleTemp);
+        private void RenderizarLinhas()
+        {
+            var linhas = Linhas;
 
             rptLinhas.DataSource = linhas;
             rptLinhas.DataBind();
-            phSemLinhas.Visible = !linhas.Any();
 
-            lblSubTotal.Text = saleTemp.SubTotal.ToString("C");
-            lblIvaTotal.Text = saleTemp.TaxTotal.ToString("C");
-            lblTotalGeral.Text = saleTemp.Total.ToString("C");
+            phSemLinhas.Visible = linhas.Count == 0;
+            btnAdicionarLinha.Visible = PodeEditar;
         }
 
-        protected void rptLinhas_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RecalcularTotais()
         {
-            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem)
-                return;
+            var linhas = Linhas;
 
-            var linha = (SaleLine)e.Item.DataItem;
-            var ucProduto = (SeletorProduto)e.Item.FindControl("ucProduto");
-            ucProduto.ProdutoId = linha.ProductId > 0 ? linha.ProductId : (int?)null;
-            ucProduto.ProdutoSelecionado += (s, args) => ucProduto_ProdutoSelecionado(ucProduto, e.Item);
+            decimal subTotal = linhas.Sum(l => l.LineTotal);
+            decimal ivaTotal = linhas.Sum(l => Math.Round(l.LineTotal * (l.TaxPercentage / 100m), 2));
 
-            ((HiddenField)e.Item.FindControl("hdnUnitPrice")).Value =
-                linha.UnitPrice.ToString(CultureInfo.InvariantCulture);
-            ((HiddenField)e.Item.FindControl("hdnTaxRateId")).Value =
-                linha.TaxRateId.ToString();
-
-            ((Label)e.Item.FindControl("lblPrecoUnit")).Text = linha.UnitPrice.ToString("C");
-            ((Label)e.Item.FindControl("lblIva")).Text =
-                linha.TaxRate != null ? $"{linha.TaxRate.Percentage:0.##}%" : "—";
-            ((Label)e.Item.FindControl("lblTotalLinha")).Text = linha.LineTotal.ToString("C");
+            lblSubTotal.Text = subTotal.ToString("C");
+            lblIvaTotal.Text = ivaTotal.ToString("C");
+            lblTotalGeral.Text = (subTotal + ivaTotal).ToString("C");
         }
 
-        private void ucProduto_ProdutoSelecionado(SeletorProduto ucProduto, RepeaterItem item)
+        private void RecalcularLinha(LinhaEdicao linha)
         {
-            var produto = ucProduto.ObterProdutoSelecionado();
-            if (produto == null) return;
-
-            ((HiddenField)item.FindControl("hdnUnitPrice")).Value =
-                produto.BasePrice.ToString(CultureInfo.InvariantCulture);
-            ((HiddenField)item.FindControl("hdnTaxRateId")).Value =
-                produto.TaxRateId.ToString();
-
-            var txtDescricao = (TextBox)item.FindControl("txtDescricao");
-            if (string.IsNullOrWhiteSpace(txtDescricao.Text))
-                txtDescricao.Text = produto.Name;
-
-            RebindLinhas(ColherLinhasDosControles());
+            linha.LineTotal = Math.Round(linha.Quantity * linha.UnitPrice * (1 - linha.DiscountPercent / 100m), 2);
         }
 
-        protected void txtLinha_TextChanged(object sender, EventArgs e) =>
-            RebindLinhas(ColherLinhasDosControles());
-
-        protected void btnAdicionarLinha_Click(object sender, EventArgs e)
-        {
-            var linhas = ColherLinhasDosControles();
-            linhas.Add(NovaLinhaVazia());
-            RebindLinhas(linhas);
-        }
-
-        protected void rptLinhas_ItemCommand(object source, RepeaterCommandEventArgs e)
-        {
-            if (e.CommandName != "Remover") return;
-
-            var linhas = ColherLinhasDosControles();
-            linhas.RemoveAt(e.Item.ItemIndex);
-
-            if (!linhas.Any())
-                linhas.Add(NovaLinhaVazia());
-
-            RebindLinhas(linhas);
-        }
-
-        // ===================== Permissões / visibilidade =====================
-
-        private void AtualizarVisibilidadeBotoes(Sale sale)
-        {
-            bool ehNova = sale == null;
-            bool temPermissaoPerfil = _saleService.PodeCriarOuEditar(Perfil);
-            bool ehDono = ehNova || _saleService.PodeAceder(sale, UserId, Perfil);
-            bool estadoPermiteEdicaoDireta = ehNova || _saleService.PodeEditarDiretamente(sale);
-            bool podeEditar = temPermissaoPerfil && ehDono && estadoPermiteEdicaoDireta;
-
-            pnlCamposEditaveis.Enabled = podeEditar;
-            btnGuardar.Visible = podeEditar;
-            btnAdicionarLinha.Visible = podeEditar;
-            phAvisoSoLeitura.Visible = !podeEditar && !ehNova;
-        }
-
-        // ===================== Validação =====================
-
-        protected void cvLinhas_ServerValidate(object source, ServerValidateEventArgs args)
-        {
-            args.IsValid = ColherLinhasDosControles().Any(l => l.ProductId > 0);
-        }
-
-        // ===================== Gravação =====================
-
-        protected void btnGuardar_Click(object sender, EventArgs e)
-        {
-            if (!Page.IsValid) return;
-
-            var saleExistente = SaleId.HasValue ? _saleService.GetById(SaleId.Value) : null;
-
-            bool podeGravar = _saleService.PodeCriarOuEditar(Perfil)
-                && (saleExistente == null || _saleService.PodeAceder(saleExistente, UserId, Perfil))
-                && (saleExistente == null || _saleService.PodeEditarDiretamente(saleExistente));
-
-            if (!podeGravar)
-            {
-                NotificacaoService.Erro("Não tens permissão para gravar esta venda.");
-                return;
-            }
-
-            var linhas = ColherLinhasDosControles().Where(l => l.ProductId > 0).ToList();
-
-            var sale = new Sale
-            {
-                SaleId = SaleId ?? 0,
-                RowVersion = string.IsNullOrEmpty(hdnRowVersion.Value) ? null : Convert.FromBase64String(hdnRowVersion.Value),
-                ClientId = ucCliente.ClienteId ?? 0,
-                OwnerId = string.IsNullOrEmpty(ddlComercial.SelectedValue) ? 0 : int.Parse(ddlComercial.SelectedValue),
-                Origin = ddlOrigem.SelectedValue,
-                ProposalId = string.IsNullOrEmpty(ddlProposta.SelectedValue) ? (int?)null : int.Parse(ddlProposta.SelectedValue),
-                SaleDate = DateTime.TryParse(txtDataVenda.Text, out DateTime dataVenda) ? dataVenda : DateTime.Today,
-                DueDate = DateTime.TryParse(txtDataVencimento.Text, out DateTime dataVenc) ? dataVenc : (DateTime?)null,
-                PaymentMethod = string.IsNullOrEmpty(ddlMetodoPagamento.SelectedValue) ? null : ddlMetodoPagamento.SelectedValue,
-                CommissionValue = decimal.TryParse(txtComissao.Text, out decimal comissao) ? comissao : (decimal?)null,
-                Lines = linhas
-            };
-
-            var erros = _saleService.Validar(sale);
-            if (erros.Any())
-            {
-                NotificacaoService.Erro(string.Join(" ", erros));
-                return;
-            }
-
-            if (SaleId.HasValue)
-            {
-                sale.Status = StatusAtual;
-
-                try
-                {
-                    _saleService.Atualizar(sale, UserId);
-                    NotificacaoService.Sucesso("Venda atualizada.");
-                    Response.Redirect($"VendaEditar.aspx?id={SaleId}");
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    NotificacaoService.Erro("Esta venda foi alterada por outro utilizador entretanto. A página foi recarregada com os dados mais recentes — revê e grava novamente.");
-                    Response.Redirect($"VendaEditar.aspx?id={SaleId}");
-                }
-            }
-            else
-            {
-                var criada = _saleService.Criar(sale, UserId);
-                NotificacaoService.Sucesso("Venda criada.");
-                Response.Redirect($"VendaEditar.aspx?id={criada.SaleId}");
-            }
-        }
-
-        protected void btnConfirmar_Click(object sender, EventArgs e)
-        {
-            if (!SaleId.HasValue) return;
-
-            if (_saleService.ConfirmarManualmente(SaleId.Value, UserId, Perfil))
-                NotificacaoService.Sucesso("Venda confirmada.");
-            else
-                NotificacaoService.Erro("Não foi possível confirmar a venda.");
-
-            Response.Redirect($"VendaEditar.aspx?id={SaleId}");
-        }
-
-        protected void btnCancelar_Click(object sender, EventArgs e)
-        {
-            if (!SaleId.HasValue) return;
-
-            var erros = _saleService.ValidarCancelamento(txtMotivoCancelamento.Text);
-            if (erros.Any())
-            {
-                NotificacaoService.Erro(string.Join(" ", erros));
-                return;
-            }
-
-            if (_saleService.Cancelar(SaleId.Value, txtMotivoCancelamento.Text.Trim(), UserId, Perfil))
-                NotificacaoService.Sucesso("Venda cancelada.");
-            else
-                NotificacaoService.Erro("Não tens permissão para cancelar esta venda.");
-
-            Response.Redirect($"VendaEditar.aspx?id={SaleId}");
-        }
-
-        // ===================== Pagamentos =====================
-
-        private void CarregarPagamentos(Sale sale)
-        {
-            var pagamentos = _paymentService.ListarPorVenda(sale.SaleId);
-            rptPagamentos.DataSource = pagamentos;
-            rptPagamentos.DataBind();
-            phSemPagamentos.Visible = pagamentos.Count == 0;
-
-            decimal totalPago = _paymentService.TotalPago(sale.SaleId);
-            lblTotalPago.Text = totalPago.ToString("C");
-            lblSaldoEmAberto.Text = (sale.Total - totalPago).ToString("C");
-
-            pnlNovoPagamento.Visible = _saleService.PodeRegistarPagamento(sale, UserId, Perfil);
-            txtDataPagamento.Text = DateTime.Today.ToString("dd/MM/yyyy");
-        }
-
-        protected void btnRegistarPagamento_Click(object sender, EventArgs e)
-        {
-            if (!SaleId.HasValue) return;
-
-            var sale = _saleService.GetById(SaleId.Value);
-            if (sale == null || !_saleService.PodeRegistarPagamento(sale, UserId, Perfil))
-            {
-                NotificacaoService.Erro("Não tens permissão para registar pagamentos nesta venda.");
-                return;
-            }
-
-            var payment = new Payment
-            {
-                SaleId = SaleId.Value,
-                Amount = decimal.TryParse(txtValorPagamento.Text, out decimal valor) ? valor : 0,
-                PaymentDate = DateTime.TryParse(txtDataPagamento.Text, out DateTime data) ? data : DateTime.Today,
-                PaymentMethod = ddlMetodoPagamentoPagamento.SelectedValue,
-                Reference = txtReferenciaPagamento.Text.Trim(),
-                Notes = txtNotasPagamento.Text.Trim()
-            };
-
-            var erros = _paymentService.Validar(payment);
-            if (erros.Any())
-            {
-                NotificacaoService.Erro(string.Join(" ", erros));
-                return;
-            }
-
-            _paymentService.Registar(payment, UserId);
-            NotificacaoService.Sucesso("Pagamento registado.");
-            Response.Redirect($"VendaEditar.aspx?id={SaleId}");
-        }
-
-        protected void rptPagamentos_ItemCommand(object source, RepeaterCommandEventArgs e)
-        {
-            if (e.CommandName != "Eliminar" || !SaleId.HasValue) return;
-
-            var sale = _saleService.GetById(SaleId.Value);
-            if (sale == null || !_saleService.PodeRegistarPagamento(sale, UserId, Perfil))
-            {
-                NotificacaoService.Erro("Não tens permissão para eliminar este pagamento.");
-                Response.Redirect($"VendaEditar.aspx?id={SaleId}");
-                return;
-            }
-
-            int paymentId = int.Parse(e.CommandArgument.ToString());
-            _paymentService.Eliminar(paymentId, SaleId.Value, UserId);
-            NotificacaoService.Sucesso("Pagamento eliminado.");
-            Response.Redirect($"VendaEditar.aspx?id={SaleId}");
-        }
-
-        // ===================== Auxiliares =====================
-
-        protected string GetBadgeClasse(string status)
+        private static string EstadoParaClasseBadge(string status)
         {
             switch (status)
             {
@@ -543,6 +301,213 @@ namespace CRM.Web.Paginas.Vendas
                 case "Cancelada": return "badge-bloqueado";
                 default: return "bg-secondary";
             }
+        }
+
+        protected void ucCliente_ClienteSelecionado(object sender, EventArgs e)
+        {
+            if (!ucCliente.ClienteId.HasValue) return;
+
+            if (ddlOrigem.SelectedValue == SaleService.OrigemProposta)
+                CarregarPropostas(ucCliente.ClienteId.Value);
+        }
+
+        protected void ddlOrigem_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            phSeletorProposta.Visible = ddlOrigem.SelectedValue == SaleService.OrigemProposta;
+
+            if (phSeletorProposta.Visible && ucCliente.ClienteId.HasValue)
+                CarregarPropostas(ucCliente.ClienteId.Value);
+        }
+
+        protected void ddlProposta_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(ddlProposta.SelectedValue))
+                return;
+
+            int proposalId = int.Parse(ddlProposta.SelectedValue);
+
+            var proposal = _proposalRepository.GetById(proposalId);
+            if (proposal == null) return;
+
+            var vendaTemp = _saleService.MontarAPartirDeProposta(proposal);
+            Linhas = MapearLinhas(vendaTemp.Lines);
+        }
+
+        protected void btnAdicionarLinha_Click(object sender, EventArgs e)
+        {
+            var linhas = Linhas;
+            linhas.Add(new LinhaEdicao { LineOrder = linhas.Count + 1, Quantity = 1, DiscountPercent = 0 });
+            Linhas = linhas;
+        }
+
+        protected void rptLinhas_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem)
+                return;
+
+            var linha = (LinhaEdicao)e.Item.DataItem;
+            int index = e.Item.ItemIndex;
+
+            var ucProduto = (SeletorProduto)e.Item.FindControl("ucProduto");
+            ucProduto.ProdutoSelecionado += (s, args) => AtualizarProdutoLinha(index, ucProduto);
+            ucProduto.Enabled = PodeEditar;
+
+            if (linha.ProductId > 0)
+                ucProduto.ProdutoId = linha.ProductId;
+
+            var hdnUnitPrice = (HiddenField)e.Item.FindControl("hdnUnitPrice");
+            var hdnTaxRateId = (HiddenField)e.Item.FindControl("hdnTaxRateId");
+            hdnUnitPrice.Value = linha.UnitPrice.ToString();
+            hdnTaxRateId.Value = linha.TaxRateId.ToString();
+
+            ((Label)e.Item.FindControl("lblPrecoUnit")).Text = linha.UnitPrice.ToString("C");
+            ((Label)e.Item.FindControl("lblIva")).Text = linha.TaxPercentage.ToString("0") + "%";
+            ((Label)e.Item.FindControl("lblTotalLinha")).Text = linha.LineTotal.ToString("C");
+
+            var txtQuantidade = (TextBox)e.Item.FindControl("txtQuantidade");
+            var txtDesconto = (TextBox)e.Item.FindControl("txtDesconto");
+            var txtDescricao = (TextBox)e.Item.FindControl("txtDescricao");
+            var lnkRemover = (LinkButton)e.Item.FindControl("lnkRemover");
+
+            txtQuantidade.Enabled = PodeEditar;
+            txtDesconto.Enabled = PodeEditar;
+            txtDescricao.Enabled = PodeEditar;
+            lnkRemover.Visible = PodeEditar;
+        }
+
+        private void AtualizarProdutoLinha(int index, SeletorProduto seletor)
+        {
+            var linhas = Linhas;
+            if (index < 0 || index >= linhas.Count) return;
+
+            var produto = seletor.ObterProdutoSelecionado();
+            if (produto == null) return;
+
+            var taxa = _taxRateRepository.ListarTodas().SingleOrDefault(t => t.TaxRateId == produto.TaxRateId);
+
+            var linha = linhas[index];
+            linha.ProductId = produto.ProductId;
+            linha.ProductName = produto.Name;
+            if (string.IsNullOrWhiteSpace(linha.Description))
+                linha.Description = produto.Name;
+            linha.UnitPrice = produto.BasePrice;
+            linha.TaxRateId = taxa?.TaxRateId ?? produto.TaxRateId;
+            linha.TaxPercentage = taxa?.Percentage ?? 0;
+            if (linha.Quantity <= 0) linha.Quantity = 1;
+
+            RecalcularLinha(linha);
+            Linhas = linhas;
+        }
+
+        protected void txtLinha_TextChanged(object sender, EventArgs e)
+        {
+            var item = (RepeaterItem)((TextBox)sender).NamingContainer;
+            int index = item.ItemIndex;
+
+            var linhas = Linhas;
+            if (index < 0 || index >= linhas.Count) return;
+
+            var linha = linhas[index];
+
+            decimal.TryParse(((TextBox)item.FindControl("txtQuantidade")).Text, out decimal quantidade);
+            decimal.TryParse(((TextBox)item.FindControl("txtDesconto")).Text, out decimal desconto);
+
+            linha.Quantity = quantidade;
+            linha.DiscountPercent = desconto;
+            linha.Description = ((TextBox)item.FindControl("txtDescricao")).Text;
+
+            RecalcularLinha(linha);
+            Linhas = linhas;
+        }
+
+        protected void rptLinhas_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName != "Remover") return;
+
+            var linhas = Linhas;
+            int index = e.Item.ItemIndex;
+
+            if (index >= 0 && index < linhas.Count)
+            {
+                linhas.RemoveAt(index);
+                for (int i = 0; i < linhas.Count; i++)
+                    linhas[i].LineOrder = i + 1;
+
+                Linhas = linhas;
+            }
+        }
+
+        protected void cvLinhas_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            args.IsValid = Linhas.Any(l => l.ProductId > 0 && l.Quantity > 0);
+        }
+
+        protected void btnGuardar_Click(object sender, EventArgs e)
+        {
+            if (!Page.IsValid) return;
+
+            var sale = MontarSaleAPartirDoFormulario();
+            var erros = _saleService.Validar(sale);
+
+            if (erros.Any())
+            {
+                NotificacaoService.Erro(string.Join(" ", erros));
+                return;
+            }
+
+            try
+            {
+                if (SaleId.HasValue)
+                {
+                    sale.SaleId = SaleId.Value;
+                    _saleService.Atualizar(sale, UserId);
+                    NotificacaoService.Sucesso("Venda atualizada.");
+                    Response.Redirect($"VendaDetalhe.aspx?id={SaleId}");
+                }
+                else
+                {
+                    var criada = _saleService.Criar(sale, UserId);
+                    NotificacaoService.Sucesso("Venda criada.");
+                    Response.Redirect($"VendaDetalhe.aspx?id={criada.SaleId}");
+                }
+            }
+            catch (System.Data.Entity.Infrastructure.DbUpdateConcurrencyException)
+            {
+                NotificacaoService.Erro("Esta venda foi alterada por outro utilizador entretanto. Recarrega a página e tenta novamente.");
+            }
+        }
+
+        private Sale MontarSaleAPartirDoFormulario()
+        {
+            DateTime.TryParse(txtDataVenda.Text, out DateTime dataVenda);
+            DateTime? dataVencimento = DateTime.TryParse(txtDataVencimento.Text, out DateTime dv) ? dv : (DateTime?)null;
+            decimal? comissao = decimal.TryParse(txtComissao.Text, out decimal com) ? com : (decimal?)null;
+            int.TryParse(ddlComercial.SelectedValue, out int ownerId);
+
+            return new Sale
+            {
+                ClientId = ucCliente.ClienteId ?? 0,
+                OwnerId = ownerId,
+                Origin = ddlOrigem.SelectedValue,
+                ProposalId = ddlOrigem.SelectedValue == SaleService.OrigemProposta && !string.IsNullOrEmpty(ddlProposta.SelectedValue)
+                    ? int.Parse(ddlProposta.SelectedValue)
+                    : (int?)null,
+                SaleDate = dataVenda == default ? DateTime.Today : dataVenda,
+                DueDate = dataVencimento,
+                PaymentMethod = string.IsNullOrWhiteSpace(ddlMetodoPagamento.SelectedValue) ? null : ddlMetodoPagamento.SelectedValue,
+                CommissionValue = comissao,
+                Lines = Linhas.Select(l => new SaleLine
+                {
+                    SaleLineId = l.SaleLineId,
+                    ProductId = l.ProductId,
+                    LineOrder = l.LineOrder,
+                    Description = l.Description,
+                    Quantity = l.Quantity,
+                    UnitPrice = l.UnitPrice,
+                    DiscountPercent = l.DiscountPercent,
+                    TaxRateId = l.TaxRateId
+                }).ToList()
+            };
         }
     }
 }

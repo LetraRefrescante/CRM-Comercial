@@ -47,9 +47,6 @@ namespace CRM.Data.Repositories
             }
         }
 
-        /// <summary>
-        /// Igual a Listar, mas sem paginação — usado para exportar apenas os resultados filtrados.
-        /// </summary>
         public List<Client> ListarParaExportacao(string pesquisa, string status, int? accountManagerId)
         {
             using (var context = new CrmDbContext())
@@ -90,9 +87,6 @@ namespace CRM.Data.Repositories
             return query;
         }
 
-        // Whitelist explícita de propósito: nunca aceites o nome da coluna
-        // diretamente num OrderBy dinâmico por string (isso sim seria uma
-        // porta para injeção).
         private IQueryable<Client> AplicarOrdenacao(IQueryable<Client> query, string sortColumn, bool sortAscending)
         {
             switch (sortColumn)
@@ -113,13 +107,6 @@ namespace CRM.Data.Repositories
             }
         }
 
-        /// <summary>
-        /// Blueprint: "Não permitir clientes ativos duplicados pelo mesmo NIF" — por isso
-        /// só o Status "Ativo" bloqueia, alinhado com o índice único filtrado
-        /// UX_Clients_VatNumber (WHERE IsDeleted = 0 AND Status = 'Ativo') em 003_Clients_Contacts.sql.
-        /// Antes verificava "Status != Inativo" (bloqueava também Potencial/Bloqueado),
-        /// o que era mais restritivo do que a BD e do que a blueprint pedem.
-        /// </summary>
         public bool NifAtivoExiste(string vatNumber, int? ignorarClientId = null)
         {
             using (var context = new CrmDbContext())
@@ -142,7 +129,7 @@ namespace CRM.Data.Repositories
         {
             using (var context = new CrmDbContext())
             {
-                int totalClientes = context.Clients.Count(); // inclui eliminados, para nunca repetir código
+                int totalClientes = context.Clients.Count();
                 return $"CLI{(totalClientes + 1):D5}";
             }
         }
@@ -219,8 +206,29 @@ namespace CRM.Data.Repositories
             }
             catch (DbUpdateConcurrencyException)
             {
-                // Outro utilizador alterou o registo entretanto; a página trata o aviso ao utilizador.
                 throw;
+            }
+        }
+        public int ContarAtivos(int? accountManagerId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                var query = context.Clients.Where(c => !c.IsDeleted && c.Status == "Ativo");
+                if (accountManagerId.HasValue)
+                    query = query.Where(c => c.AccountManagerId == accountManagerId.Value);
+                return query.Count();
+            }
+        }
+
+        public int ContarNovosNoMes(int? accountManagerId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                var inicioMes = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+                var query = context.Clients.Where(c => !c.IsDeleted && c.CreatedDate >= inicioMes);
+                if (accountManagerId.HasValue)
+                    query = query.Where(c => c.AccountManagerId == accountManagerId.Value);
+                return query.Count();
             }
         }
     }

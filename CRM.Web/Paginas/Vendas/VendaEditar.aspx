@@ -2,8 +2,6 @@
     AutoEventWireup="true" CodeBehind="VendaEditar.aspx.cs" Inherits="CRM.Web.Paginas.Vendas.VendaEditar" %>
 <%@ Register TagPrefix="uc" TagName="SeletorProduto" Src="~/Controls/SeletorProduto.ascx" %>
 <%@ Register TagPrefix="uc" TagName="SeletorCliente" Src="~/Controls/SeletorCliente.ascx" %>
-<%@ Register TagPrefix="uc" TagName="Anexos" Src="~/Controls/Anexos.ascx" %>
-<%@ Register TagPrefix="uc" TagName="Historico" Src="~/Controls/Historico.ascx" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Breadcrumb" runat="server">
     <li class="breadcrumb-item"><a href="VendasLista.aspx">Vendas</a></li>
@@ -12,8 +10,6 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <asp:HiddenField ID="hdnRowVersion" runat="server" />
-
     <div class="crm-list-header">
         <h2>Venda <asp:Label ID="lblNumero" runat="server" CssClass="text-muted fs-6" /></h2>
         <span id="spanStatus" runat="server" class="badge bg-secondary"></span>
@@ -21,7 +17,7 @@
 
     <asp:PlaceHolder ID="phAvisoSoLeitura" runat="server" Visible="false">
         <div class="alert alert-warning">
-            Esta venda não pode ser editada diretamente neste estado. Consulta os pagamentos ou o motivo de cancelamento abaixo.
+            Esta venda não pode ser editada diretamente neste estado. Consulta o Detalhe para pagamentos, confirmação ou cancelamento.
         </div>
     </asp:PlaceHolder>
 
@@ -105,7 +101,6 @@
                 <tr>
                     <td>
                         <uc:SeletorProduto ID="ucProduto" runat="server" TextoBotao="Escolher" IconeBotao="fa-box" />
-                        <asp:HiddenField ID="hdnSaleLineId" runat="server" Value='<%# Eval("SaleLineId") %>' />
                         <asp:HiddenField ID="hdnUnitPrice" runat="server" />
                         <asp:HiddenField ID="hdnTaxRateId" runat="server" />
                     </td>
@@ -149,115 +144,7 @@
 
     <div class="mt-3">
         <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn btn-primary" OnClick="btnGuardar_Click" />
-        <asp:Button ID="btnConfirmar" runat="server" Text="Confirmar Venda" CssClass="btn btn-outline-primary"
-            OnClick="btnConfirmar_Click" CausesValidation="false" Visible="false" />
-        <a href="VendasLista.aspx" class="btn btn-outline-secondary">Cancelar</a>
+        <asp:HyperLink ID="lnkCancelar" runat="server" CssClass="btn btn-outline-secondary">Cancelar</asp:HyperLink>
     </div>
-
-    <!-- ===================== Pagamentos ===================== -->
-    <asp:PlaceHolder ID="phPagamentos" runat="server" Visible="false">
-        <div class="crm-table-card mt-4">
-            <div class="p-3 pb-0 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Pagamentos</h5>
-                <div class="text-muted small">
-                    Pago: <asp:Label ID="lblTotalPago" runat="server" CssClass="fw-semibold" /> ·
-                    Em aberto: <asp:Label ID="lblSaldoEmAberto" runat="server" CssClass="fw-semibold" />
-                </div>
-            </div>
-
-            <asp:Panel ID="pnlNovoPagamento" runat="server" CssClass="row g-2 align-items-end p-3">
-                <div class="col-md-2">
-                    <label class="form-label small">Valor *</label>
-                    <asp:TextBox ID="txtValorPagamento" runat="server" CssClass="form-control form-control-sm" />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small">Data *</label>
-                    <asp:TextBox ID="txtDataPagamento" runat="server" CssClass="form-control form-control-sm" />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small">Método</label>
-                    <asp:DropDownList ID="ddlMetodoPagamentoPagamento" runat="server" CssClass="form-select form-select-sm">
-                        <asp:ListItem Text="Transferência" Value="Transferência" />
-                        <asp:ListItem Text="Referência" Value="Referência" />
-                        <asp:ListItem Text="Cartão" Value="Cartão" />
-                        <asp:ListItem Text="Outro" Value="Outro" />
-                    </asp:DropDownList>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small">Referência</label>
-                    <asp:TextBox ID="txtReferenciaPagamento" runat="server" CssClass="form-control form-control-sm" />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small">Notas</label>
-                    <asp:TextBox ID="txtNotasPagamento" runat="server" CssClass="form-control form-control-sm" />
-                </div>
-                <div class="col-md-2">
-                    <asp:Button ID="btnRegistarPagamento" runat="server" Text="Registar" CssClass="btn btn-primary btn-sm w-100"
-                        OnClick="btnRegistarPagamento_Click" CausesValidation="false" />
-                </div>
-            </asp:Panel>
-
-            <asp:Repeater ID="rptPagamentos" runat="server" OnItemCommand="rptPagamentos_ItemCommand">
-                <HeaderTemplate>
-                    <table class="table mb-0 align-middle">
-                        <thead><tr><th>Data</th><th>Valor</th><th>Método</th><th>Referência</th><th>Notas</th><th></th></tr></thead>
-                        <tbody>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <tr>
-                        <td><%# Eval("PaymentDate", "{0:dd/MM/yyyy}") %></td>
-                        <td><%# Eval("Amount", "{0:C}") %></td>
-                        <td><%# Eval("PaymentMethod") %></td>
-                        <td><%# Eval("Reference") %></td>
-                        <td><%# Eval("Notes") %></td>
-                        <td class="text-end">
-                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-danger" ToolTip="Eliminar"
-                                CommandName="Eliminar" CommandArgument='<%# Eval("PaymentId") %>' CausesValidation="false"
-                                data-confirm="Eliminar este pagamento? O total pago da venda será recalculado.">
-                                <i class="fas fa-trash"></i>
-                            </asp:LinkButton>
-                        </td>
-                    </tr>
-                </ItemTemplate>
-                <FooterTemplate></tbody></table></FooterTemplate>
-            </asp:Repeater>
-
-            <asp:PlaceHolder ID="phSemPagamentos" runat="server" Visible="false">
-                <p class="text-muted text-center p-3 mb-0">Ainda não existem pagamentos registados.</p>
-            </asp:PlaceHolder>
-        </div>
-    </asp:PlaceHolder>
-
-    <!-- ===================== Cancelamento ===================== -->
-    <asp:PlaceHolder ID="phCancelamento" runat="server" Visible="false">
-        <div class="crm-filter-card mt-4">
-            <h5>Cancelar Venda</h5>
-            <p class="text-muted small">O cancelamento exige motivo e não elimina o histórico da venda.</p>
-            <div class="row g-2 align-items-end">
-                <div class="col-md-8">
-                    <asp:TextBox ID="txtMotivoCancelamento" runat="server" CssClass="form-control" placeholder="Motivo do cancelamento..." />
-                </div>
-                <div class="col-md-4">
-                    <asp:Button ID="btnCancelar" runat="server" Text="Cancelar Venda" CssClass="btn btn-outline-danger w-100"
-                        OnClick="btnCancelar_Click" CausesValidation="false"
-                        OnClientClick="return confirm('Tens a certeza que queres cancelar esta venda?');" />
-                </div>
-            </div>
-        </div>
-    </asp:PlaceHolder>
-
-    <!-- ===================== Anexos e Histórico ===================== -->
-    <asp:PlaceHolder ID="phAnexosHistorico" runat="server" Visible="false">
-        <div class="row mt-4">
-            <div class="col-md-7">
-                <h5>Documentos</h5>
-                <uc:Anexos ID="ucAnexos" runat="server" />
-            </div>
-            <div class="col-md-5">
-                <h5>Histórico</h5>
-                <uc:Historico ID="ucHistorico" runat="server" />
-            </div>
-        </div>
-    </asp:PlaceHolder>
 
 </asp:Content>

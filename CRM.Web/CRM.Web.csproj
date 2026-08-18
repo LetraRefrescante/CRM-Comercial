@@ -119,6 +119,8 @@
     <Content Include="Paginas\Account\RedefinirPassword.aspx" />
     <Content Include="Paginas\AcessoNegado.aspx" />
     <Content Include="Paginas\Administracao\Auditoria.aspx" />
+    <Content Include="Paginas\Administracao\ListasAuxiliares.aspx" />
+    <Content Include="Paginas\Administracao\Parametros.aspx" />
     <Content Include="Paginas\Administracao\PerfisPermissoes.aspx" />
     <Content Include="Paginas\Administracao\UtilizadorEditar.aspx" />
     <Content Include="Paginas\Administracao\UtilizadoresLista.aspx" />
@@ -319,6 +321,20 @@
     </Compile>
     <Compile Include="Paginas\Administracao\Auditoria.aspx.designer.cs">
       <DependentUpon>Auditoria.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Administracao\ListasAuxiliares.aspx.cs">
+      <DependentUpon>ListasAuxiliares.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Administracao\ListasAuxiliares.aspx.designer.cs">
+      <DependentUpon>ListasAuxiliares.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Administracao\Parametros.aspx.cs">
+      <DependentUpon>Parametros.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Administracao\Parametros.aspx.designer.cs">
+      <DependentUpon>Parametros.aspx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\Administracao\PerfisPermissoes.aspx.cs">
       <DependentUpon>PerfisPermissoes.aspx</DependentUpon>

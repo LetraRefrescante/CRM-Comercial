@@ -15,15 +15,6 @@ namespace CRM.Web.Paginas.Vendas
     {
 
         /// <summary>
-        /// Controle hdnRowVersion.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnRowVersion;
-
-        /// <summary>
         /// Controle lblNumero.
         /// </summary>
         /// <remarks>
@@ -222,174 +213,12 @@ namespace CRM.Web.Paginas.Vendas
         protected global::System.Web.UI.WebControls.Button btnGuardar;
 
         /// <summary>
-        /// Controle btnConfirmar.
+        /// Controle lnkCancelar.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConfirmar;
-
-        /// <summary>
-        /// Controle phPagamentos.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phPagamentos;
-
-        /// <summary>
-        /// Controle lblTotalPago.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblTotalPago;
-
-        /// <summary>
-        /// Controle lblSaldoEmAberto.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSaldoEmAberto;
-
-        /// <summary>
-        /// Controle pnlNovoPagamento.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlNovoPagamento;
-
-        /// <summary>
-        /// Controle txtValorPagamento.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtValorPagamento;
-
-        /// <summary>
-        /// Controle txtDataPagamento.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtDataPagamento;
-
-        /// <summary>
-        /// Controle ddlMetodoPagamentoPagamento.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlMetodoPagamentoPagamento;
-
-        /// <summary>
-        /// Controle txtReferenciaPagamento.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtReferenciaPagamento;
-
-        /// <summary>
-        /// Controle txtNotasPagamento.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtNotasPagamento;
-
-        /// <summary>
-        /// Controle btnRegistarPagamento.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnRegistarPagamento;
-
-        /// <summary>
-        /// Controle rptPagamentos.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptPagamentos;
-
-        /// <summary>
-        /// Controle phSemPagamentos.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phSemPagamentos;
-
-        /// <summary>
-        /// Controle phCancelamento.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phCancelamento;
-
-        /// <summary>
-        /// Controle txtMotivoCancelamento.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMotivoCancelamento;
-
-        /// <summary>
-        /// Controle btnCancelar.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCancelar;
-
-        /// <summary>
-        /// Controle phAnexosHistorico.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phAnexosHistorico;
-
-        /// <summary>
-        /// Controle ucAnexos.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::CRM.Web.Controls.Anexos ucAnexos;
-
-        /// <summary>
-        /// Controle ucHistorico.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::CRM.Web.Controls.Historico ucHistorico;
+        protected global::System.Web.UI.WebControls.HyperLink lnkCancelar;
     }
 }

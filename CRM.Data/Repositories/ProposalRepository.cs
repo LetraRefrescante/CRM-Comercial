@@ -67,10 +67,13 @@ namespace CRM.Data.Repositories
         {
             using (var context = new CrmDbContext())
             {
-                return context.Proposals.Where(p => !p.IsDeleted)
-                    .OrderByDescending(p => p.CreatedDate).ToList();
+                return context.Proposals
+                    .Where(p => !p.IsDeleted)
+                    .OrderByDescending(p => p.IssueDate)
+                    .ToList();
             }
         }
+
         private IQueryable<Proposal> ConstruirQuery(
             CrmDbContext context,
             string pesquisa,

@@ -41,6 +41,12 @@ namespace CRM.Services
             return _opportunityRepository.ListarAbertasParaPipeline(ownerId);
         }
 
+        public List<Opportunity> ListarSemAtividadeRecente(int diasAlerta, string perfil, int userId)
+        {
+            int? ownerId = TemAmbitoProprios(perfil) ? userId : (int?)null;
+            return _opportunityRepository.ListarSemAtividadeRecente(diasAlerta, ownerId);
+        }
+
         public Opportunity ObterPorId(int opportunityId, string perfil, int userId)
         {
             var opportunity = _opportunityRepository.GetById(opportunityId);

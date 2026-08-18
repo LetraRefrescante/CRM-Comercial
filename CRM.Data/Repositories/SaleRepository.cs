@@ -15,7 +15,7 @@ namespace CRM.Data.Repositories
         {
             using (var context = new CrmDbContext())
             {
-                var sale = context.Sales
+                return context.Sales
                     .Include(s => s.Client)
                     .Include(s => s.Client.AccountManager)
                     .Include(s => s.Proposal)
@@ -25,14 +25,6 @@ namespace CRM.Data.Repositories
                     .Include(s => s.Payments)
                     .Where(s => s.SaleId == saleId && !s.IsDeleted)
                     .SingleOrDefault();
-
-                if (sale != null)
-                {
-                    sale.Lines = sale.Lines.Where(l => !l.IsDeleted).ToList();
-                    sale.Payments = sale.Payments.Where(p => !p.IsDeleted).ToList();
-                }
-
-                return sale;
             }
         }
 
@@ -67,15 +59,6 @@ namespace CRM.Data.Repositories
                     .Skip((pagina - 1) * tamanhoPagina)
                     .Take(tamanhoPagina)
                     .ToList();
-            }
-        }
-
-        public List<Sale> ListarParaSelecao()
-        {
-            using (var context = new CrmDbContext())
-            {
-                return context.Sales.Where(s => !s.IsDeleted)
-                    .OrderByDescending(s => s.CreatedDate).ToList();
             }
         }
 
@@ -147,38 +130,31 @@ namespace CRM.Data.Repositories
                     return sortAscending ? query.OrderBy(s => s.SaleDate) : query.OrderByDescending(s => s.SaleDate);
             }
         }
-
         public Sale Criar(Sale sale)
         {
-            const int maxTentativas = 3;
+            const int tentativasMaximas = 3;
 
-            using (var context = new CrmDbContext())
+            for (int tentativa = 1; tentativa <= tentativasMaximas; tentativa++)
             {
-                for (int tentativa = 1; tentativa <= maxTentativas; tentativa++)
+                using (var context = new CrmDbContext())
+                using (var transaction = context.Database.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    using (var transacao = context.Database.BeginTransaction(IsolationLevel.Serializable))
+                    try
                     {
-                        try
-                        {
-                            sale.SaleNumber = GerarProximoNumero(context);
-                            context.Sales.Add(sale);
-                            context.SaveChanges();
-                            transacao.Commit();
-                            return sale;
-                        }
-                        catch (DbUpdateException) when (tentativa < maxTentativas)
-                        {
-                            transacao.Rollback();
-
-                            context.Entry(sale).State = EntityState.Detached;
-                            foreach (var linha in sale.Lines)
-                                context.Entry(linha).State = EntityState.Detached;
-                        }
+                        sale.SaleNumber = GerarProximoNumero(context);
+                        context.Sales.Add(sale);
+                        context.SaveChanges();
+                        transaction.Commit();
+                        return sale;
+                    }
+                    catch (DbUpdateException) when (tentativa < tentativasMaximas)
+                    {
+                        transaction.Rollback();
                     }
                 }
             }
 
-            throw new InvalidOperationException("Não foi possível gerar um número de venda único após várias tentativas. Tenta novamente.");
+            throw new InvalidOperationException("Não foi possível gerar um número de venda único após várias tentativas.");
         }
 
         public void Atualizar(Sale sale)
@@ -190,13 +166,6 @@ namespace CRM.Data.Repositories
                     .SingleOrDefault(s => s.SaleId == sale.SaleId && !s.IsDeleted);
 
                 if (existente == null) return;
-
-                if (sale.RowVersion != null && existente.RowVersion != null
-                    && !existente.RowVersion.SequenceEqual(sale.RowVersion))
-                {
-                    throw new DbUpdateConcurrencyException(
-                        "Esta venda foi alterada por outro utilizador entretanto. Recarrega a página antes de gravar novamente.");
-                }
 
                 existente.ClientId = sale.ClientId;
                 existente.ProposalId = sale.ProposalId;
@@ -212,21 +181,15 @@ namespace CRM.Data.Repositories
                 existente.UpdatedDate = sale.UpdatedDate;
                 existente.UpdatedBy = sale.UpdatedBy;
 
-                var linhasAtivasExistentes = existente.Lines.Where(l => !l.IsDeleted).ToList();
-
-                foreach (var linhaExistente in linhasAtivasExistentes)
+                foreach (var linhaExistente in existente.Lines.ToList())
                 {
                     if (sale.Lines.All(l => l.SaleLineId != linhaExistente.SaleLineId))
-                    {
-                        linhaExistente.IsDeleted = true;
-                        linhaExistente.DeletedDate = DateTime.UtcNow;
-                        linhaExistente.DeletedBy = sale.UpdatedBy;
-                    }
+                        context.SaleLines.Remove(linhaExistente);
                 }
 
                 foreach (var linha in sale.Lines)
                 {
-                    var linhaExistente = linhasAtivasExistentes.SingleOrDefault(l => l.SaleLineId == linha.SaleLineId);
+                    var linhaExistente = existente.Lines.SingleOrDefault(l => l.SaleLineId == linha.SaleLineId);
                     if (linhaExistente != null)
                     {
                         linhaExistente.ProductId = linha.ProductId;
@@ -237,14 +200,10 @@ namespace CRM.Data.Repositories
                         linhaExistente.DiscountPercent = linha.DiscountPercent;
                         linhaExistente.TaxRateId = linha.TaxRateId;
                         linhaExistente.LineTotal = linha.LineTotal;
-                        linhaExistente.UpdatedDate = DateTime.UtcNow;
-                        linhaExistente.UpdatedBy = sale.UpdatedBy;
                     }
                     else
                     {
                         linha.SaleId = existente.SaleId;
-                        linha.CreatedDate = DateTime.UtcNow;
-                        linha.CreatedBy = sale.UpdatedBy;
                         context.SaleLines.Add(linha);
                     }
                 }
@@ -268,7 +227,6 @@ namespace CRM.Data.Repositories
                 context.SaveChanges();
             }
         }
-
         public void EliminarLogico(int saleId, int eliminadoPor)
         {
             using (var context = new CrmDbContext())
@@ -284,7 +242,6 @@ namespace CRM.Data.Repositories
             }
         }
 
-        // Formato ASSUMIDO, espelha o de Proposals: VEN-{ano}-{sequencial 4 dígitos}. Reinicia a cada ano.
         private string GerarProximoNumero(CrmDbContext context)
         {
             int ano = DateTime.Today.Year;
@@ -299,6 +256,16 @@ namespace CRM.Data.Repositories
                 .Max();
 
             return $"{prefixo}{(ultimoNumero + 1):D4}";
+        }
+        public List<Sale> ListarParaSelecao()
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.Sales
+                    .Where(s => !s.IsDeleted)
+                    .OrderByDescending(s => s.SaleDate)
+                    .ToList();
+            }
         }
     }
 }

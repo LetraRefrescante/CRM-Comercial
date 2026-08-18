@@ -62,13 +62,11 @@ namespace CRM.Web.Paginas.Catalogo
             lblIvaTotal.Text = proposal.TaxTotal.ToString("C");
             lblTotalGeral.Text = proposal.Total.ToString("C");
 
-            // ===================== Versões =====================
             var versoes = _proposalService.ListarVersoes(proposal.ProposalId);
             phVersoes.Visible = versoes.Count > 1;
             rptVersoes.DataSource = versoes;
             rptVersoes.DataBind();
 
-            // ===================== Ações por estado =====================
             lnkEditar.NavigateUrl = $"PropostaEditar.aspx?id={proposal.ProposalId}";
             lnkEditar.Visible = _proposalService.PodeEditarDiretamente(proposal)
                 && _proposalService.PodeCriarOuEditar(Perfil)
@@ -101,7 +99,6 @@ namespace CRM.Web.Paginas.Catalogo
                 && _saleService.PodeCriarOuEditar(Perfil);
             lnkCriarVenda.NavigateUrl = $"~/Vendas/VendaEditar.aspx?proposalId={proposal.ProposalId}";
 
-            // ===================== Anexos e histórico =====================
             ucAnexos.Inicializar("Proposal", proposal.ProposalId, UserId);
             ucHistorico.Inicializar("Proposal", proposal.ProposalId.ToString());
         }
@@ -160,7 +157,8 @@ namespace CRM.Web.Paginas.Catalogo
                 default: return "bg-secondary";
             }
         }
+
         protected string GetVersaoRowClass(object proposalId) =>
-    (int)proposalId == VersaoAtualId ? "table-active" : "";
+            (int)proposalId == VersaoAtualId ? "table-active" : "";
     }
 }

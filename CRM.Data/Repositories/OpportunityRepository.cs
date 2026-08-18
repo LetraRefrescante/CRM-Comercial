@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using CRM.Data.Context;
+using CRM.Models.Entities.Oportunidades;
+using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using CRM.Data.Context;
-using CRM.Models.Entities.Oportunidades;
 
 namespace CRM.Data.Repositories
 {
@@ -36,8 +37,10 @@ namespace CRM.Data.Repositories
         {
             using (var context = new CrmDbContext())
             {
-                return context.Opportunities.Where(o => !o.IsDeleted)
-                    .OrderByDescending(o => o.CreatedDate).ToList();
+                return context.Opportunities
+                    .Where(o => !o.IsDeleted)
+                    .OrderBy(o => o.Title)
+                    .ToList();
             }
         }
 
@@ -100,7 +103,29 @@ namespace CRM.Data.Repositories
                 return query.OrderByDescending(o => o.EstimatedValue).ToList();
             }
         }
+        public List<Opportunity> ListarSemAtividadeRecente(int diasAlerta, int? ownerId)
+        {
+            using (var context = new CrmDbContext())
+            {
+                var limite = DateTime.UtcNow.AddDays(-diasAlerta);
 
+                var query = context.Opportunities
+                    .Include(o => o.Client)
+                    .Include(o => o.Stage)
+                    .Where(o => !o.IsDeleted && !o.IsClosed);
+
+                if (ownerId.HasValue)
+                    query = query.Where(o => o.OwnerId == ownerId.Value);
+
+                return query
+                    .Where(o => !context.Activities.Any(a =>
+                        a.RelatedOpportunityId == o.OpportunityId &&
+                        !a.IsDeleted &&
+                        a.StartDateTime >= limite))
+                    .OrderByDescending(o => o.EstimatedValue)
+                    .ToList();
+            }
+        }
         public void Adicionar(Opportunity opportunity)
         {
             using (var context = new CrmDbContext())

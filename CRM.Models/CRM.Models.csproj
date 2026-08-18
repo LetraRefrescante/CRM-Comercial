@@ -42,10 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTOs\DashboardIndicadores.cs" />
     <Compile Include="DTOs\EmailComporRequest.cs" />
+    <Compile Include="DTOs\FasePipelineDto.cs" />
     <Compile Include="DTOs\LeadConversionRequest.cs" />
     <Compile Include="DTOs\LeadConversionResult.cs" />
+    <Compile Include="DTOs\OrigemLeadDto.cs" />
     <Compile Include="DTOs\ParticipanteLinha.cs" />
+    <Compile Include="DTOs\TopComercialDto.cs" />
+    <Compile Include="DTOs\VendaMensalDto.cs" />
     <Compile Include="Entities\Atividades\Activity.cs" />
     <Compile Include="Entities\Atividades\ActivityParticipant.cs" />
     <Compile Include="Entities\Atividades\TaskItem.cs" />

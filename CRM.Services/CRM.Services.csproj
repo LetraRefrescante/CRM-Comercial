@@ -49,22 +49,28 @@
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\ClientService.cs" />
     <Compile Include="Services\ContactService.cs" />
+    <Compile Include="Services\DashboardService.cs" />
     <Compile Include="Services\DocumentService.cs" />
     <Compile Include="Services\EmailHistoryService.cs" />
     <Compile Include="Services\EmailServices.cs" />
     <Compile Include="Services\EmailTemplateService.cs" />
     <Compile Include="Services\LeadConversionService.cs" />
     <Compile Include="Services\LeadService.cs" />
+    <Compile Include="Services\LeadSourceService.cs" />
+    <Compile Include="Services\LossReasonService.cs" />
     <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\OpportunityService.cs" />
     <Compile Include="Services\PaymentService.cs" />
+    <Compile Include="Services\PaymentTermService.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\PriceTableItemService.cs" />
     <Compile Include="Services\PriceTableService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\ProposalService.cs" />
     <Compile Include="Services\SaleService.cs" />
+    <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\TaskService.cs" />
+    <Compile Include="Services\TaxRateService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CRM.Business\CRM.Business.csproj">
