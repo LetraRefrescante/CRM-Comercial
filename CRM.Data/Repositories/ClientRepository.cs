@@ -61,6 +61,7 @@ namespace CRM.Data.Repositories
         {
             var query = context.Clients
                 .Include(c => c.Country)
+                .Include(c => c.Sector)
                 .Include(c => c.AccountManager)
                 .Where(c => !c.IsDeleted);
 

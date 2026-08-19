@@ -26,14 +26,28 @@ namespace CRM.Services
             var extensao = Path.GetExtension(fileName)?.ToLowerInvariant();
             return !string.IsNullOrEmpty(extensao) && Array.IndexOf(ExtensoesPermitidas, extensao) >= 0;
         }
+        private static readonly Dictionary<string, string[]> MimeEsperados = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+            {
+                { ".pdf", new[] { "application/pdf" } },
+                { ".doc", new[] { "application/msword" } },
+                { ".docx", new[] { "application/vnd.openxmlformats-officedocument.wordprocessingml.document" } },
+                { ".xls", new[] { "application/vnd.ms-excel" } },
+                { ".xlsx", new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" } },
+                { ".png", new[] { "image/png" } },
+                { ".jpg", new[] { "image/jpeg" } },
+                { ".jpeg", new[] { "image/jpeg" } },
+            };
+
+        public bool MimeCorrespondeExtensao(string fileName, string mimeType)
+        {
+            var extensao = Path.GetExtension(fileName)?.ToLowerInvariant();
+            if (string.IsNullOrEmpty(extensao) || !MimeEsperados.TryGetValue(extensao, out var mimesValidos))
+                return false;
+            return Array.IndexOf(mimesValidos, mimeType?.ToLowerInvariant()) >= 0;
+        }
 
         public bool TamanhoPermitido(long fileSizeBytes) => fileSizeBytes <= TamanhoMaximoBytes;
-
-        // DocumentosLista.aspx (pesquisa global) fica reservada a Administrador/Diretor —
-        // ver nota de arquitetura entregue junto com este ficheiro.
         public bool PodeAcederListaGlobal(string perfil) => perfil == "Administrador" || perfil == "Diretor";
-
-        // Upload aberto a qualquer perfil que não seja só-consulta.
         public bool PodeCarregar(string perfil) => perfil != "Consulta";
 
         public List<Document> Pesquisar(

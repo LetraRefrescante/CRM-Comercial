@@ -144,6 +144,12 @@ namespace CRM.Services
             => _proposalRepository.Listar(pesquisa, status, clientId, accountManagerId, dataInicio, dataFim,
                 pagina, tamanhoPagina, out totalRegistos, sortColumn, sortAscending);
 
+        public List<Proposal> ListarParaSelecao(string perfil, int userId)
+        {
+            int? ownerId = TemAmbitoProprios(perfil) ? userId : (int?)null;
+            return _proposalRepository.ListarParaSelecao(ownerId);
+        }
+
         public List<Proposal> ListarVersoes(int proposalId) => _proposalRepository.ListarVersoes(proposalId);
         public List<Proposal> ListarPorOportunidade(int opportunityId) =>
             _proposalRepository.ListarPorOportunidade(opportunityId);

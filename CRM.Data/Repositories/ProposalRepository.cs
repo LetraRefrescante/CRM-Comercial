@@ -63,14 +63,14 @@ namespace CRM.Data.Repositories
                     .ToList();
             }
         }
-        public List<Proposal> ListarParaSelecao()
+
+        public List<Proposal> ListarParaSelecao(int? ownerId = null)
         {
             using (var context = new CrmDbContext())
             {
-                return context.Proposals
-                    .Where(p => !p.IsDeleted)
-                    .OrderByDescending(p => p.IssueDate)
-                    .ToList();
+                var query = context.Proposals.Where(p => !p.IsDeleted);
+                if (ownerId.HasValue) query = query.Where(p => p.Client.AccountManagerId == ownerId.Value);
+                return query.OrderByDescending(p => p.IssueDate).ToList();
             }
         }
 

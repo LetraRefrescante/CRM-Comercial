@@ -61,7 +61,26 @@ namespace CRM.Data.Repositories
                     .ToList();
             }
         }
+        public List<Sale> ListarParaRelatorio(DateTime dataInicio, DateTime dataFim, int? clientId, int? ownerId, List<string> estados)
+        {
+            using (var context = new CrmDbContext())
+            {
+                var dataFimExclusive = dataFim.Date.AddDays(1);
 
+                var query = context.Sales
+                    .Include(s => s.Client)
+                    .Include(s => s.Owner)
+                    .Where(s => !s.IsDeleted &&
+                                s.SaleDate >= dataInicio &&
+                                s.SaleDate < dataFimExclusive);
+
+                if (clientId.HasValue) query = query.Where(s => s.ClientId == clientId.Value);
+                if (ownerId.HasValue) query = query.Where(s => s.OwnerId == ownerId.Value);
+                if (estados != null && estados.Count > 0) query = query.Where(s => estados.Contains(s.Status));
+
+                return query.ToList();
+            }
+        }
         private IQueryable<Sale> ConstruirQuery(
             CrmDbContext context,
             string pesquisa,
@@ -105,7 +124,8 @@ namespace CRM.Data.Repositories
 
             if (dataFim.HasValue)
             {
-                query = query.Where(s => s.SaleDate <= dataFim.Value.Date);
+                var dataFimExclusive = dataFim.Value.Date.AddDays(1);
+                query = query.Where(s => s.SaleDate < dataFimExclusive);
             }
 
             return query;
@@ -257,14 +277,13 @@ namespace CRM.Data.Repositories
 
             return $"{prefixo}{(ultimoNumero + 1):D4}";
         }
-        public List<Sale> ListarParaSelecao()
+        public List<Sale> ListarParaSelecao(int? ownerId = null)
         {
             using (var context = new CrmDbContext())
             {
-                return context.Sales
-                    .Where(s => !s.IsDeleted)
-                    .OrderByDescending(s => s.SaleDate)
-                    .ToList();
+                var query = context.Sales.Where(s => !s.IsDeleted);
+                if (ownerId.HasValue) query = query.Where(s => s.OwnerId == ownerId.Value);
+                return query.OrderByDescending(s => s.SaleDate).ToList();
             }
         }
     }

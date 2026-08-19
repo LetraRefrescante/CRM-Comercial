@@ -24,7 +24,10 @@ namespace CRM.Services
         }
 
         public LeadSource GetById(int id) => _leadSourceRepository.GetById(id);
-        public List<LeadSource> Listar(string pesquisa) => _leadSourceRepository.Listar(pesquisa);
+
+        public List<LeadSource> Listar(string pesquisa, bool incluirInativos = false)
+            => _leadSourceRepository.Listar(pesquisa, incluirInativos);
+
         public bool ExisteNome(string name, int? ignorarId = null) => _leadSourceRepository.ExisteNome(name, ignorarId);
 
         public int Criar(LeadSource leadSource)

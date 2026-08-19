@@ -88,6 +88,7 @@ namespace CRM.Data.Repositories
             {
                 var taxRate = context.TaxRates.Find(taxRateId);
                 if (taxRate == null) return;
+
                 taxRate.IsActive = !taxRate.IsActive;
                 taxRate.UpdatedDate = DateTime.UtcNow;
                 taxRate.UpdatedBy = alteradoPor;

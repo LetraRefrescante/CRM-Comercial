@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Web.UI.WebControls;
 using CRM.Models.Entities.ListasAuxiliares;
 using CRM.Services;
 using CRM.Web.Helpers;
@@ -12,75 +11,89 @@ namespace CRM.Web.Paginas.Administracao
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!_settingsService.PodeGerir(Perfil))
+            if (!_settingsService.PodeConsultar(Perfil))
             {
-                NotificacaoService.Erro("Só o Administrador pode alterar os parâmetros do sistema.");
+                NotificacaoService.Erro("Não tens permissão para aceder a esta página.");
                 Response.Redirect("~/Dashboard/Dashboard.aspx");
                 return;
             }
 
             if (!IsPostBack)
-                CarregarParametros();
+                CarregarConfiguracao();
         }
 
-        private void CarregarParametros()
+        private void CarregarConfiguracao()
         {
-            var settings = _settingsService.Obter();
-
-            txtEmpresa.Text = settings.CompanyName;
-
-            ddlMoeda.SelectedValue =
-                string.IsNullOrEmpty(settings.Currency)
-                    ? "EUR"
-                    : settings.Currency;
-
-            ddlFusoHorario.SelectedValue =
-                string.IsNullOrEmpty(settings.TimeZone)
-                    ? "Europe/Lisbon"
-                    : settings.TimeZone;
-
-            txtDiasAlerta.Text = settings.AlertDaysProposals.ToString();
-        }
-
-        protected void cvRegrasNegocio_ServerValidate(
-            object source,
-            ServerValidateEventArgs args)
-        {
-            var settings = MontarDoFormulario();
-
-            var erros = _settingsService.Validar(settings);
-
-            args.IsValid = erros.Count == 0;
-
-            cvRegrasNegocio.ErrorMessage =
-                string.Join(" ", erros);
-        }
-
-        private Settings MontarDoFormulario()
-        {
-            int.TryParse(txtDiasAlerta.Text, out int dias);
-
-            return new Settings
+            var settings = _settingsService.ObterConfiguracaoAtual();
+            if (settings == null)
             {
-                CompanyName = txtEmpresa.Text.Trim(),
-                Currency = ddlMoeda.SelectedValue,
-                TimeZone = ddlFusoHorario.SelectedValue,
+                NotificacaoService.Erro("Ainda não existe nenhuma linha de configuração na tabela Settings.");
+                return;
+            }
 
-                AlertDaysProposals = dias
-            };
+            txtNomeEmpresa.Text = settings.CompanyName;
+            txtMoeda.Text = settings.Currency;
+            txtFusoHorario.Text = settings.TimeZone;
+            txtAlertaLeads.Text = settings.AlertDaysLeads.ToString();
+            txtAlertaOportunidades.Text = settings.AlertDaysOpportunities.ToString();
+            txtAlertaPropostas.Text = settings.AlertDaysProposals.ToString();
+            txtMaxTentativas.Text = settings.MaxFailedLoginAttempts.ToString();
+            txtBloqueioMinutos.Text = settings.AccountLockoutMinutes.ToString();
+            txtSessaoMinutos.Text = settings.SessionTimeoutMinutes.ToString();
+
+            bool podeGerir = _settingsService.PodeGerir(Perfil);
+            btnGuardar.Visible = podeGerir;
+
+            txtNomeEmpresa.Enabled = podeGerir;
+            txtMoeda.Enabled = podeGerir;
+            txtFusoHorario.Enabled = podeGerir;
+            txtAlertaLeads.Enabled = podeGerir;
+            txtAlertaOportunidades.Enabled = podeGerir;
+            txtAlertaPropostas.Enabled = podeGerir;
+            txtMaxTentativas.Enabled = podeGerir;
+            txtBloqueioMinutos.Enabled = podeGerir;
+            txtSessaoMinutos.Enabled = podeGerir;
         }
 
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
-            if (!Page.IsValid)
+            if (!_settingsService.PodeGerir(Perfil))
+            {
+                NotificacaoService.Erro("Não tens permissão para executar esta ação.");
                 return;
+            }
 
-            _settingsService.Guardar(
-                MontarDoFormulario(),
-                UserId);
+            int.TryParse(txtAlertaLeads.Text, out int alertaLeads);
+            int.TryParse(txtAlertaOportunidades.Text, out int alertaOportunidades);
+            int.TryParse(txtAlertaPropostas.Text, out int alertaPropostas);
+            int.TryParse(txtMaxTentativas.Text, out int maxTentativas);
+            int.TryParse(txtBloqueioMinutos.Text, out int bloqueioMinutos);
+            int.TryParse(txtSessaoMinutos.Text, out int sessaoMinutos);
 
-            NotificacaoService.Sucesso(
-                "Parâmetros atualizados.");
+            var settings = new Settings
+            {
+                CompanyName = txtNomeEmpresa.Text.Trim(),
+                Currency = txtMoeda.Text.Trim().ToUpperInvariant(),
+                TimeZone = txtFusoHorario.Text.Trim(),
+                AlertDaysLeads = alertaLeads,
+                AlertDaysOpportunities = alertaOportunidades,
+                AlertDaysProposals = alertaPropostas,
+                MaxFailedLoginAttempts = maxTentativas,
+                AccountLockoutMinutes = bloqueioMinutos,
+                SessionTimeoutMinutes = sessaoMinutos,
+                UpdatedBy = UserId
+            };
+
+            var erros = _settingsService.Validar(settings);
+            if (erros.Count > 0)
+            {
+                NotificacaoService.Erro(string.Join(" ", erros));
+                return;
+            }
+
+            _settingsService.Atualizar(settings);
+            NotificacaoService.Sucesso("Parâmetros atualizados.");
+            CarregarConfiguracao();
         }
     }
 }

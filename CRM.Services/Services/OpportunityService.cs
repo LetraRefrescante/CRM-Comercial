@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using CRM.Data.Repositories;
+﻿using CRM.Data.Repositories;
+using CRM.Models.DTOs;
 using CRM.Models.Entities.Oportunidades;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CRM.Services
 {
@@ -34,11 +36,16 @@ namespace CRM.Services
             return _opportunityRepository.Listar(pesquisa, stageId, ownerIdEfetivo, clientId, isClosed,
                 pagina, tamanhoPagina, out totalRegistos);
         }
-
         public List<Opportunity> ListarParaPipeline(string perfil, int userId)
         {
             int? ownerId = TemAmbitoProprios(perfil) ? userId : (int?)null;
             return _opportunityRepository.ListarAbertasParaPipeline(ownerId);
+        }
+
+        public List<Opportunity> ListarParaSelecao(string perfil, int userId)
+        {
+            int? ownerId = TemAmbitoProprios(perfil) ? userId : (int?)null;
+            return _opportunityRepository.ListarParaSelecao(ownerId);
         }
 
         public List<Opportunity> ListarSemAtividadeRecente(int diasAlerta, string perfil, int userId)
@@ -225,6 +232,22 @@ namespace CRM.Services
 
             _auditService.Registar(userId, ganho ? "Fecho Ganho" : "Fecho Perdido", "Opportunity", opportunityId.ToString());
             return null;
+        }
+        public List<RelatorioPipelineLinha> ObterRelatorioPipeline(DateTime? dataInicio, DateTime? dataFim, int? clientId, int? ownerId, bool? isClosed)
+        {
+            var oportunidades = _opportunityRepository.ListarParaRelatorio(dataInicio, dataFim, clientId, ownerId, isClosed);
+
+            return oportunidades
+                .GroupBy(o => new { Nome = o.Stage?.Name ?? "(sem fase)", Ordem = o.Stage?.OrderIndex ?? 999 })
+                .OrderBy(g => g.Key.Ordem)
+                .Select(g => new RelatorioPipelineLinha
+                {
+                    Fase = g.Key.Nome,
+                    Quantidade = g.Count(),
+                    ValorTotal = g.Sum(o => o.EstimatedValue),
+                    ValorPonderado = g.Sum(o => o.EstimatedValue * o.Probability / 100m)
+                })
+                .ToList();
         }
 
         // ---------- Cálculos ----------

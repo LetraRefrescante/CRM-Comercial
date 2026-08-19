@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Models.Entities.ListasAuxiliares
@@ -6,6 +7,7 @@ namespace CRM.Models.Entities.ListasAuxiliares
     [Table("Settings")]
     public class Settings
     {
+        [Key]
         public int SettingId { get; set; }
 
         public string CompanyName { get; set; }
@@ -19,6 +21,8 @@ namespace CRM.Models.Entities.ListasAuxiliares
         public int MaxFailedLoginAttempts { get; set; }
         public int AccountLockoutMinutes { get; set; }
         public int SessionTimeoutMinutes { get; set; }
+
+        public decimal? MonthlySalesTarget { get; set; }
 
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set; }

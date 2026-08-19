@@ -15,58 +15,85 @@ namespace CRM.Web.Paginas.Administracao
     {
 
         /// <summary>
-        /// Controle valSummary.
+        /// Controle txtNomeEmpresa.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ValidationSummary valSummary;
+        protected global::System.Web.UI.WebControls.TextBox txtNomeEmpresa;
 
         /// <summary>
-        /// Controle cvRegrasNegocio.
+        /// Controle txtMoeda.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator cvRegrasNegocio;
+        protected global::System.Web.UI.WebControls.TextBox txtMoeda;
 
         /// <summary>
-        /// Controle txtEmpresa.
+        /// Controle txtFusoHorario.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEmpresa;
+        protected global::System.Web.UI.WebControls.TextBox txtFusoHorario;
 
         /// <summary>
-        /// Controle ddlMoeda.
+        /// Controle txtAlertaLeads.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlMoeda;
+        protected global::System.Web.UI.WebControls.TextBox txtAlertaLeads;
 
         /// <summary>
-        /// Controle ddlFusoHorario.
+        /// Controle txtAlertaOportunidades.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlFusoHorario;
+        protected global::System.Web.UI.WebControls.TextBox txtAlertaOportunidades;
 
         /// <summary>
-        /// Controle txtDiasAlerta.
+        /// Controle txtAlertaPropostas.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtDiasAlerta;
+        protected global::System.Web.UI.WebControls.TextBox txtAlertaPropostas;
+
+        /// <summary>
+        /// Controle txtMaxTentativas.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtMaxTentativas;
+
+        /// <summary>
+        /// Controle txtBloqueioMinutos.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtBloqueioMinutos;
+
+        /// <summary>
+        /// Controle txtSessaoMinutos.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtSessaoMinutos;
 
         /// <summary>
         /// Controle btnGuardar.

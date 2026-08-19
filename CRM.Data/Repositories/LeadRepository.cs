@@ -22,14 +22,13 @@ namespace CRM.Data.Repositories
                     .SingleOrDefault();
             }
         }
-        public List<Lead> ListarParaSelecao()
+        public List<Lead> ListarParaSelecao(int? ownerId = null)
         {
             using (var context = new CrmDbContext())
             {
-                return context.Leads
-                    .Where(l => !l.IsDeleted && l.Status != "Convertido")
-                    .OrderBy(l => l.Name)
-                    .ToList();
+                var query = context.Leads.Where(l => !l.IsDeleted);
+                if (ownerId.HasValue) query = query.Where(l => l.OwnerId == ownerId.Value);
+                return query.OrderBy(l => l.Name).ToList();
             }
         }
 

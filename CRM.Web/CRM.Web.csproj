@@ -187,6 +187,13 @@
     <Content Include="Paginas\Oportunidades\OportunidadeFechar.aspx" />
     <Content Include="Paginas\Oportunidades\OportunidadesLista.aspx" />
     <Content Include="Paginas\Oportunidades\Pipeline.aspx" />
+    <Content Include="Paginas\Relatorios\RelatorioAtividades.aspx" />
+    <Content Include="Paginas\Relatorios\RelatorioClientes.aspx" />
+    <Content Include="Paginas\Relatorios\RelatorioComissoes.aspx" />
+    <Content Include="Paginas\Relatorios\RelatorioLeads.aspx" />
+    <Content Include="Paginas\Relatorios\RelatorioPipeline.aspx" />
+    <Content Include="Paginas\Relatorios\Relatorios.aspx" />
+    <Content Include="Paginas\Relatorios\RelatorioVendas.aspx" />
     <Content Include="Paginas\Vendas\Pagamentos.aspx" />
     <Content Include="Paginas\Vendas\VendaDetalhe.aspx" />
     <Content Include="Paginas\Vendas\VendaEditar.aspx" />
@@ -679,6 +686,55 @@
     </Compile>
     <Compile Include="Paginas\PaginaBase.cs">
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioAtividades.aspx.cs">
+      <DependentUpon>RelatorioAtividades.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioAtividades.aspx.designer.cs">
+      <DependentUpon>RelatorioAtividades.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioClientes.aspx.cs">
+      <DependentUpon>RelatorioClientes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioClientes.aspx.designer.cs">
+      <DependentUpon>RelatorioClientes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioComissoes.aspx.cs">
+      <DependentUpon>RelatorioComissoes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioComissoes.aspx.designer.cs">
+      <DependentUpon>RelatorioComissoes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioLeads.aspx.cs">
+      <DependentUpon>RelatorioLeads.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioLeads.aspx.designer.cs">
+      <DependentUpon>RelatorioLeads.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioPipeline.aspx.cs">
+      <DependentUpon>RelatorioPipeline.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioPipeline.aspx.designer.cs">
+      <DependentUpon>RelatorioPipeline.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\Relatorios.aspx.cs">
+      <DependentUpon>Relatorios.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\Relatorios.aspx.designer.cs">
+      <DependentUpon>Relatorios.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioVendas.aspx.cs">
+      <DependentUpon>RelatorioVendas.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Paginas\Relatorios\RelatorioVendas.aspx.designer.cs">
+      <DependentUpon>RelatorioVendas.aspx</DependentUpon>
     </Compile>
     <Compile Include="Paginas\Vendas\Pagamentos.aspx.cs">
       <DependentUpon>Pagamentos.aspx</DependentUpon>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Web.UI.WebControls;
-using CRM.Data.Repositories;
 using CRM.Services;
 using CRM.Web.Helpers;
 
@@ -10,10 +9,10 @@ namespace CRM.Web.Paginas.Documentos
     public partial class DocumentoEditar : PaginaBase
     {
         private readonly DocumentService _documentService = new DocumentService();
-        private readonly LeadRepository _leadRepository = new LeadRepository();
-        private readonly OpportunityRepository _opportunityRepository = new OpportunityRepository();
-        private readonly ProposalRepository _proposalRepository = new ProposalRepository();
-        private readonly SaleRepository _saleRepository = new SaleRepository();
+        private readonly LeadService _leadService = new LeadService();
+        private readonly OpportunityService _opportunityService = new OpportunityService();
+        private readonly ProposalService _proposalService = new ProposalService();
+        private readonly SaleService _saleService = new SaleService();
 
         private const string PastaArmazenamento = "~/App_Data/DocumentUploads/";
 
@@ -39,7 +38,7 @@ namespace CRM.Web.Paginas.Documentos
         {
             ddlLead.Items.Clear();
             ddlLead.Items.Add(new ListItem("Selecione...", ""));
-            foreach (var lead in _leadRepository.ListarParaSelecao())
+            foreach (var lead in _leadService.ListarParaSelecao(Perfil, UserId))
                 ddlLead.Items.Add(new ListItem(lead.Name, lead.LeadId.ToString()));
         }
 
@@ -47,7 +46,7 @@ namespace CRM.Web.Paginas.Documentos
         {
             ddlOportunidade.Items.Clear();
             ddlOportunidade.Items.Add(new ListItem("Selecione...", ""));
-            foreach (var opportunity in _opportunityRepository.ListarParaSelecao())
+            foreach (var opportunity in _opportunityService.ListarParaSelecao(Perfil, UserId))
                 ddlOportunidade.Items.Add(new ListItem(opportunity.Title, opportunity.OpportunityId.ToString()));
         }
 
@@ -55,7 +54,7 @@ namespace CRM.Web.Paginas.Documentos
         {
             ddlProposta.Items.Clear();
             ddlProposta.Items.Add(new ListItem("Selecione...", ""));
-            foreach (var proposal in _proposalRepository.ListarParaSelecao())
+            foreach (var proposal in _proposalService.ListarParaSelecao(Perfil, UserId))
                 ddlProposta.Items.Add(new ListItem(proposal.ProposalNumber, proposal.ProposalId.ToString()));
         }
 
@@ -63,7 +62,7 @@ namespace CRM.Web.Paginas.Documentos
         {
             ddlVenda.Items.Clear();
             ddlVenda.Items.Add(new ListItem("Selecione...", ""));
-            foreach (var sale in _saleRepository.ListarParaSelecao())
+            foreach (var sale in _saleService.ListarParaSelecao(Perfil, UserId))
                 ddlVenda.Items.Add(new ListItem(sale.SaleNumber, sale.SaleId.ToString()));
         }
 
@@ -89,6 +88,12 @@ namespace CRM.Web.Paginas.Documentos
             if (!_documentService.ExtensaoPermitida(fuFicheiro.FileName))
             {
                 NotificacaoService.Erro("Extensão de ficheiro não permitida.");
+                return;
+            }
+
+            if (!_documentService.MimeCorrespondeExtensao(fuFicheiro.FileName, fuFicheiro.PostedFile.ContentType))
+            {
+                NotificacaoService.Erro("O tipo de ficheiro não corresponde à extensão indicada.");
                 return;
             }
 

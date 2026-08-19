@@ -73,5 +73,27 @@ namespace CRM.Data.Repositories
                 context.SaveChanges();
             }
         }
+        public void Atualizar(Settings settings)
+        {
+            using (var context = new CrmDbContext())
+            {
+                var existente = context.Settings.FirstOrDefault();
+                if (existente == null) return;
+
+                existente.CompanyName = settings.CompanyName;
+                existente.Currency = settings.Currency;
+                existente.TimeZone = settings.TimeZone;
+                existente.AlertDaysLeads = settings.AlertDaysLeads;
+                existente.AlertDaysOpportunities = settings.AlertDaysOpportunities;
+                existente.AlertDaysProposals = settings.AlertDaysProposals;
+                existente.MaxFailedLoginAttempts = settings.MaxFailedLoginAttempts;
+                existente.AccountLockoutMinutes = settings.AccountLockoutMinutes;
+                existente.SessionTimeoutMinutes = settings.SessionTimeoutMinutes;
+                existente.UpdatedDate = DateTime.UtcNow;
+                existente.UpdatedBy = settings.UpdatedBy;
+
+                context.SaveChanges();
+            }
+        }
     }
 }

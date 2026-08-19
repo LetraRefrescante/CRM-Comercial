@@ -24,7 +24,10 @@ namespace CRM.Services
         }
 
         public PaymentTerm GetById(int id) => _paymentTermRepository.GetById(id);
-        public List<PaymentTerm> Listar(string pesquisa) => _paymentTermRepository.Listar(pesquisa);
+
+        public List<PaymentTerm> Listar(string pesquisa, bool incluirInativos = false)
+            => _paymentTermRepository.Listar(pesquisa, incluirInativos);
+
         public bool ExisteNome(string name, int? ignorarId = null) => _paymentTermRepository.ExisteNome(name, ignorarId);
 
         public int Criar(PaymentTerm paymentTerm)

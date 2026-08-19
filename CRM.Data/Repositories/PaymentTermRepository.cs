@@ -1,38 +1,43 @@
-﻿using CRM.Data.Context;
-using CRM.Models.Entities.ListasAuxiliares;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CRM.Data.Context;
+using CRM.Models.Entities.ListasAuxiliares;
 
 namespace CRM.Data.Repositories
 {
     public class PaymentTermRepository
     {
+        public PaymentTerm GetById(int id)
+        {
+            using (var context = new CrmDbContext())
+            {
+                return context.PaymentTerms.Find(id);
+            }
+        }
         public List<PaymentTerm> ListarAtivas()
         {
             using (var context = new CrmDbContext())
             {
                 return context.PaymentTerms
                     .Where(p => p.IsActive)
-                    .OrderBy(p => p.DaysDue)
+                    .OrderBy(p => p.Name)
                     .ToList();
             }
         }
-        // PaymentTermRepository.cs — adicionar aos métodos que já tinha (só ListarAtivas)
-        public PaymentTerm GetById(int paymentTermId)
-        {
-            using (var context = new CrmDbContext())
-                return context.PaymentTerms.Find(paymentTermId);
-        }
-
-        public List<PaymentTerm> Listar(string pesquisa)
+        public List<PaymentTerm> Listar(string pesquisa, bool incluirInativos)
         {
             using (var context = new CrmDbContext())
             {
                 var query = context.PaymentTerms.AsQueryable();
+
+                if (!incluirInativos)
+                    query = query.Where(p => p.IsActive);
+
                 if (!string.IsNullOrWhiteSpace(pesquisa))
-                    query = query.Where(t => t.Name.Contains(pesquisa));
-                return query.OrderBy(t => t.DaysDue).ToList();
+                    query = query.Where(p => p.Name.Contains(pesquisa));
+
+                return query.OrderBy(p => p.Name).ToList();
             }
         }
 
@@ -40,8 +45,8 @@ namespace CRM.Data.Repositories
         {
             using (var context = new CrmDbContext())
             {
-                var query = context.PaymentTerms.Where(t => t.Name == name);
-                if (ignorarPaymentTermId.HasValue) query = query.Where(t => t.PaymentTermId != ignorarPaymentTermId.Value);
+                var query = context.PaymentTerms.Where(p => p.Name == name);
+                if (ignorarPaymentTermId.HasValue) query = query.Where(p => p.PaymentTermId != ignorarPaymentTermId.Value);
                 return query.Any();
             }
         }
@@ -62,12 +67,14 @@ namespace CRM.Data.Repositories
         {
             using (var context = new CrmDbContext())
             {
-                var paymentTerm = context.PaymentTerms.Find(paymentTermAtualizado.PaymentTermId);
-                if (paymentTerm == null) return;
-                paymentTerm.Name = paymentTermAtualizado.Name;
-                paymentTerm.DaysDue = paymentTermAtualizado.DaysDue;
-                paymentTerm.UpdatedDate = DateTime.UtcNow;
-                paymentTerm.UpdatedBy = paymentTermAtualizado.UpdatedBy;
+                var existente = context.PaymentTerms.Find(paymentTermAtualizado.PaymentTermId);
+                if (existente == null) return;
+
+                existente.Name = paymentTermAtualizado.Name;
+                existente.DaysDue = paymentTermAtualizado.DaysDue;
+                existente.UpdatedDate = DateTime.UtcNow;
+                existente.UpdatedBy = paymentTermAtualizado.UpdatedBy;
+
                 context.SaveChanges();
             }
         }
@@ -78,6 +85,7 @@ namespace CRM.Data.Repositories
             {
                 var paymentTerm = context.PaymentTerms.Find(paymentTermId);
                 if (paymentTerm == null) return;
+
                 paymentTerm.IsActive = !paymentTerm.IsActive;
                 paymentTerm.UpdatedDate = DateTime.UtcNow;
                 paymentTerm.UpdatedBy = alteradoPor;

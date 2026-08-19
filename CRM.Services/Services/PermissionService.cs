@@ -45,5 +45,6 @@ namespace CRM.Services
 
             return codigos;
         }
+        public bool TemCodigo(string perfil, string codigo) => ObterCodigosComCache(perfil).Contains(codigo);
     }
 }

@@ -8,44 +8,64 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <div class="crm-list-header"><h2>Parâmetros Gerais</h2></div>
+    <h2 class="mb-3">Parâmetros</h2>
 
-    <div class="crm-form-card" style="max-width: 640px;">
-        <asp:ValidationSummary ID="valSummary" runat="server" CssClass="alert alert-danger" DisplayMode="BulletList" />
-        <asp:CustomValidator ID="cvRegrasNegocio" runat="server" Display="None" OnServerValidate="cvRegrasNegocio_ServerValidate" />
-
+    <div class="crm-card mb-3">
+        <h5 class="crm-card-title">Empresa</h5>
         <div class="row g-3">
-            <div class="col-12">
+            <div class="col-md-6">
                 <label class="form-label">Nome da Empresa *</label>
-                <asp:TextBox ID="txtEmpresa" runat="server" CssClass="form-control" MaxLength="150" />
-                <div class="form-text">Usado nos documentos gerados (propostas, PDFs, emails).</div>
+                <asp:TextBox ID="txtNomeEmpresa" runat="server" CssClass="form-control" MaxLength="150" Enabled="false" />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <label class="form-label">Moeda *</label>
-                <asp:DropDownList ID="ddlMoeda" runat="server" CssClass="form-select">
-                    <asp:ListItem Text="Euro (€)" Value="EUR" />
-                    <asp:ListItem Text="Dólar Americano ($)" Value="USD" />
-                    <asp:ListItem Text="Libra Esterlina (£)" Value="GBP" />
-                </asp:DropDownList>
+                <asp:TextBox ID="txtMoeda" runat="server" CssClass="form-control" MaxLength="3" Enabled="false" />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <label class="form-label">Fuso Horário *</label>
-                <asp:DropDownList ID="ddlFusoHorario" runat="server" CssClass="form-select">
-                    <asp:ListItem Text="Europe/Lisbon" Value="Europe/Lisbon" />
-                    <asp:ListItem Text="Europe/Madrid" Value="Europe/Madrid" />
-                    <asp:ListItem Text="UTC" Value="UTC" />
-                </asp:DropDownList>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label">Dias de Alerta</label>
-                <asp:TextBox ID="txtDiasAlerta" runat="server" CssClass="form-control" TextMode="Number" />
-                <div class="form-text">Antecedência para avisos de Leads, Oportunidades e Propostas a expirar.</div>
+                <asp:TextBox ID="txtFusoHorario" runat="server" CssClass="form-control" MaxLength="50" Enabled="false" />
             </div>
         </div>
+    </div>
 
-        <div class="mt-4">
-            <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn btn-primary" OnClick="btnGuardar_Click" />
+    <div class="crm-card mb-3">
+        <h5 class="crm-card-title">Alertas (dias)</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Leads</label>
+                <asp:TextBox ID="txtAlertaLeads" runat="server" CssClass="form-control" Enabled="false" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Oportunidades</label>
+                <asp:TextBox ID="txtAlertaOportunidades" runat="server" CssClass="form-control" Enabled="false" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Propostas</label>
+                <asp:TextBox ID="txtAlertaPropostas" runat="server" CssClass="form-control" Enabled="false" />
+            </div>
         </div>
+    </div>
+
+    <div class="crm-card mb-3">
+        <h5 class="crm-card-title">Segurança</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Tentativas Falhadas Máximas</label>
+                <asp:TextBox ID="txtMaxTentativas" runat="server" CssClass="form-control" Enabled="false" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Bloqueio de Conta (minutos)</label>
+                <asp:TextBox ID="txtBloqueioMinutos" runat="server" CssClass="form-control" Enabled="false" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Expiração de Sessão (minutos)</label>
+                <asp:TextBox ID="txtSessaoMinutos" runat="server" CssClass="form-control" Enabled="false" />
+            </div>
+        </div>
+    </div>
+
+    <div class="crm-form-actions">
+        <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn btn-primary" OnClick="btnGuardar_Click" Visible="false" />
     </div>
 
 </asp:Content>

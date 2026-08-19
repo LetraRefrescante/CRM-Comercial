@@ -33,14 +33,13 @@ namespace CRM.Data.Repositories
             }
         }
 
-        public List<Opportunity> ListarParaSelecao()
+        public List<Opportunity> ListarParaSelecao(int? ownerId = null)
         {
             using (var context = new CrmDbContext())
             {
-                return context.Opportunities
-                    .Where(o => !o.IsDeleted)
-                    .OrderBy(o => o.Title)
-                    .ToList();
+                var query = context.Opportunities.Where(o => !o.IsDeleted);
+                if (ownerId.HasValue) query = query.Where(o => o.OwnerId == ownerId.Value);
+                return query.OrderBy(o => o.Title).ToList();
             }
         }
 
@@ -181,6 +180,25 @@ namespace CRM.Data.Repositories
                     .Where(h => h.OpportunityId == opportunityId)
                     .OrderByDescending(h => h.ChangedDate)
                     .ToList();
+            }
+        }
+        public List<Opportunity> ListarParaRelatorio(DateTime? dataInicio, DateTime? dataFim, int? clientId, int? ownerId, bool? isClosed)
+        {
+            using (var context = new CrmDbContext())
+            {
+                var query = context.Opportunities
+                    .Include(o => o.Client)
+                    .Include(o => o.Stage)
+                    .Include(o => o.Owner)
+                    .Where(o => !o.IsDeleted);
+
+                if (dataInicio.HasValue) query = query.Where(o => o.ExpectedCloseDate >= dataInicio.Value);
+                if (dataFim.HasValue) query = query.Where(o => o.ExpectedCloseDate <= dataFim.Value);
+                if (clientId.HasValue) query = query.Where(o => o.ClientId == clientId.Value);
+                if (ownerId.HasValue) query = query.Where(o => o.OwnerId == ownerId.Value);
+                if (isClosed.HasValue) query = query.Where(o => o.IsClosed == isClosed.Value);
+
+                return query.ToList();
             }
         }
     }

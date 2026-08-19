@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CRM.Models.Entities.Clientes;
+using CRM.Models.Entities.Leads;
+using CRM.Models.Entities.Oportunidades;
+using CRM.Models.Entities.Seguranca;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using CRM.Models.Entities.Clientes;
-using CRM.Models.Entities.Leads;
-using CRM.Models.Entities.Seguranca;
 
 namespace CRM.Models.Entities.Atividades
 {
@@ -12,16 +13,26 @@ namespace CRM.Models.Entities.Atividades
     {
         [Key]
         public int TaskId { get; set; }
+
         public string Subject { get; set; }
 
+        [ForeignKey(nameof(RelatedClient))]
         public int? RelatedClientId { get; set; }
+
         public Client RelatedClient { get; set; }
 
+        [ForeignKey(nameof(RelatedLead))]
         public int? RelatedLeadId { get; set; }
-        public Lead RelatedLead { get; set; }
-        public int? RelatedOpportunityId { get; set; }
 
+        public Lead RelatedLead { get; set; }
+
+        [ForeignKey(nameof(RelatedOpportunity))]
+        public int? RelatedOpportunityId { get; set; }
+        public Opportunity RelatedOpportunity { get; set; }
+
+        [ForeignKey(nameof(AssignedTo))]
         public int AssignedToUserId { get; set; }
+
         public User AssignedTo { get; set; }
 
         public DateTime DueDate { get; set; }

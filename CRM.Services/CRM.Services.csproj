@@ -46,6 +46,7 @@
     <Compile Include="Services\ActivityService.cs" />
     <Compile Include="Services\AuditService.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
+    <Compile Include="Services\AuxiliaryListService.cs" />
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\ClientService.cs" />
     <Compile Include="Services\ContactService.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Services\PriceTableService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\ProposalService.cs" />
+    <Compile Include="Services\RelatorioService.cs" />
     <Compile Include="Services\SaleService.cs" />
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\TaskService.cs" />

@@ -70,7 +70,14 @@ namespace CRM.Services
             string sortColumn, bool sortAscending)
             => _leadRepository.Listar(pesquisa, status, leadSourceId, ownerId, scoreMin, scoreMax,
                 dataInicio, dataFim, pagina, tamanhoPagina, out totalRegistos, sortColumn, sortAscending);
+        public List<Lead> ListarParaSelecao(string perfil, int userId)
+        {
+            var nivel = _permissionService.ObterNivel(perfil, "Leads");
+            if (nivel == NivelAcesso.Nenhum) return new List<Lead>();
 
+            int? ownerId = nivel == NivelAcesso.Proprios ? userId : (int?)null;
+            return _leadRepository.ListarParaSelecao(ownerId);
+        }
         public int Criar(Lead lead)
         {
             int leadId = _leadRepository.Criar(lead);

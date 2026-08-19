@@ -7,9 +7,6 @@ using CRM.Models.Entities.Seguranca;
 
 namespace CRM.Models.Entities.Oportunidades
 {
-    // ⚠️ Scaffold mínimo — só o necessário para o LeadConverter criar a linha.
-    // O módulo completo de Oportunidades (fase seguinte do blueprint) vai
-    // expandir esta entidade (Competitor, LossReasonId, fecho, histórico de fase).
     [Table("Opportunities")]
     public class Opportunity
     {

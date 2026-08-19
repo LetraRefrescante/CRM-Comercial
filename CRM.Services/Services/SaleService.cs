@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CRM.Data.Repositories;
+﻿using CRM.Data.Repositories;
+using CRM.Models.DTOs;
 using CRM.Models.Entities.Catalogo;
 using CRM.Models.Entities.Vendas;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CRM.Services
 {
@@ -187,6 +188,30 @@ namespace CRM.Services
             => _saleRepository.Listar(pesquisa, status, clientId, ownerId, dataInicio, dataFim,
                 pagina, tamanhoPagina, out totalRegistos, sortColumn, sortAscending);
 
+        public List<Sale> ListarParaSelecao(string perfil, int userId)
+        {
+            int? ownerId = TemAmbitoProprios(perfil) ? userId : (int?)null;
+            return _saleRepository.ListarParaSelecao(ownerId);
+        }
+
+        public List<RelatorioComissoesLinha> ObterRelatorioComissoes(
+            DateTime dataInicio, DateTime dataFim, int? ownerId)
+        {
+            var vendas = _saleRepository.ListarParaRelatorio(dataInicio, dataFim, null, ownerId, new List<string> { "Concluída" });
+
+            return vendas
+                .GroupBy(v => v.Owner?.Name ?? "(sem comercial)")
+                .OrderByDescending(g => g.Sum(v => v.CommissionValue ?? 0))
+                .Select(g => new RelatorioComissoesLinha
+                {
+                    Comercial = g.Key,
+                    QuantidadeVendas = g.Count(),
+                    TotalVendas = g.Sum(v => v.Total),
+                    TotalComissao = g.Sum(v => v.CommissionValue ?? 0)
+                })
+                .ToList();
+        }
+
         // ===================== Gravação =====================
 
         public Sale Criar(Sale sale, int userId)
@@ -266,6 +291,44 @@ namespace CRM.Services
 
             if (novoStatus != sale.Status)
                 _saleRepository.AtualizarEstado(saleId, novoStatus, sale.CancellationReason, userId);
+        }
+
+        // ===================== Relatorio =====================
+        public RelatorioVendasResultado ObterRelatorio(
+        DateTime dataInicio, DateTime dataFim, int? clientId, int? ownerId, List<string> estados, string agrupamento)
+        {
+            var vendas = _saleRepository.ListarParaRelatorio(dataInicio, dataFim, clientId, ownerId, estados);
+
+            var linhas = vendas
+                .GroupBy(v => ChavePeriodo(v.SaleDate, agrupamento))
+                .OrderBy(g => g.Key)
+                .Select(g => new RelatorioVendasLinha
+                {
+                    Periodo = g.Key,
+                    Quantidade = g.Count(),
+                    SubTotal = g.Sum(v => v.SubTotal),
+                    TaxTotal = g.Sum(v => v.TaxTotal),
+                    Total = g.Sum(v => v.Total)
+                })
+                .ToList();
+
+            return new RelatorioVendasResultado
+            {
+                Linhas = linhas,
+                QuantidadeGeral = vendas.Count,
+                TotalGeral = vendas.Sum(v => v.Total)
+            };
+        }
+
+        private string ChavePeriodo(DateTime data, string agrupamento)
+        {
+            switch (agrupamento)
+            {
+                case "Dia": return data.ToString("yyyy-MM-dd");
+                case "Trimestre": return $"{data.Year}-T{(data.Month - 1) / 3 + 1}";
+                case "Ano": return data.Year.ToString();
+                default: return data.ToString("yyyy-MM"); // "Mes"
+            }
         }
     }
 }

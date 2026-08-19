@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CRM.Data.Repositories;
+﻿using CRM.Data.Repositories;
+using CRM.Models.DTOs;
 using CRM.Models.Entities.Atividades;
 using CRM.Models.Filtros;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CRM.Services
 {
@@ -22,7 +23,6 @@ namespace CRM.Services
 
         public List<Activity> ListarPorLead(int leadId) => _activityRepository.ListarPorLead(leadId);
 
-        // Atualizado: agora suporta paginação e ordenação, para a AtividadesLista.aspx
         public List<Activity> Pesquisar(
             ActivityFiltro filtro,
             int pagina, int tamanhoPagina, out int totalRegistos,
@@ -132,11 +132,37 @@ namespace CRM.Services
             _auditService.Registar(currentUserId, "Delete", "Activity", activityId.ToString(),
                 $"Atividade '{activity.Subject}' eliminada (lógico).");
         }
+        public List<RelatorioAtividadesLinha> ObterRelatorioProdutividade(
+            DateTime? dataInicio, DateTime? dataFim, int? assignedToUserId, string tipo, string status)
+        {
+            var filtro = new ActivityFiltro
+            {
+                DataInicio = dataInicio,
+                DataFim = dataFim,
+                AssignedToUserId = assignedToUserId,
+                Tipo = tipo,
+                Status = status
+            };
 
-        // Novo: mostra/esconde o botão "Nova Atividade" na listagem
+            var atividades = _activityRepository.Pesquisar(filtro, 1, int.MaxValue, out int _, "StartDateTime", true);
+
+            return atividades
+                .GroupBy(a => a.AssignedTo?.Name ?? "(sem responsável)")
+                .OrderByDescending(g => g.Count())
+                .Select(g => new RelatorioAtividadesLinha
+                {
+                    Responsavel = g.Key,
+                    Total = g.Count(),
+                    Concluidas = g.Count(a => a.Status == "Concluída"),
+                    Planeadas = g.Count(a => a.Status == "Planeada"),
+                    EmCurso = g.Count(a => a.Status == "Em Curso"),
+                    Canceladas = g.Count(a => a.Status == "Cancelada")
+                })
+                .ToList();
+        }
+
         public bool PodeCriar(string currentUserRole) => !EhPerfilConsulta(currentUserRole);
 
-        // Alterado de private para public: a listagem chama isto por linha, para mostrar/esconder "Editar"
         public bool PodeGerir(Activity activity, int currentUserId, string currentUserRole)
         {
             if (EhPerfilPrivilegiado(currentUserRole)) return true;
@@ -144,15 +170,12 @@ namespace CRM.Services
             return activity.AssignedToUserId == currentUserId;
         }
 
-        // Novo: usado na listagem para mostrar/esconder "Eliminar" (respeita a regra de Concluída)
         public bool PodeEliminar(Activity activity, int currentUserId, string currentUserRole)
         {
             if (activity.Status == "Concluída" && !EhPerfilPrivilegiado(currentUserRole)) return false;
             return PodeGerir(activity, currentUserId, currentUserRole);
         }
 
-        // Novo: diz à listagem se deve mostrar o filtro "Responsável" (não faz sentido para quem já
-        // está limitado às próprias atividades)
         public bool TemAmbitoProprios(string currentUserRole) => currentUserRole == "Comercial";
 
         private void AplicarAmbitoPermissao(ActivityFiltro filtro, int currentUserId, string currentUserRole)
@@ -172,7 +195,7 @@ namespace CRM.Services
 
         private static bool EhPerfilConsulta(string role) =>
             role == "Financeiro" || role == "Consulta";
-        public List<Activity> ListarPorOportunidade(int opportunityId) =>
+        public List<Activity> ListarPorOportunidade(int opportunityId) => 
             _activityRepository.ListarPorOportunidade(opportunityId);
 
         public List<ActivityParticipant> ListarParticipantes(int activityId) =>

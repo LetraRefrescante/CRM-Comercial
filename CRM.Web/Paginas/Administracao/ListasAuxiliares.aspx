@@ -8,159 +8,158 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <div class="crm-list-header"><h2>Listas Auxiliares</h2></div>
-    <p class="text-muted small">Categorias de produto têm página própria em Catálogo. "Estados" (Cliente/Lead/Proposta/Venda) são fixos no schema, não geríveis aqui.</p>
+    <h2 class="mb-3">Listas Auxiliares</h2>
+    <p class="text-muted small mb-4">Nenhum item é eliminado fisicamente — só ativado/inativado. Itens inativos deixam de aparecer em novos registos, mas continuam nos registos já criados.</p>
 
-    <!-- ===================== Origens de Lead ===================== -->
-    <h5 class="mt-4">Origens de Lead</h5>
-    <div class="crm-form-card mb-2">
-        <asp:CustomValidator ID="cvLeadSource" runat="server" Display="None" ValidationGroup="LeadSource" OnServerValidate="cvLeadSource_ServerValidate" />
-        <asp:ValidationSummary ID="vsLeadSource" runat="server" CssClass="alert alert-danger" DisplayMode="BulletList" ValidationGroup="LeadSource" />
-        <div class="row g-2 align-items-end">
-            <div class="col-md-4">
-                <asp:TextBox ID="txtLeadSourceNome" runat="server" CssClass="form-control" placeholder="Nome da origem" />
-            </div>
-            <div class="col-md-auto">
-                <asp:Button ID="btnLeadSourceGuardar" runat="server" Text="Adicionar" CssClass="btn btn-primary" ValidationGroup="LeadSource" OnClick="btnLeadSourceGuardar_Click" />
-            </div>
-            <div class="col-md-auto">
-                <asp:Button ID="btnLeadSourceCancelar" runat="server" Text="Cancelar" CssClass="btn btn-outline-secondary" Visible="false"
-                    CausesValidation="false" OnClick="btnLeadSourceCancelar_Click" />
+    <div class="row g-3">
+
+        <div class="col-md-6">
+            <div class="crm-table-card">
+                <div class="p-3 pb-0"><h5 class="mb-0">Setores</h5></div>
+                <asp:Repeater ID="rptSetores" runat="server" OnItemCommand="rptSetores_ItemCommand">
+                    <HeaderTemplate><ul class="list-group list-group-flush"></HeaderTemplate>
+                    <ItemTemplate>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="<%# GetTextoClasse(Eval("IsActive")) %>"><%# Eval("Name") %></span>
+                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="Alternar" CommandArgument='<%# Eval("SectorId") %>'>
+                                <%# GetTextoBotaoEstado(Eval("IsActive")) %>
+                            </asp:LinkButton>
+                        </li>
+                    </ItemTemplate>
+                    <FooterTemplate></ul></FooterTemplate>
+                </asp:Repeater>
+                <asp:PlaceHolder ID="phFormSetor" runat="server">
+                    <div class="p-3 border-top d-flex gap-2">
+                        <asp:TextBox ID="txtNovoSetor" runat="server" CssClass="form-control form-control-sm" placeholder="Novo setor..." />
+                        <asp:Button ID="btnAddSetor" runat="server" Text="Adicionar" CssClass="btn btn-sm btn-primary" OnClick="btnAddSetor_Click" CausesValidation="false" />
+                    </div>
+                </asp:PlaceHolder>
             </div>
         </div>
-    </div>
-    <div class="crm-table-card mb-4">
-        <asp:Repeater ID="rptLeadSources" runat="server" OnItemCommand="rptLeadSources_ItemCommand">
-            <HeaderTemplate><table class="table table-hover mb-0"><thead><tr><th>Nome</th><th>Estado</th><th class="text-end">Ações</th></tr></thead><tbody></HeaderTemplate>
-            <ItemTemplate>
-                <tr>
-                    <td><%# Eval("Name") %></td>
-                    <td><span class="badge <%# (bool)Eval("IsActive") ? "bg-success" : "bg-secondary" %>"><%# (bool)Eval("IsActive") ? "Ativa" : "Inativa" %></span></td>
-                    <td class="text-end">
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="Editar" CommandArgument='<%# Eval("LeadSourceId") %>'><i class="fas fa-pen"></i></asp:LinkButton>
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-warning" CommandName="AlternarEstado" CommandArgument='<%# Eval("LeadSourceId") %>'><i class="fas fa-power-off"></i></asp:LinkButton>
-                    </td>
-                </tr>
-            </ItemTemplate>
-            <FooterTemplate></tbody></table></FooterTemplate>
-        </asp:Repeater>
-        <asp:PlaceHolder ID="phLeadSourcesVazio" runat="server" Visible="false"><p class="text-muted text-center p-3 mb-0">Sem origens registadas.</p></asp:PlaceHolder>
-    </div>
 
-    <!-- ===================== Motivos de Perda ===================== -->
-    <h5>Motivos de Perda</h5>
-    <div class="crm-form-card mb-2">
-        <asp:CustomValidator ID="cvLossReason" runat="server" Display="None" ValidationGroup="LossReason" OnServerValidate="cvLossReason_ServerValidate" />
-        <asp:ValidationSummary ID="vsLossReason" runat="server" CssClass="alert alert-danger" DisplayMode="BulletList" ValidationGroup="LossReason" />
-        <div class="row g-2 align-items-end">
-            <div class="col-md-4">
-                <asp:TextBox ID="txtLossReasonNome" runat="server" CssClass="form-control" placeholder="Nome do motivo" />
-            </div>
-            <div class="col-md-auto">
-                <asp:Button ID="btnLossReasonGuardar" runat="server" Text="Adicionar" CssClass="btn btn-primary" ValidationGroup="LossReason" OnClick="btnLossReasonGuardar_Click" />
-            </div>
-            <div class="col-md-auto">
-                <asp:Button ID="btnLossReasonCancelar" runat="server" Text="Cancelar" CssClass="btn btn-outline-secondary" Visible="false"
-                    CausesValidation="false" OnClick="btnLossReasonCancelar_Click" />
+        <div class="col-md-6">
+            <div class="crm-table-card">
+                <div class="p-3 pb-0"><h5 class="mb-0">Origens de Lead</h5></div>
+                <asp:Repeater ID="rptOrigens" runat="server" OnItemCommand="rptOrigens_ItemCommand">
+                    <HeaderTemplate><ul class="list-group list-group-flush"></HeaderTemplate>
+                    <ItemTemplate>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="<%# GetTextoClasse(Eval("IsActive")) %>"><%# Eval("Name") %></span>
+                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="Alternar" CommandArgument='<%# Eval("LeadSourceId") %>'>
+                                <%# GetTextoBotaoEstado(Eval("IsActive")) %>
+                            </asp:LinkButton>
+                        </li>
+                    </ItemTemplate>
+                    <FooterTemplate></ul></FooterTemplate>
+                </asp:Repeater>
+                <asp:PlaceHolder ID="phFormOrigem" runat="server">
+                    <div class="p-3 border-top d-flex gap-2">
+                        <asp:TextBox ID="txtNovaOrigem" runat="server" CssClass="form-control form-control-sm" placeholder="Nova origem..." />
+                        <asp:Button ID="btnAddOrigem" runat="server" Text="Adicionar" CssClass="btn btn-sm btn-primary" OnClick="btnAddOrigem_Click" CausesValidation="false" />
+                    </div>
+                </asp:PlaceHolder>
             </div>
         </div>
-    </div>
-    <div class="crm-table-card mb-4">
-        <asp:Repeater ID="rptLossReasons" runat="server" OnItemCommand="rptLossReasons_ItemCommand">
-            <HeaderTemplate><table class="table table-hover mb-0"><thead><tr><th>Nome</th><th>Estado</th><th class="text-end">Ações</th></tr></thead><tbody></HeaderTemplate>
-            <ItemTemplate>
-                <tr>
-                    <td><%# Eval("Name") %></td>
-                    <td><span class="badge <%# (bool)Eval("IsActive") ? "bg-success" : "bg-secondary" %>"><%# (bool)Eval("IsActive") ? "Ativo" : "Inativo" %></span></td>
-                    <td class="text-end">
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="Editar" CommandArgument='<%# Eval("LossReasonId") %>'><i class="fas fa-pen"></i></asp:LinkButton>
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-warning" CommandName="AlternarEstado" CommandArgument='<%# Eval("LossReasonId") %>'><i class="fas fa-power-off"></i></asp:LinkButton>
-                    </td>
-                </tr>
-            </ItemTemplate>
-            <FooterTemplate></tbody></table></FooterTemplate>
-        </asp:Repeater>
-        <asp:PlaceHolder ID="phLossReasonsVazio" runat="server" Visible="false"><p class="text-muted text-center p-3 mb-0">Sem motivos registados.</p></asp:PlaceHolder>
-    </div>
 
-    <!-- ===================== Condições de Pagamento ===================== -->
-    <h5>Condições de Pagamento</h5>
-    <div class="crm-form-card mb-2">
-        <asp:CustomValidator ID="cvPaymentTerm" runat="server" Display="None" ValidationGroup="PaymentTerm" OnServerValidate="cvPaymentTerm_ServerValidate" />
-        <asp:ValidationSummary ID="vsPaymentTerm" runat="server" CssClass="alert alert-danger" DisplayMode="BulletList" ValidationGroup="PaymentTerm" />
-        <div class="row g-2 align-items-end">
-            <div class="col-md-4">
-                <asp:TextBox ID="txtPaymentTermNome" runat="server" CssClass="form-control" placeholder="ex: 30 dias" />
-            </div>
-            <div class="col-md-2">
-                <asp:TextBox ID="txtPaymentTermDias" runat="server" CssClass="form-control" TextMode="Number" placeholder="Dias" />
-            </div>
-            <div class="col-md-auto">
-                <asp:Button ID="btnPaymentTermGuardar" runat="server" Text="Adicionar" CssClass="btn btn-primary" ValidationGroup="PaymentTerm" OnClick="btnPaymentTermGuardar_Click" />
-            </div>
-            <div class="col-md-auto">
-                <asp:Button ID="btnPaymentTermCancelar" runat="server" Text="Cancelar" CssClass="btn btn-outline-secondary" Visible="false"
-                    CausesValidation="false" OnClick="btnPaymentTermCancelar_Click" />
+        <div class="col-md-6">
+            <div class="crm-table-card">
+                <div class="p-3 pb-0"><h5 class="mb-0">Motivos de Perda</h5></div>
+                <asp:Repeater ID="rptMotivos" runat="server" OnItemCommand="rptMotivos_ItemCommand">
+                    <HeaderTemplate><ul class="list-group list-group-flush"></HeaderTemplate>
+                    <ItemTemplate>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="<%# GetTextoClasse(Eval("IsActive")) %>"><%# Eval("Name") %></span>
+                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="Alternar" CommandArgument='<%# Eval("LossReasonId") %>'>
+                                <%# GetTextoBotaoEstado(Eval("IsActive")) %>
+                            </asp:LinkButton>
+                        </li>
+                    </ItemTemplate>
+                    <FooterTemplate></ul></FooterTemplate>
+                </asp:Repeater>
+                <asp:PlaceHolder ID="phFormMotivo" runat="server">
+                    <div class="p-3 border-top d-flex gap-2">
+                        <asp:TextBox ID="txtNovoMotivo" runat="server" CssClass="form-control form-control-sm" placeholder="Novo motivo..." />
+                        <asp:Button ID="btnAddMotivo" runat="server" Text="Adicionar" CssClass="btn btn-sm btn-primary" OnClick="btnAddMotivo_Click" CausesValidation="false" />
+                    </div>
+                </asp:PlaceHolder>
             </div>
         </div>
-    </div>
-    <div class="crm-table-card mb-4">
-        <asp:Repeater ID="rptPaymentTerms" runat="server" OnItemCommand="rptPaymentTerms_ItemCommand">
-            <HeaderTemplate><table class="table table-hover mb-0"><thead><tr><th>Nome</th><th>Dias</th><th>Estado</th><th class="text-end">Ações</th></tr></thead><tbody></HeaderTemplate>
-            <ItemTemplate>
-                <tr>
-                    <td><%# Eval("Name") %></td>
-                    <td><%# Eval("DaysDue") %></td>
-                    <td><span class="badge <%# (bool)Eval("IsActive") ? "bg-success" : "bg-secondary" %>"><%# (bool)Eval("IsActive") ? "Ativa" : "Inativa" %></span></td>
-                    <td class="text-end">
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="Editar" CommandArgument='<%# Eval("PaymentTermId") %>'><i class="fas fa-pen"></i></asp:LinkButton>
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-warning" CommandName="AlternarEstado" CommandArgument='<%# Eval("PaymentTermId") %>'><i class="fas fa-power-off"></i></asp:LinkButton>
-                    </td>
-                </tr>
-            </ItemTemplate>
-            <FooterTemplate></tbody></table></FooterTemplate>
-        </asp:Repeater>
-        <asp:PlaceHolder ID="phPaymentTermsVazio" runat="server" Visible="false"><p class="text-muted text-center p-3 mb-0">Sem condições registadas.</p></asp:PlaceHolder>
-    </div>
 
-    <!-- ===================== Taxas de IVA ===================== -->
-    <h5>Taxas de IVA</h5>
-    <div class="crm-form-card mb-2">
-        <asp:CustomValidator ID="cvTaxRate" runat="server" Display="None" ValidationGroup="TaxRate" OnServerValidate="cvTaxRate_ServerValidate" />
-        <asp:ValidationSummary ID="vsTaxRate" runat="server" CssClass="alert alert-danger" DisplayMode="BulletList" ValidationGroup="TaxRate" />
-        <div class="row g-2 align-items-end">
-            <div class="col-md-4">
-                <asp:TextBox ID="txtTaxRateNome" runat="server" CssClass="form-control" placeholder="ex: Taxa Normal" />
-            </div>
-            <div class="col-md-2">
-                <asp:TextBox ID="txtTaxRatePercentagem" runat="server" CssClass="form-control" TextMode="Number" step="0.01" placeholder="%" />
-            </div>
-            <div class="col-md-auto">
-                <asp:Button ID="btnTaxRateGuardar" runat="server" Text="Adicionar" CssClass="btn btn-primary" ValidationGroup="TaxRate" OnClick="btnTaxRateGuardar_Click" />
-            </div>
-            <div class="col-md-auto">
-                <asp:Button ID="btnTaxRateCancelar" runat="server" Text="Cancelar" CssClass="btn btn-outline-secondary" Visible="false"
-                    CausesValidation="false" OnClick="btnTaxRateCancelar_Click" />
+        <div class="col-md-6">
+            <div class="crm-table-card">
+                <div class="p-3 pb-0"><h5 class="mb-0">Taxas de IVA</h5></div>
+                <asp:Repeater ID="rptTaxas" runat="server" OnItemCommand="rptTaxas_ItemCommand">
+                    <HeaderTemplate><ul class="list-group list-group-flush"></HeaderTemplate>
+                    <ItemTemplate>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="<%# GetTextoClasse(Eval("IsActive")) %>"><%# Eval("Name") %> (<%# Eval("Percentage") %>%)</span>
+                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="Alternar" CommandArgument='<%# Eval("TaxRateId") %>'>
+                                <%# GetTextoBotaoEstado(Eval("IsActive")) %>
+                            </asp:LinkButton>
+                        </li>
+                    </ItemTemplate>
+                    <FooterTemplate></ul></FooterTemplate>
+                </asp:Repeater>
+                <asp:PlaceHolder ID="phFormTaxa" runat="server">
+                    <div class="p-3 border-top d-flex gap-2">
+                        <asp:TextBox ID="txtNovaTaxaNome" runat="server" CssClass="form-control form-control-sm" placeholder="Nome..." />
+                        <asp:TextBox ID="txtNovaTaxaPercentagem" runat="server" CssClass="form-control form-control-sm" placeholder="%" style="max-width:80px;" />
+                        <asp:Button ID="btnAddTaxa" runat="server" Text="Adicionar" CssClass="btn btn-sm btn-primary" OnClick="btnAddTaxa_Click" CausesValidation="false" />
+                    </div>
+                </asp:PlaceHolder>
             </div>
         </div>
-    </div>
-    <div class="crm-table-card">
-        <asp:Repeater ID="rptTaxRates" runat="server" OnItemCommand="rptTaxRates_ItemCommand">
-            <HeaderTemplate><table class="table table-hover mb-0"><thead><tr><th>Nome</th><th>%</th><th>Estado</th><th class="text-end">Ações</th></tr></thead><tbody></HeaderTemplate>
-            <ItemTemplate>
-                <tr>
-                    <td><%# Eval("Name") %></td>
-                    <td><%# Eval("Percentage") %>%</td>
-                    <td><span class="badge <%# (bool)Eval("IsActive") ? "bg-success" : "bg-secondary" %>"><%# (bool)Eval("IsActive") ? "Ativa" : "Inativa" %></span></td>
-                    <td class="text-end">
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="Editar" CommandArgument='<%# Eval("TaxRateId") %>'><i class="fas fa-pen"></i></asp:LinkButton>
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-warning" CommandName="AlternarEstado" CommandArgument='<%# Eval("TaxRateId") %>'><i class="fas fa-power-off"></i></asp:LinkButton>
-                    </td>
-                </tr>
-            </ItemTemplate>
-            <FooterTemplate></tbody></table></FooterTemplate>
-        </asp:Repeater>
-        <asp:PlaceHolder ID="phTaxRatesVazio" runat="server" Visible="false"><p class="text-muted text-center p-3 mb-0">Sem taxas registadas.</p></asp:PlaceHolder>
+
+        <div class="col-md-6">
+            <div class="crm-table-card">
+                <div class="p-3 pb-0"><h5 class="mb-0">Condições de Pagamento</h5></div>
+                <asp:Repeater ID="rptCondicoes" runat="server" OnItemCommand="rptCondicoes_ItemCommand">
+                    <HeaderTemplate><ul class="list-group list-group-flush"></HeaderTemplate>
+                    <ItemTemplate>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="<%# GetTextoClasse(Eval("IsActive")) %>"><%# Eval("Name") %><%# GetDiasVencimentoTexto(Eval("DaysDue")) %></span>
+                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="Alternar" CommandArgument='<%# Eval("PaymentTermId") %>'>
+                                <%# GetTextoBotaoEstado(Eval("IsActive")) %>
+                            </asp:LinkButton>
+                        </li>
+                    </ItemTemplate>
+                    <FooterTemplate></ul></FooterTemplate>
+                </asp:Repeater>
+                <asp:PlaceHolder ID="phFormCondicao" runat="server">
+                    <div class="p-3 border-top d-flex gap-2">
+                        <asp:TextBox ID="txtNovaCondicaoNome" runat="server" CssClass="form-control form-control-sm" placeholder="Nome..." />
+                        <asp:TextBox ID="txtNovaCondicaoDias" runat="server" CssClass="form-control form-control-sm" placeholder="Dias" style="max-width:80px;" />
+                        <asp:Button ID="btnAddCondicao" runat="server" Text="Adicionar" CssClass="btn btn-sm btn-primary" OnClick="btnAddCondicao_Click" CausesValidation="false" />
+                    </div>
+                </asp:PlaceHolder>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="crm-table-card">
+                <div class="p-3 pb-0"><h5 class="mb-0">Países</h5></div>
+                <asp:Repeater ID="rptPaises" runat="server" OnItemCommand="rptPaises_ItemCommand">
+                    <HeaderTemplate><ul class="list-group list-group-flush"></HeaderTemplate>
+                    <ItemTemplate>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="<%# GetTextoClasse(Eval("IsActive")) %>"><%# Eval("Code") %> — <%# Eval("Name") %></span>
+                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="Alternar" CommandArgument='<%# Eval("CountryId") %>'>
+                                <%# GetTextoBotaoEstado(Eval("IsActive")) %>
+                            </asp:LinkButton>
+                        </li>
+                    </ItemTemplate>
+                    <FooterTemplate></ul></FooterTemplate>
+                </asp:Repeater>
+                <asp:PlaceHolder ID="phFormPais" runat="server">
+                    <div class="p-3 border-top d-flex gap-2">
+                        <asp:TextBox ID="txtNovoPaisCodigo" runat="server" CssClass="form-control form-control-sm" placeholder="Código" style="max-width:80px;" MaxLength="3" />
+                        <asp:TextBox ID="txtNovoPaisNome" runat="server" CssClass="form-control form-control-sm" placeholder="Nome..." />
+                        <asp:Button ID="btnAddPais" runat="server" Text="Adicionar" CssClass="btn btn-sm btn-primary" OnClick="btnAddPais_Click" CausesValidation="false" />
+                    </div>
+                </asp:PlaceHolder>
+            </div>
+        </div>
+
     </div>
 
 </asp:Content>

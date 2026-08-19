@@ -22,7 +22,10 @@ namespace CRM.Services
         }
 
         public LossReason GetById(int id) => _lossReasonRepository.GetById(id);
-        public List<LossReason> Listar(string pesquisa) => _lossReasonRepository.Listar(pesquisa);
+
+        public List<LossReason> Listar(string pesquisa, bool incluirInativos = false)
+            => _lossReasonRepository.Listar(pesquisa, incluirInativos);
+
         public bool ExisteNome(string name, int? ignorarId = null) => _lossReasonRepository.ExisteNome(name, ignorarId);
 
         public int Criar(LossReason lossReason, int userId)
@@ -34,13 +37,14 @@ namespace CRM.Services
 
         public void Atualizar(LossReason lossReason, int userId)
         {
+            lossReason.UpdatedBy = userId;
             _lossReasonRepository.Atualizar(lossReason);
             _auditService.Registar(userId, "Atualizar", "LossReason", lossReason.LossReasonId.ToString(), $"Motivo '{lossReason.Name}' atualizado.");
         }
 
         public void AlternarEstado(int id, int userId)
         {
-            _lossReasonRepository.AlternarEstado(id);
+            _lossReasonRepository.AlternarEstado(id, userId);
             _auditService.Registar(userId, "AlternarEstado", "LossReason", id.ToString(), "Estado do motivo alternado.");
         }
     }

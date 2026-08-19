@@ -15,273 +15,246 @@ namespace CRM.Web.Paginas.Administracao
     {
 
         /// <summary>
-        /// Controle cvLeadSource.
+        /// Controle rptSetores.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator cvLeadSource;
+        protected global::System.Web.UI.WebControls.Repeater rptSetores;
 
         /// <summary>
-        /// Controle vsLeadSource.
+        /// Controle phFormSetor.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ValidationSummary vsLeadSource;
+        protected global::System.Web.UI.WebControls.PlaceHolder phFormSetor;
 
         /// <summary>
-        /// Controle txtLeadSourceNome.
+        /// Controle txtNovoSetor.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtLeadSourceNome;
+        protected global::System.Web.UI.WebControls.TextBox txtNovoSetor;
 
         /// <summary>
-        /// Controle btnLeadSourceGuardar.
+        /// Controle btnAddSetor.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnLeadSourceGuardar;
+        protected global::System.Web.UI.WebControls.Button btnAddSetor;
 
         /// <summary>
-        /// Controle btnLeadSourceCancelar.
+        /// Controle rptOrigens.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnLeadSourceCancelar;
+        protected global::System.Web.UI.WebControls.Repeater rptOrigens;
 
         /// <summary>
-        /// Controle rptLeadSources.
+        /// Controle phFormOrigem.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptLeadSources;
+        protected global::System.Web.UI.WebControls.PlaceHolder phFormOrigem;
 
         /// <summary>
-        /// Controle phLeadSourcesVazio.
+        /// Controle txtNovaOrigem.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phLeadSourcesVazio;
+        protected global::System.Web.UI.WebControls.TextBox txtNovaOrigem;
 
         /// <summary>
-        /// Controle cvLossReason.
+        /// Controle btnAddOrigem.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator cvLossReason;
+        protected global::System.Web.UI.WebControls.Button btnAddOrigem;
 
         /// <summary>
-        /// Controle vsLossReason.
+        /// Controle rptMotivos.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ValidationSummary vsLossReason;
+        protected global::System.Web.UI.WebControls.Repeater rptMotivos;
 
         /// <summary>
-        /// Controle txtLossReasonNome.
+        /// Controle phFormMotivo.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtLossReasonNome;
+        protected global::System.Web.UI.WebControls.PlaceHolder phFormMotivo;
 
         /// <summary>
-        /// Controle btnLossReasonGuardar.
+        /// Controle txtNovoMotivo.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnLossReasonGuardar;
+        protected global::System.Web.UI.WebControls.TextBox txtNovoMotivo;
 
         /// <summary>
-        /// Controle btnLossReasonCancelar.
+        /// Controle btnAddMotivo.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnLossReasonCancelar;
+        protected global::System.Web.UI.WebControls.Button btnAddMotivo;
 
         /// <summary>
-        /// Controle rptLossReasons.
+        /// Controle rptTaxas.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptLossReasons;
+        protected global::System.Web.UI.WebControls.Repeater rptTaxas;
 
         /// <summary>
-        /// Controle phLossReasonsVazio.
+        /// Controle phFormTaxa.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phLossReasonsVazio;
+        protected global::System.Web.UI.WebControls.PlaceHolder phFormTaxa;
 
         /// <summary>
-        /// Controle cvPaymentTerm.
+        /// Controle txtNovaTaxaNome.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator cvPaymentTerm;
+        protected global::System.Web.UI.WebControls.TextBox txtNovaTaxaNome;
 
         /// <summary>
-        /// Controle vsPaymentTerm.
+        /// Controle txtNovaTaxaPercentagem.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ValidationSummary vsPaymentTerm;
+        protected global::System.Web.UI.WebControls.TextBox txtNovaTaxaPercentagem;
 
         /// <summary>
-        /// Controle txtPaymentTermNome.
+        /// Controle btnAddTaxa.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPaymentTermNome;
+        protected global::System.Web.UI.WebControls.Button btnAddTaxa;
 
         /// <summary>
-        /// Controle txtPaymentTermDias.
+        /// Controle rptCondicoes.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPaymentTermDias;
+        protected global::System.Web.UI.WebControls.Repeater rptCondicoes;
 
         /// <summary>
-        /// Controle btnPaymentTermGuardar.
+        /// Controle phFormCondicao.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnPaymentTermGuardar;
+        protected global::System.Web.UI.WebControls.PlaceHolder phFormCondicao;
 
         /// <summary>
-        /// Controle btnPaymentTermCancelar.
+        /// Controle txtNovaCondicaoNome.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnPaymentTermCancelar;
+        protected global::System.Web.UI.WebControls.TextBox txtNovaCondicaoNome;
 
         /// <summary>
-        /// Controle rptPaymentTerms.
+        /// Controle txtNovaCondicaoDias.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptPaymentTerms;
+        protected global::System.Web.UI.WebControls.TextBox txtNovaCondicaoDias;
 
         /// <summary>
-        /// Controle phPaymentTermsVazio.
+        /// Controle btnAddCondicao.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phPaymentTermsVazio;
+        protected global::System.Web.UI.WebControls.Button btnAddCondicao;
 
         /// <summary>
-        /// Controle cvTaxRate.
+        /// Controle rptPaises.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator cvTaxRate;
+        protected global::System.Web.UI.WebControls.Repeater rptPaises;
 
         /// <summary>
-        /// Controle vsTaxRate.
+        /// Controle phFormPais.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ValidationSummary vsTaxRate;
+        protected global::System.Web.UI.WebControls.PlaceHolder phFormPais;
 
         /// <summary>
-        /// Controle txtTaxRateNome.
+        /// Controle txtNovoPaisCodigo.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtTaxRateNome;
+        protected global::System.Web.UI.WebControls.TextBox txtNovoPaisCodigo;
 
         /// <summary>
-        /// Controle txtTaxRatePercentagem.
+        /// Controle txtNovoPaisNome.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtTaxRatePercentagem;
+        protected global::System.Web.UI.WebControls.TextBox txtNovoPaisNome;
 
         /// <summary>
-        /// Controle btnTaxRateGuardar.
+        /// Controle btnAddPais.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnTaxRateGuardar;
-
-        /// <summary>
-        /// Controle btnTaxRateCancelar.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnTaxRateCancelar;
-
-        /// <summary>
-        /// Controle rptTaxRates.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptTaxRates;
-
-        /// <summary>
-        /// Controle phTaxRatesVazio.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Para modificar, mova a declaração de campo do arquivo de designer a um arquivo code-behind.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder phTaxRatesVazio;
+        protected global::System.Web.UI.WebControls.Button btnAddPais;
     }
 }

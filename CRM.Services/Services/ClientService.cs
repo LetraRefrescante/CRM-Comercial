@@ -1,7 +1,10 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using CRM.Data.Repositories;
+﻿using CRM.Data.Repositories;
+using CRM.Models.DTOs;
 using CRM.Models.Entities.Clientes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CRM.Services
 {
@@ -128,6 +131,24 @@ namespace CRM.Services
                 "Cliente eliminado (soft delete).");
 
             return true;
+        }
+        public List<RelatorioClientesLinha> ObterRelatorioCarteira(string status, int? accountManagerId)
+        {
+            var clientes = _clientRepository.ListarParaExportacao(null, status, accountManagerId);
+
+            return clientes
+                .GroupBy(c => c.Sector?.Name ?? "(sem setor)")
+                .OrderByDescending(g => g.Count())
+                .Select(g => new RelatorioClientesLinha
+                {
+                    Setor = g.Key,
+                    Total = g.Count(),
+                    Ativos = g.Count(c => c.Status == "Ativo"),
+                    Potenciais = g.Count(c => c.Status == "Potencial"),
+                    Inativos = g.Count(c => c.Status == "Inativo"),
+                    Bloqueados = g.Count(c => c.Status == "Bloqueado")
+                })
+                .ToList();
         }
     }
 }
