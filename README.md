@@ -155,7 +155,7 @@ Todas as tabelas incluem os campos técnicos obrigatórios:
 
 ## 📄 Documentação do Projeto
 
-- [`CRM_Comercial_-_Estágio_2026.pdf`](./CRM_Comercial_-_Estágio_2026.pdf) — blueprint funcional e técnica completa (campos, regras de negócio e critérios de aceitação por módulo)
+- [`CRM Comercial - Estágio 2026.pdf`](./CRM%20Comercial%20-%20Estágio%202026.pdf) — blueprint funcional e técnica completa (campos, regras de negócio e critérios de aceitação por módulo)
 - [`CRM_Comercial_Checklist_Fases.md`](./CRM_Comercial_Checklist_Fases.md) — checklist de páginas/ficheiros por fase
 
 ## 🥇 Regras de Ouro
